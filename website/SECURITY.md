@@ -1,8 +1,10 @@
 # Security notes
 
-A static, dependency-free site: 6 HTML pages, one stylesheet, three scripts,
-self-hosted fonts. No build step, no package manager, no third-party requests
-at runtime.
+6 HTML pages, one stylesheet, five scripts, self-hosted fonts, and a small
+PHP + MySQL backend under `api/` for the contact form and the account
+system. No package manager, no third-party requests at runtime. Served
+locally via MAMP (Apache + PHP 8.3 + MySQL) with the site folder junctioned
+into `C:\MAMP\htdocs\nepal`, reachable at `http://localhost/nepal/`.
 
 ## Content Security Policy
 
@@ -60,22 +62,66 @@ Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains
 `frame-ancestors`, `nosniff` and HSTS will not. Put Cloudflare in front if you
 need them.
 
-## The account page is a demo
+## The backend (`api/`)
 
-`login.html` performs **no authentication**. Nothing is transmitted, verified
-or stored, and no credential leaves the browser. The page says so on screen.
+`contact.html` and `login.html` submit to real PHP endpoints backed by
+MySQL. What's actually implemented:
 
-Before putting it in front of real users you need, at minimum:
+- **Passwords are hashed with `password_hash()`** (bcrypt via
+  `PASSWORD_DEFAULT`) — never stored or logged in plain text.
+- **Every query is parameterised** (`PDO` with `ATTR_EMULATE_PREPARES =>
+  false`) — no string-built SQL anywhere, so there's no injection surface.
+- **CSRF via double-submit token**: `GET api/csrf.php` puts a random token
+  in the (`HttpOnly`, `SameSite=Lax`) session; every state-changing POST
+  must echo it back in an `X-CSRF-Token` header, checked with
+  `hash_equals()`. A cross-site request can read neither the cookie nor the
+  token, so it can't forge the header.
+- **Timing-safe login**: `api/signin.php` runs `password_verify()` against
+  a dummy hash even when the email doesn't exist, so "no such account" and
+  "wrong password" take the same code path and roughly the same time —
+  response timing can't be used to enumerate registered emails.
+- **Rate limiting is per-IP**, not per-session (a file-locked counter
+  keyed on `REMOTE_ADDR`), so it isn't defeated by clearing cookies. It's
+  single-instance only — a real multi-server deployment needs this in
+  something shared, like Redis.
+- **Generic error responses**: a global exception handler catches anything
+  unexpected, logs the real message server-side, and returns a flat "try
+  again" to the client — never a stack trace or a DB error string.
+- **`config.php` is gitignored** (see `api/config.sample.php` for the
+  template) and blocked from direct HTTP access via `api/.htaccess`, same
+  for `bootstrap.php`. `sql/.htaccess` denies the whole folder — nothing in
+  there is meant to be requested, and serving `schema.sql` as plain text
+  would hand over the table structure for free.
 
-- HTTPS, with HSTS
-- a server-side session or token in an `HttpOnly; Secure; SameSite=Lax` cookie
-- password hashing server-side (argon2id, or bcrypt with cost ≥ 12)
-- rate limiting on the sign-in endpoint, and lockout/backoff on repeated failures
-- CSRF protection on every state-changing POST
-- server-side revalidation of everything the client already checked
+What this setup does **not** provide, and would need before facing real
+users beyond a local dev machine:
 
-Client-side validation in `login.js` is a convenience for the user, **not a
-security control**. Anyone can bypass it.
+- **HTTPS.** MAMP serves plain `http://localhost`. The session cookie is
+  `Secure` only when the request actually arrives over HTTPS — on a real
+  deployment behind TLS this becomes automatic, no code change needed.
+- **Email verification** — signup takes any email address at face value.
+- **Account lockout** — rate limiting slows brute-forcing, it doesn't lock
+  an account after N failures.
+- **Password reset flow** — "Forgot password?" currently links to the
+  contact page.
+
+Client-side validation in `login.js` / `contact.js` is a convenience for
+the user, **not** a security control — every one of those checks is
+re-run server-side, because the client can always be bypassed.
+
+## Local database (MAMP)
+
+- MySQL on `localhost:3306`, default credentials `root` / `root`.
+- Schema: `sql/schema.sql` — two tables, `users` and `contact_messages`.
+  Import once via phpMyAdmin (`http://localhost/phpMyAdmin`) or:
+  ```
+  "C:\MAMP\bin\mysql\bin\mysql.exe" -u root -proot < sql/schema.sql
+  ```
+- The site is reached through Apache, not by opening the `.html` files
+  directly — `file://` pages have no PHP and the forms can't reach the
+  API. Start MAMP, then browse to `http://localhost/nepal/mainpage.html`.
+  `C:\MAMP\htdocs\nepal` is an NTFS junction pointing at this folder, so
+  there's one copy of the site, not two drifting in and out of sync.
 
 ## Why the forms are `method="post"`
 

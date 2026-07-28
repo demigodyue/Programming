@@ -1,18 +1,27 @@
-/* Contact form — client-side validation only.
-   There is no backend: nothing is transmitted or stored. The form is
-   method="post" so that if this script ever fails to run, the browser
-   falls back to a POST rather than putting the visitor's name, email
-   and phone number into the URL. */
+/* Contact form — validates client-side, then submits to api/contact.php,
+   which inserts the message into MySQL. The form is method="post" so that
+   if this script ever fails to run, the browser falls back to a native
+   POST instead of putting the visitor's name, email and phone in the URL. */
 
 const contactForm = document.getElementById('contactForm')
 const contactMsg = document.getElementById('contactMsg')
 const contactSubmit = document.getElementById('contactSubmit')
 
+let csrfToken = null
+
+fetch('api/csrf.php', { credentials: 'same-origin' })
+    .then(r => r.json())
+    .then(d => { csrfToken = d.token })
+    .catch(() => { /* submit will surface the failure if this never arrives */ })
+
 contactForm.addEventListener('submit', (e) => {
     e.preventDefault()
 
     const first = contactForm.firstName.value.trim()
+    const last = contactForm.lastName.value.trim()
     const email = contactForm.email.value.trim()
+    const phone = contactForm.phone.value.trim()
+    const interest = contactForm.interest.value
     const message = contactForm.message.value.trim()
 
     // validate before showing any loading state, and focus the offending field
@@ -29,8 +38,33 @@ contactForm.addEventListener('submit', (e) => {
         return contactForm.message.focus()
     }
 
-    withLoading(contactSubmit, 900, () => {
-        report(contactMsg, true, `Dhanyabad, ${first}! Your message is on its way — we'll reply to ${email} within one working day.`)
-        contactForm.reset()
+    contactSubmit.classList.add('is-loading')
+    contactSubmit.disabled = true
+
+    fetch('api/contact.php', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken || ''
+        },
+        body: JSON.stringify({ firstName: first, lastName: last, email, phone, interest, message })
     })
+        .then(async (r) => ({ ok: r.ok, data: await r.json() }))
+        .then(({ ok, data }) => {
+            contactSubmit.classList.remove('is-loading')
+            contactSubmit.disabled = false
+
+            if (ok && data.ok) {
+                report(contactMsg, true, data.message)
+                contactForm.reset()
+            } else {
+                report(contactMsg, false, data.error || 'Something went wrong — please try again.')
+            }
+        })
+        .catch(() => {
+            contactSubmit.classList.remove('is-loading')
+            contactSubmit.disabled = false
+            report(contactMsg, false, 'Could not reach the server — check your connection and try again.')
+        })
 })

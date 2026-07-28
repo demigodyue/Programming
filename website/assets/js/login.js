@@ -1,14 +1,8 @@
-/* Account page — front-end demo only.
-
-   There is NO authentication here: nothing is sent, verified or stored,
-   and no credential ever leaves the page. Do not put this in front of
-   real users as-is. Wiring it up for real means, at minimum:
-     - serving over HTTPS
-     - a server-side session or token, set as an HttpOnly Secure cookie
-     - password hashing (argon2id / bcrypt) server-side
-     - rate limiting and CSRF protection on the POST endpoint
-   The forms are method="post" so a script failure can never place a
-   password into the URL, history or server access logs. */
+/* Account page — signs in and creates accounts for real, against MySQL via
+   api/signin.php and api/signup.php. Passwords are hashed server-side
+   (password_hash/PASSWORD_DEFAULT) and never touch this file in any form
+   but what the visitor just typed. Client-side checks below are only a
+   convenience — the server re-validates everything independently. */
 
 /* ---- tabs (keyboard accessible: arrow keys move between them) ---- */
 const tabButtons = [...document.querySelectorAll('.tabs button')]
@@ -64,6 +58,26 @@ pwInput.addEventListener('input', () => {
         : PW_HINT_DEFAULT
 })
 
+/* ---- shared CSRF token, fetched once on page load ---- */
+let csrfToken = null
+
+fetch('api/csrf.php', { credentials: 'same-origin' })
+    .then(r => r.json())
+    .then(d => { csrfToken = d.token })
+    .catch(() => { /* submit will surface the failure if this never arrives */ })
+
+function postJson(url, payload) {
+    return fetch(url, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken || ''
+        },
+        body: JSON.stringify(payload)
+    }).then(async (r) => ({ ok: r.ok, data: await r.json() }))
+}
+
 /* ---- sign in ---- */
 const signinForm = document.getElementById('signinForm')
 const signinMsg = document.getElementById('signinMsg')
@@ -73,6 +87,7 @@ signinForm.addEventListener('submit', (e) => {
     e.preventDefault()
     const emailEl = document.getElementById('loginEmail')
     const passEl = document.getElementById('loginPassword')
+    const rememberEl = document.getElementById('remember')
 
     if (!isEmail(emailEl.value.trim())) {
         report(signinMsg, false, 'Enter a valid email address.')
@@ -83,11 +98,32 @@ signinForm.addEventListener('submit', (e) => {
         return passEl.focus()
     }
 
-    withLoading(signinSubmit, 900, () => {
-        report(signinMsg, true, `Namaste! Signed in as ${emailEl.value.trim()}. This is a front-end demo — connect a backend to make it real.`)
-        // never leave a password sitting in the DOM after a submit
-        passEl.value = ''
+    signinSubmit.classList.add('is-loading')
+    signinSubmit.disabled = true
+
+    postJson('api/signin.php', {
+        email: emailEl.value.trim(),
+        password: passEl.value,
+        remember: rememberEl.checked
     })
+        .then(({ ok, data }) => {
+            signinSubmit.classList.remove('is-loading')
+            signinSubmit.disabled = false
+            // never leave a password sitting in the DOM after a submit
+            passEl.value = ''
+
+            if (ok && data.ok) {
+                report(signinMsg, true, data.message)
+            } else {
+                report(signinMsg, false, data.error || 'Something went wrong — please try again.')
+            }
+        })
+        .catch(() => {
+            signinSubmit.classList.remove('is-loading')
+            signinSubmit.disabled = false
+            passEl.value = ''
+            report(signinMsg, false, 'Could not reach the server — check your connection and try again.')
+        })
 })
 
 /* ---- sign up ---- */
@@ -100,6 +136,7 @@ signupForm.addEventListener('submit', (e) => {
     const first = document.getElementById('suFirst')
     const last = document.getElementById('suLast')
     const email = document.getElementById('suEmail')
+    const country = document.getElementById('suCountry')
     const pass = document.getElementById('suPassword')
     const confirm = document.getElementById('suConfirm')
     const terms = document.getElementById('terms')
@@ -111,11 +148,38 @@ signupForm.addEventListener('submit', (e) => {
     if (pass.value !== confirm.value) { report(signupMsg, false, 'The two passwords do not match.'); return confirm.focus() }
     if (!terms.checked)               { report(signupMsg, false, 'Please accept the terms of booking to continue.'); return terms.focus() }
 
-    const name = first.value.trim()
-    withLoading(signupSubmit, 1100, () => {
-        report(signupMsg, true, `Welcome, ${name}! Your account is ready. This is a front-end demo — no data is stored.`)
-        signupForm.reset()
-        pwMeter.className = 'meter'
-        pwHint.textContent = PW_HINT_DEFAULT
+    signupSubmit.classList.add('is-loading')
+    signupSubmit.disabled = true
+
+    postJson('api/signup.php', {
+        firstName: first.value.trim(),
+        lastName: last.value.trim(),
+        email: email.value.trim(),
+        country: country.value,
+        password: pass.value,
+        confirm: confirm.value,
+        terms: terms.checked
     })
+        .then(({ ok, data }) => {
+            signupSubmit.classList.remove('is-loading')
+            signupSubmit.disabled = false
+            pass.value = ''
+            confirm.value = ''
+
+            if (ok && data.ok) {
+                report(signupMsg, true, data.message)
+                signupForm.reset()
+                pwMeter.className = 'meter'
+                pwHint.textContent = PW_HINT_DEFAULT
+            } else {
+                report(signupMsg, false, data.error || 'Something went wrong — please try again.')
+            }
+        })
+        .catch(() => {
+            signupSubmit.classList.remove('is-loading')
+            signupSubmit.disabled = false
+            pass.value = ''
+            confirm.value = ''
+            report(signupMsg, false, 'Could not reach the server — check your connection and try again.')
+        })
 })

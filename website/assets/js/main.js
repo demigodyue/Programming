@@ -602,13 +602,3 @@ function report(el, ok, text) {
     el.className = 'form-msg show ' + (ok ? 'ok' : 'err')
     el.textContent = text
 }
-
-function withLoading(button, ms, done) {
-    button.classList.add('is-loading')
-    button.disabled = true
-    setTimeout(() => {
-        button.classList.remove('is-loading')
-        button.disabled = false
-        done()
-    }, ms)
-}
