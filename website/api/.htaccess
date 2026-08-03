@@ -1,0 +1,7 @@
+# config.php / config.sample.php / bootstrap.php are includes, never
+# meant to be requested directly — only reachable via `require` from the
+# real endpoints below. Everything else in this folder (contact.php,
+# signup.php, signin.php, csrf.php) is a real endpoint and stays open.
+<FilesMatch "^(config|config\.sample|bootstrap)\.php$">
+    Require all denied
+</FilesMatch>

@@ -1,0 +1,25 @@
+# Security headers — Netlify / Cloudflare Pages format.
+#
+# The <meta http-equiv="Content-Security-Policy"> in each page covers most
+# directives, but three things can ONLY be delivered as real HTTP headers:
+#   frame-ancestors        (clickjacking — meta form is ignored by browsers)
+#   X-Content-Type-Options (MIME sniffing)
+#   Strict-Transport-Security
+#
+# If you host somewhere else, the nginx/Apache equivalents are in
+# SECURITY.md. If you host on plain GitHub Pages these are NOT applied —
+# GitHub Pages cannot set custom headers, so put Cloudflare in front of it.
+
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; form-action 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+# Fonts are content-hashed by name and never change — cache hard.
+/assets/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *

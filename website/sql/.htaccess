@@ -1,0 +1,5 @@
+# Nothing in here is meant to be requested over HTTP — it's a manual-import
+# script, not application code. Block it outright rather than relying on
+# "it's just a .sql file, Apache won't execute it" (it would still be served
+# as plain text, handing an attacker the exact table structure).
+Require all denied

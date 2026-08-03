@@ -1,0 +1,5 @@
+# Local database credentials — see website/api/config.sample.php for the
+# committed template. Never commit the real one, even though MAMP's own
+# defaults (root/root) aren't exactly a secret; a production DB password
+# would go in the same file.
+website/api/config.php

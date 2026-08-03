@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; form-action 'self'; base-uri 'none'; object-src 'none'">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    <link rel="icon" type="image/webp" href="assets/img/flag.webp">
+    <meta name="description" content="Contact us to plan a trek or tour in Nepal — enquiries, bookings and the Kathmandu office.">
+    <meta name="theme-color" content="#05070f">
+    <title>Contact — NEPAL</title>
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Contact — NEPAL">
+    <meta property="og:description" content="Contact us to plan a trek or tour in Nepal — enquiries, bookings and the Kathmandu office.">
+    <meta property="og:image" content="assets/img/boudha.jpg">
+    <meta property="og:locale" content="en_GB">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Contact — NEPAL">
+    <meta name="twitter:description" content="Contact us to plan a trek or tour in Nepal — enquiries, bookings and the Kathmandu office.">
+    <meta name="twitter:image" content="assets/img/boudha.jpg">
+    <link rel="preload" href="assets/fonts/SpaceGrotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="assets/fonts/DMSans-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="assets/css/fonts.css">
+
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="progress-bar" role="presentation"></div>
+
+    <!-- @nav -->
+    <nav class="navbar" id="top">
+        <a class="brand" href="mainpage.html" aria-label="Nepal — home">
+            <span class="embelem" aria-hidden="true">
+                <img src="assets/img/flag.webp" width="860" height="1048" alt="">
+            </span>
+            <span class="logo">NEPAL</span>
+        </a>
+        <ul class="nav-link" id="navMenu">
+            <li><a href="mainpage.html">Home</a></li>
+            <li><a href="tours.html">Tours</a></li>
+            <li><a href="explore.html">Explore</a></li>
+            <li><a href="about.html">About</a></li>
+            <li class="ctn-li active"><a href="contact.html" aria-current="page">Contact</a></li>
+        </ul>
+        <button class="menu-btn" type="button" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navMenu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+    <!-- @end -->
+
+    <main id="main">
+        <section class="page-hero hero-contact">
+            <div class="aurora" aria-hidden="true"></div>
+            <div class="page-hero-content">
+                <p class="crumb">Home / Contact</p>
+                <h1 data-split>Contact Us</h1>
+                <div class="line"></div>
+                <p>Tell us when you want to travel and how high you want to go — we'll come back with a route, a price and an honest opinion about the weather.</p>
+            </div>
+        </section>
+
+        <section>
+            <div class="wrap">
+                <div class="form-shell">
+
+                    <div class="form-card reveal">
+                        <h2>Send us a message</h2>
+                        <p>We reply to every enquiry within one working day, Nepal Standard Time (UTC+5:45).</p>
+
+                        <form id="contactForm" method="post" action="" novalidate>
+                            <div class="field-row">
+                                <div class="field">
+                                    <label for="firstName">First name</label>
+                                    <input type="text" id="firstName" name="firstName" autocomplete="given-name" placeholder="Alex" required>
+                                </div>
+                                <div class="field">
+                                    <label for="lastName">Last name</label>
+                                    <input type="text" id="lastName" name="lastName" autocomplete="family-name" placeholder="Morgan" required>
+                                </div>
+                            </div>
+
+                            <div class="field-row">
+                                <div class="field">
+                                    <label for="email">Email</label>
+                                    <input type="email" id="email" name="email" autocomplete="email" placeholder="you@example.com" required>
+                                </div>
+                                <div class="field">
+                                    <label for="phone">Phone <span class="label-note">(optional)</span></label>
+                                    <input type="tel" id="phone" name="phone" autocomplete="tel" placeholder="+977 98 0000 0000">
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label for="interest">I'm interested in</label>
+                                <select id="interest" name="interest">
+                                    <option>Everest Base Camp Trek</option>
+                                    <option>Gokyo Lakes &amp; Ri</option>
+                                    <option>Ama Dablam Base Camp</option>
+                                    <option>Valley Heritage Tour</option>
+                                    <option>Indra Jatra Festival Week</option>
+                                    <option>Kathmandu Food Trail</option>
+                                    <option>Something custom</option>
+                                </select>
+                            </div>
+
+                            <div class="field">
+                                <label for="message">Your message</label>
+                                <textarea id="message" name="message" placeholder="Travel dates, group size, fitness level, anything we should know…" required></textarea>
+                            </div>
+
+                            <button type="submit" class="ctn" id="contactSubmit">Send Message</button>
+                            <p class="form-msg" id="contactMsg" role="status" aria-live="polite"></p>
+                        </form>
+
+                        <p class="form-note">Already booked with us? <a href="login.html">Log in to your account →</a></p>
+                    </div>
+
+                    <aside class="info-card reveal">
+                        <div class="aurora" aria-hidden="true"></div>
+                        <h2>Namaste 🙏</h2>
+                        <div class="line left"></div>
+
+                        <div class="info-item">
+                            <span class="ico" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linejoin="round">
+                                    <path d="M12 21s7-5.6 7-11a7 7 0 10-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/>
+                                </svg>
+                            </span>
+                            <div>
+                                <h4>Office</h4>
+                                <p>Thamel Marg, Ward 26<br>Kathmandu 44600, Nepal</p>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="ico" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linejoin="round">
+                                    <rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>
+                                </svg>
+                            </span>
+                            <div>
+                                <h4>Email</h4>
+                                <p>namaste@visitnepal.com<br>bookings@visitnepal.com</p>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="ico" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linejoin="round">
+                                    <path d="M5 4h4l2 5-2.5 1.5a12 12 0 005 5L15 13l5 2v4a1 1 0 01-1.1 1A16 16 0 014 5.1 1 1 0 015 4z"/>
+                                </svg>
+                            </span>
+                            <div>
+                                <h4>Phone</h4>
+                                <p>+977 1 400 0000<br>+977 98 0000 0000 (WhatsApp)</p>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="ico" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>
+                                </svg>
+                            </span>
+                            <div>
+                                <h4>Office hours</h4>
+                                <p>Sunday – Friday, 9:00 – 18:00 NPT<br>Emergency trek line open 24/7</p>
+                            </div>
+                        </div>
+
+                        <a href="login.html" class="ctn ghost">Member Login</a>
+                    </aside>
+
+                </div>
+            </div>
+        </section>
+
+        <!--Where we are-->
+        <section class="section-alt">
+            <div class="wrap">
+                <div class="split flip">
+                    <div class="split-text reveal reveal-left">
+                        <span class="eyebrow">Finding Us</span>
+                        <h2>Start in Kathmandu</h2>
+                        <div class="line left"></div>
+                        <p>
+                            Our office sits in Thamel, a ten-minute walk from Kathmandu Durbar Square and the
+                            departure point for every trip we run. Almost all routes begin here with a briefing
+                            and a kit check before the flight to Lukla or the drive to Pokhara.
+                        </p>
+                        <p>
+                            Tribhuvan International is the only international airport in the country, twenty
+                            minutes from the office. We can arrange the pickup if you send us your flight number.
+                        </p>
+                        <a href="tours.html" class="ctn">See Departure Points</a>
+                    </div>
+                    <div class="reveal reveal-right">
+                        <div class="split-media contain">
+                            <img src="assets/img/map.jpg" width="612" height="438" alt="Map of Nepal showing its administrative zones, with Kathmandu marked in the central valley" loading="lazy" decoding="async">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="band band-photo band-valley">
+            <div class="aurora" aria-hidden="true"></div>
+            <div class="blob b1" aria-hidden="true"></div>
+            <div class="blob b2" aria-hidden="true"></div>
+            <div class="wrap reveal">
+                <span class="eyebrow">Groups</span>
+                <h2>Planning a group trip?</h2>
+                <div class="line"></div>
+                <p>Schools, clubs and company retreats of eight or more get a dedicated coordinator, a custom itinerary and a discounted per-person rate. Mention the group size in your message and we'll build it around you.</p>
+                <a href="tours.html" class="ctn">See All Tours</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- @footer -->
+    <footer class="footer">
+        <div class="aurora" aria-hidden="true"></div>
+        <div class="footer-grid">
+            <div>
+                <div class="brand-block">
+                    <img src="assets/img/flag.webp" width="860" height="1048" alt="The non-rectangular national flag of Nepal" loading="lazy" decoding="async">
+                    <strong>NEPAL</strong>
+                </div>
+                <p>"Discover Nepal: where adventure meets serenity. Explore majestic mountains, vibrant culture, and unforgettable experiences." 🏔️✨</p>
+            </div>
+            <div>
+                <h3>Pages</h3>
+                <ul>
+                    <li><a href="mainpage.html">Home</a></li>
+                    <li><a href="tours.html">Tours</a></li>
+                    <li><a href="explore.html">Explore</a></li>
+                    <li><a href="about.html">About</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3>Get in touch</h3>
+                <ul>
+                    <li><a href="contact.html">Contact us</a></li>
+                    <li><a href="login.html">Member login</a></li>
+                    <li><a href="mailto:namaste@visitnepal.com">namaste@visitnepal.com</a></li>
+                    <li><a href="tel:+97714000000">+977 1 400 0000</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>Nepal — The Land of Lord Buddha</p>
+        </div>
+    </footer>
+    <!-- @end -->
+
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/contact.js"></script>
+</body>
+</html>

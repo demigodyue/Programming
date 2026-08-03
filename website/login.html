@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; form-action 'self'; base-uri 'none'; object-src 'none'">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    <link rel="icon" type="image/webp" href="assets/img/flag.webp">
+    <meta name="description" content="Log in or create an account to manage your Nepal trek bookings.">
+    <meta name="theme-color" content="#05070f">
+    <title>Login — NEPAL</title>
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Login — NEPAL">
+    <meta property="og:description" content="Log in or create an account to manage your Nepal trek bookings.">
+    <meta property="og:image" content="assets/img/mountain2.jpg">
+    <meta property="og:locale" content="en_GB">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Login — NEPAL">
+    <meta name="twitter:description" content="Log in or create an account to manage your Nepal trek bookings.">
+    <meta name="twitter:image" content="assets/img/mountain2.jpg">
+    <link rel="preload" href="assets/fonts/SpaceGrotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="assets/fonts/DMSans-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="assets/css/fonts.css">
+
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <!-- @nav -->
+    <nav class="navbar" id="top">
+        <a class="brand" href="mainpage.html" aria-label="Nepal — home">
+            <span class="embelem" aria-hidden="true">
+                <img src="assets/img/flag.webp" width="860" height="1048" alt="">
+            </span>
+            <span class="logo">NEPAL</span>
+        </a>
+        <ul class="nav-link" id="navMenu">
+            <li><a href="mainpage.html">Home</a></li>
+            <li><a href="tours.html">Tours</a></li>
+            <li><a href="explore.html">Explore</a></li>
+            <li><a href="about.html">About</a></li>
+            <li class="ctn-li"><a href="contact.html">Contact</a></li>
+        </ul>
+        <button class="menu-btn" type="button" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navMenu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+    <!-- @end -->
+
+    <main class="auth-page" id="main">
+        <div class="aurora" aria-hidden="true"></div>
+
+        <div class="auth-box">
+
+            <!--Left panel-->
+            <aside class="auth-side">
+                <div class="aurora" aria-hidden="true"></div>
+                <img class="flag" src="assets/img/flag.webp" width="860" height="1048" alt="The non-rectangular national flag of Nepal">
+                <h2>Welcome back<br>to the Himalaya.</h2>
+                <p>Sign in to manage your bookings, download permits and check the weather window for your departure.</p>
+                <ul>
+                    <li>Track your trek itinerary day by day</li>
+                    <li>Download permits &amp; TIMS cards</li>
+                    <li>Message your assigned guide</li>
+                    <li>Members-only departure dates</li>
+                </ul>
+            </aside>
+
+            <!--Right panel-->
+            <section class="auth-form">
+                <h1>Account</h1>
+
+                <p class="demo-notice" role="note">
+                    <strong>Local dev build.</strong> Accounts are real — created in a local
+                    database with a properly hashed password. This is a development
+                    server on plain HTTP with no email verification, so please still
+                    use a password you don't rely on elsewhere.
+                </p>
+
+                <div class="tabs" role="tablist" aria-label="Sign in or create an account">
+                    <button type="button" id="tab-signin" role="tab" aria-selected="true" aria-controls="signin" data-tab="signin">Sign in</button>
+                    <button type="button" id="tab-signup" role="tab" aria-selected="false" aria-controls="signup" data-tab="signup" tabindex="-1">Create account</button>
+                </div>
+
+                <!--Sign in-->
+                <div class="auth-panel" id="signin" role="tabpanel" aria-labelledby="tab-signin">
+                    <form id="signinForm" method="post" action="" novalidate>
+                        <div class="field">
+                            <label for="loginEmail">Email</label>
+                            <input type="email" id="loginEmail" autocomplete="email" placeholder="you@example.com" required>
+                        </div>
+                        <div class="field">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" id="loginPassword" autocomplete="current-password" placeholder="••••••••" required>
+                        </div>
+                        <div class="row-between">
+                            <label class="check" for="remember"><input type="checkbox" id="remember"> Remember me</label>
+                            <a href="contact.html">Forgot password?</a>
+                        </div>
+                        <button type="submit" class="ctn" id="signinSubmit">Sign In</button>
+                        <p class="form-msg" id="signinMsg" role="status" aria-live="polite"></p>
+                    </form>
+                    <p class="form-note">No account yet? <a href="#" data-goto="signup">Create one →</a></p>
+                </div>
+
+                <!--Sign up-->
+                <div class="auth-panel" id="signup" role="tabpanel" aria-labelledby="tab-signup" hidden>
+                    <form id="signupForm" method="post" action="" novalidate>
+                        <div class="field-row">
+                            <div class="field">
+                                <label for="suFirst">First name</label>
+                                <input type="text" id="suFirst" autocomplete="given-name" placeholder="Alex" required>
+                            </div>
+                            <div class="field">
+                                <label for="suLast">Last name</label>
+                                <input type="text" id="suLast" autocomplete="family-name" placeholder="Morgan" required>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label for="suEmail">Email</label>
+                            <input type="email" id="suEmail" autocomplete="email" placeholder="you@example.com" required>
+                        </div>
+                        <div class="field">
+                            <label for="suCountry">Country</label>
+                            <select id="suCountry" autocomplete="country-name">
+                                <option>Nepal</option>
+                                <option>India</option>
+                                <option>United Kingdom</option>
+                                <option>United States</option>
+                                <option>Australia</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="suPassword">Password</label>
+                            <input type="password" id="suPassword" autocomplete="new-password" placeholder="At least 8 characters" required aria-describedby="pwHint">
+                            <div class="meter" id="pwMeter" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+                            <span class="meter-label" id="pwHint">Use 8+ characters with a number and a capital letter.</span>
+                        </div>
+                        <div class="field">
+                            <label for="suConfirm">Confirm password</label>
+                            <input type="password" id="suConfirm" autocomplete="new-password" placeholder="Repeat password" required>
+                        </div>
+                        <div class="row-between">
+                            <label class="check" for="terms"><input type="checkbox" id="terms"> I agree to the terms of booking</label>
+                        </div>
+                        <button type="submit" class="ctn" id="signupSubmit">Create Account</button>
+                        <p class="form-msg" id="signupMsg" role="status" aria-live="polite"></p>
+                    </form>
+                    <p class="form-note">Already a member? <a href="#" data-goto="signin">Sign in instead →</a></p>
+                </div>
+
+                <a href="mainpage.html" class="back-home">← Back to home</a>
+            </section>
+
+        </div>
+    </main>
+
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/login.js"></script>
+</body>
+</html>
