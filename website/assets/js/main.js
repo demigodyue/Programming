@@ -246,108 +246,30 @@ const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v))
 const maxScroll = () => Math.max(0, document.documentElement.scrollHeight - window.innerHeight)
 
 /* ============================================================
-   Momentum scrolling.
+   Momentum scrolling is Lenis's job now.
 
-   The page still scrolls natively — all this does is ease the rate
-   at which it reaches a position it was already heading to, which
-   is what gives the whole site its weight.
+   This file used to carry its own engine: a wheel handler that
+   preventDefaulted, a lerped target, and window.scrollTo every
+   frame. The parallax section is built on GSAP ScrollTrigger, whose
+   scrub is synchronised to Lenis, and two engines hijacking the same
+   wheel events while both writing scroll position fight each other
+   every frame. Only one can own the scroll, so this one stood down.
 
-   Pointer devices only. Phones already have far better native
-   inertia than this could fake, and they'd pay for the permanent
-   rAF loop in battery. Note that the test is the input device and
-   not the window width — a mouse driving a half-width desktop
-   window still wants the easing.
+   Lenis is started in parallax.js, alongside the ScrollTrigger it
+   feeds. Everything else in this file reads window.scrollY, which
+   Lenis keeps honest, so nothing else had to change.
    ============================================================ */
-const SMOOTH_EASE = 0.105
-const smooth = { on: false, target: 0, current: 0, animating: false }
-
-function initSmoothScroll() {
-    if (isTouch) return
-
-    // CSS `scroll-behavior: smooth` would re-animate every single
-    // frame this writes, so taking that off is the engine's first act.
-    // The class is added here and nowhere else, so the CSS behaviour
-    // survives untouched whenever the script doesn't run.
-    document.documentElement.classList.add('has-smooth-scroll')
-    smooth.on = true
-    smooth.target = smooth.current = window.scrollY
-
-    window.addEventListener('wheel', (e) => {
-        if (e.ctrlKey) return // pinch-zoom
-
-        // A field that has overflowed its own box still owns the wheel;
-        // swallowing it here would scroll the page out from under
-        // someone part-way through a long message.
-        const own = e.target.closest('textarea, [data-native-scroll]')
-        if (own && own.scrollHeight > own.clientHeight) return
-
-        e.preventDefault()
-
-        // deltaMode 1 counts lines and 2 counts pages — normalise both
-        const step = e.deltaMode === 1 ? 18 : e.deltaMode === 2 ? window.innerHeight : 1
-        smooth.target = clamp(smooth.target + e.deltaY * step, 0, maxScroll())
-    }, { passive: false })
-
-    // With scroll-behavior off, keys would land instantly and feel
-    // unrelated to the wheel, so they route through the easing too.
-    window.addEventListener('keydown', (e) => {
-        if (e.metaKey || e.ctrlKey || e.altKey) return
-
-        const t = e.target
-        if (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return
-
-        const page = window.innerHeight * 0.86
-        let to = null
-
-        if (e.key === 'ArrowDown') to = smooth.target + 110
-        else if (e.key === 'ArrowUp') to = smooth.target - 110
-        else if (e.key === 'PageDown') to = smooth.target + page
-        else if (e.key === 'PageUp') to = smooth.target - page
-        else if (e.key === 'Home') to = 0
-        else if (e.key === 'End') to = maxScroll()
-        else if (e.key === ' ' && t === document.body) to = smooth.target + (e.shiftKey ? -page : page)
-
-        if (to === null) return
-        e.preventDefault()
-        smooth.target = clamp(to, 0, maxScroll())
-    })
-
-    // Anything that moves the page without asking us — a scrollbar
-    // drag, find-in-page, a focus jump — is adopted rather than
-    // fought. Mid-glide our own writes land within a pixel of
-    // `current`, so only a genuine outside jump resyncs.
-    window.addEventListener('scroll', () => {
-        if (smooth.animating && Math.abs(window.scrollY - smooth.current) < 2) return
-        smooth.current = smooth.target = window.scrollY
-    }, { passive: true })
-}
-
-function advanceSmoothScroll() {
-    if (!smooth.on) return
-
-    smooth.target = clamp(smooth.target, 0, maxScroll())
-    const diff = smooth.target - smooth.current
-
-    // Once settled it stops writing entirely, which hands the page
-    // back to the scrollbar and the browser's own UI until the next
-    // wheel arrives.
-    if (Math.abs(diff) < 0.1) {
-        smooth.current = smooth.target
-        smooth.animating = false
-        return
-    }
-
-    smooth.current += diff * SMOOTH_EASE
-    smooth.animating = true
-    window.scrollTo(0, smooth.current)
-}
 
 /* Glide to an absolute offset through the engine — used by the
    back-to-top button and every in-page anchor, so nothing bypasses
    the easing and jumps. */
 function scrollToY(y) {
     const to = clamp(y, 0, maxScroll())
-    if (smooth.on) smooth.target = to
+
+    // Lenis boots on idle with parallax.js, so anything clicked
+    // before then still needs the native path rather than silently
+    // doing nothing.
+    if (window.lenis) window.lenis.scrollTo(to)
     else window.scrollTo({ top: to, behavior: 'smooth' })
 }
 
@@ -652,8 +574,6 @@ let lastRenderY = -1
 let needsRender = true
 
 function frame() {
-    advanceSmoothScroll()
-
     const y = window.scrollY
 
     // recomputed every frame rather than per scroll event, so it
@@ -947,67 +867,6 @@ document.addEventListener('pointerdown', (e) => {
 })
 
 /* ============================================================
-   Custom cursor — a ring that trails the pointer with a touch of
-   lag and expands over anything clickable. Desktop only: the
-   .has-custom-cursor class (which is what hides the native cursor)
-   is only added here, so a script failure never leaves a visitor
-   without any cursor at all.
-   ============================================================ */
-function initCursor() {
-    if (isTouch) return
-
-    document.documentElement.classList.add('has-custom-cursor')
-
-    const dot = document.createElement('div')
-    dot.className = 'cursor-dot'
-    const ring = document.createElement('div')
-    ring.className = 'cursor-ring'
-    document.body.appendChild(dot)
-    document.body.appendChild(ring)
-
-    let targetX = 0
-    let targetY = 0
-    let ringX = 0
-    let ringY = 0
-    let shown = false
-
-    window.addEventListener('pointermove', (e) => {
-        targetX = e.clientX
-        targetY = e.clientY
-        dot.style.transform = `translate3d(${targetX}px, ${targetY}px, 0) translate(-50%, -50%)`
-
-        if (!shown) {
-            shown = true
-            dot.classList.add('show')
-            ring.classList.add('show')
-        }
-    })
-
-    // mouseout with no relatedTarget means the pointer left the window
-    document.addEventListener('mouseout', (e) => {
-        if (e.relatedTarget) return
-        shown = false
-        dot.classList.remove('show')
-        ring.classList.remove('show')
-    })
-
-    document.addEventListener('pointerover', (e) => {
-        const hoverable = e.target.closest('a, button, .card, input, textarea, select')
-        ring.classList.toggle('hover', !!hoverable)
-        dot.classList.toggle('hover', !!hoverable)
-    })
-
-    // the ring trails the dot with a little lag instead of snapping to it
-    function loop() {
-        ringX += (targetX - ringX) * 0.18
-        ringY += (targetY - ringY) * 0.18
-        ring.style.transform = `translate3d(${ringX.toFixed(1)}px, ${ringY.toFixed(1)}px, 0) translate(-50%, -50%)`
-        requestAnimationFrame(loop)
-    }
-    requestAnimationFrame(loop)
-}
-
-/* ============================================================
    Hero photo cluster — tilts gently toward the pointer. Lives on
    .hero-visual itself rather than the individual cards, since those
    already carry their own entrance/float animations on `transform`
@@ -1028,31 +887,6 @@ function initHeroTilt() {
     hero.addEventListener('pointerleave', () => {
         visual.style.transform = ''
     })
-}
-
-/* ============================================================
-   The trail dog.
-
-   three.js is ~750 kB unminified-equivalent, which is far too much
-   to spend on every visit for one ornament near the bottom of the
-   page. So the module is only fetched once the stage is within a
-   screen of the viewport, and a failed fetch leaves the CSS
-   fallback in place rather than throwing.
-   ============================================================ */
-function initDogStage() {
-    const stage = document.querySelector('.dog-stage')
-    if (!stage) return
-
-    const loader = new IntersectionObserver(([entry]) => {
-        if (!entry.isIntersecting) return
-        loader.disconnect()
-
-        import('./dog.js')
-            .then(({ initDog }) => initDog(stage))
-            .catch(() => { stage.classList.add('dog-failed') })
-    }, { rootMargin: '100% 0px' })
-
-    loader.observe(stage)
 }
 
 /* ============================================================
@@ -1093,11 +927,9 @@ scrubOn = !isTouch
 
 initCurtain()
 initMotes()
-initCursor()
 initHeroTilt()
 splitHeadlines()
 splitHeadings()
-initSmoothScroll()
 initAnchorScroll()
 initMediaParallax()
 initContentScrub()
@@ -1108,9 +940,41 @@ initMarquee()
 initTilt()
 initMagneticButtons()
 initGallery()
-initDogStage()
 initReveals()
 frame()
+
+/* The scroll hero has to be live before the first scroll, so it is
+   not deferred to idle. This file is a classic script, not a module,
+   so a dynamic import is the only way in — and a failed fetch simply
+   leaves the hero as a static photograph over a photograph, which is
+   a perfectly reasonable page. */
+import('./scroll-hero.js')
+    .then(({ initScrollHero }) => initScrollHero())
+    .catch(err => console.warn('scroll-hero.js did not load:', err))
+
+/* Same deal for the parallax section below it: scroll-driven, so it
+   has to be live before the first scroll. Separate module rather than
+   folded into scroll-hero.js because the two share nothing but the
+   technique — a page can have either, both, or neither. */
+import('./parallax.js')
+    .then(({ initParallax }) => initParallax())
+    .catch(err => console.warn('parallax.js did not load:', err))
+
+/* Page-wide scroll effects, on the same ScrollTrigger. Loaded after
+   the parallax so its triggers register second and it can read
+   layout the parallax has already settled. */
+import('./scroll-fx.js')
+    .then(({ initScrollFx }) => initScrollFx())
+    .catch(err => console.warn('scroll-fx.js did not load:', err))
+
+/* The card fan waits for an IntersectionObserver rather than the
+   scroll position, so it has no reason to race the modules above.
+   It bails on its own if the page has no .fan-layout, and a failed
+   fetch leaves the cards as the scrollable strip the stylesheet
+   draws before .fan-ready is added. */
+import('./card-fan.js')
+    .then(({ initCardFan }) => initCardFan())
+    .catch(err => console.warn('card-fan.js did not load:', err))
 
 /* ============================================================
    Shared form helpers (used by contact.html and login.html)

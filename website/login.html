@@ -8,7 +8,7 @@
 
     <link rel="icon" type="image/webp" href="assets/img/flag.webp">
     <meta name="description" content="Log in or create an account to manage your Nepal trek bookings.">
-    <meta name="theme-color" content="#faf3e6">
+    <meta name="theme-color" content="#1c251e">
     <title>Login — NEPAL</title>
     <meta property="og:type" content="website">
     <meta property="og:title" content="Login — NEPAL">
@@ -25,7 +25,7 @@
 
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body>
+<body class="sh-ground-namche">
     <a class="skip-link" href="#main">Skip to content</a>
 
     <!-- @nav -->
@@ -48,6 +48,68 @@
         </button>
     </nav>
     <!-- @end -->
+
+    <!--Scroll-expansion hero, compact. Sits outside <main> on purpose:
+    the skip-link targets #main, so a keyboard visitor who wants the
+    sign-in form jumps straight past the hero rather than scrolling
+    three viewports to reach it. See assets/js/scroll-hero.js.-->
+    <section class="scroll-hero sh-compact">
+        <div class="scroll-hero-track">
+            <div class="scroll-hero-layer">
+                <div class="scroll-hero-bg">
+                    <img src="assets/img/amadablam-dusk.jpg" width="1800" height="1200" alt="" loading="eager" decoding="async">
+                </div>
+                <!--The window that opens. Its size is written by
+                scroll-hero.js as you scroll; everything else about it,
+                including the 95vw/85vh ceiling, is in the stylesheet.-->
+                <figure class="scroll-hero-media">
+                    <img src="assets/img/everest-stupa.jpg" width="1800" height="1200" alt="A whitewashed stupa on the Namche trail with Everest and Lhotse behind it" loading="eager" decoding="async">
+                </figure>
+                <div class="scroll-hero-fore">
+                    <p class="crumb">Home / Account</p>
+                    <p class="scroll-hero-title">Member Access</p>
+                    <p class="scroll-hero-date">Permits · Itineraries · Guides</p>
+                    <p class="scroll-hero-cue">Scroll to expand</p>
+                </div>
+            </div>
+        </div>
+        <!--No copy here, but the block still earns its place: it
+        carries the gradient that hands the page back from the
+        hero's black to the warm palette. Without it the hero ends
+        on a hard black-to-cream cut.-->
+        <div class="scroll-hero-body sh-body-blank"></div>
+    </section>
+
+    <!--Layered parallax, from Osmo's GSAP/ScrollTrigger
+    component. The timeline and its 70/55/40/10 yPercent values are
+    reproduced verbatim in assets/js/parallax.js; GSAP, ScrollTrigger
+    and Lenis are vendored under assets/js/vendor/ because the CSP
+    forbids CDNs.
+    
+    One photograph, not three. The original stacks pre-cut
+    transparent ridge artwork; stacking whole photographs instead
+    just reads as two pictures laid over each other. So the image
+    takes layer 4 — the 10% layer, the only rate at which a
+    full-bleed frame stays in shot — and the fast layers carry
+    light and haze instead of more pictures.-->
+    <div class="parallax parallax--compact" aria-hidden="true">
+        <section class="parallax__header">
+            <div class="parallax__visuals">
+                <div class="parallax__black-line-overflow"></div>
+                <div data-parallax-layers class="parallax__layers">
+                    <div data-parallax-layer="1" class="parallax__layer-sky"></div>
+                    <div data-parallax-layer="2" class="parallax__layer-haze"></div>
+                    <div data-parallax-layer="3" class="parallax__layer-title">
+                        <h2 class="parallax__title">Return
+                            <span class="parallax__subtitle">Your itinerary is waiting</span>
+                        </h2>
+                    </div>
+                    <img src="assets/img/amadablam-dusk.jpg" loading="eager" width="1800" height="1200" data-parallax-layer="4" alt="" class="parallax__layer-img">
+                </div>
+                <div class="parallax__fade"></div>
+            </div>
+        </section>
+    </div>
 
     <main class="auth-page" id="main">
         <div class="aurora" aria-hidden="true"></div>

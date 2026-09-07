@@ -7,7 +7,29 @@
 
 declare(strict_types=1);
 
-require __DIR__ . '/config.php';
+// Credentials come from api/config.php when that file exists (the local
+// MAMP setup). On a server there is usually no such file — the deploy
+// sets DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PASS in the environment
+// instead, so nothing secret has to be written to disk or committed.
+// A missing config.php is therefore not fatal: a wrong or absent
+// credential surfaces as a normal caught PDO exception in db() below,
+// which logs the detail and returns the generic error to the client.
+if (is_file(__DIR__ . '/config.php')) {
+    require __DIR__ . '/config.php';
+}
+
+foreach ([
+    'DB_HOST' => 'localhost',
+    'DB_PORT' => '3306',
+    'DB_NAME' => 'nepal_travel',
+    'DB_USER' => '',
+    'DB_PASS' => '',
+] as $const => $fallback) {
+    if (!defined($const)) {
+        $fromEnv = getenv($const);
+        define($const, $fromEnv === false ? $fallback : $fromEnv);
+    }
+}
 
 // Never show errors in the response body — always log them instead.
 ini_set('display_errors', '0');

@@ -30,12 +30,27 @@
     --terracotta: #c1592f;
     --terracotta-soft: #de7a4d;
     --terracotta-deep: #93441f;
+    /* accent colour for text sitting on the page background */
+    --accent-ink: var(--terracotta-deep);
     --gold: #c99a3c;
     --gold-soft: #e2ba62;
     --gold-deep: #9c7423;
 
-    --border: rgba(43, 32, 19, 0.10);
-    --border-bright: rgba(43, 32, 19, 0.20);
+    /* The two tints most of this sheet is mixed from, held as bare
+       channels so any rule can choose its own alpha. --ink is the
+       foreground colour used for hairlines, borders and subtle
+       fills; --scrim is what darkens a photograph so type can sit on
+       it. Both are flipped wholesale by the dark palette further
+       down, which is what lets the twenty-odd literals scattered
+       through the sheet follow the theme without being hunted down
+       one at a time. */
+    --ink-rgb: 43 32 19;
+    --scrim-rgb: 35 22 12;
+    /* the colour a full-width photo band sinks to in its middle */
+    --band-mid: #3c2a17;
+
+    --border: rgb(var(--ink-rgb) / 0.10);
+    --border-bright: rgb(var(--ink-rgb) / 0.20);
 
     /* ---- gradients ---- */
     --grad-brand: linear-gradient(135deg, var(--gold) 0%, var(--terracotta) 100%);
@@ -171,63 +186,6 @@ strong {
     border-radius: 6px;
 }
 
-/* ============================================================
-   Custom cursor — desktop only. JS adds .has-custom-cursor to
-   <html> only once it's confirmed a pointer device is in use, so
-   the native cursor never disappears if the script fails to load.
-   ============================================================ */
-.has-custom-cursor,
-.has-custom-cursor a,
-.has-custom-cursor button,
-.has-custom-cursor input,
-.has-custom-cursor textarea,
-.has-custom-cursor select {
-    cursor: none;
-}
-
-.cursor-dot,
-.cursor-ring {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 10001;
-    pointer-events: none;
-    opacity: 0;
-    transform: translate3d(-50%, -50%, 0);
-}
-
-.cursor-dot {
-    height: 6px;
-    width: 6px;
-    border-radius: 50%;
-    background: var(--terracotta);
-    transition: opacity 0.25s ease;
-}
-
-.cursor-ring {
-    height: 34px;
-    width: 34px;
-    border-radius: 50%;
-    border: 1.5px solid var(--terracotta);
-    transition: width 0.25s cubic-bezier(0.22, 1, 0.36, 1), height 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-                background 0.25s ease, border-color 0.25s ease, opacity 0.25s ease;
-}
-
-.cursor-dot.show,
-.cursor-ring.show {
-    opacity: 1;
-}
-
-.cursor-ring.hover {
-    height: 58px;
-    width: 58px;
-    background: rgba(193, 89, 47, 0.08);
-}
-
-.cursor-dot.hover {
-    opacity: 0;
-}
-
 /* ---- page transition curtain ----
    Lifts itself with a CSS animation, so a JS failure can never
    leave the page stuck behind a blank sheet. JS only re-drops it
@@ -296,7 +254,7 @@ strong {
     font-weight: 600;
     letter-spacing: 3.5px;
     text-transform: uppercase;
-    color: var(--terracotta-deep);
+    color: var(--accent-ink);
 }
 
 .line {
@@ -414,13 +372,13 @@ strong {
 .ctn.ghost:hover {
     background: rgba(253, 246, 234, 0.24);
     border-color: var(--gold-soft);
-    box-shadow: 0 14px 32px rgba(40, 24, 10, 0.35);
+    box-shadow: 0 14px 32px rgb(0 0 0 / 0.4);
 }
 
 /* outline button — the secondary CTA wherever it sits on the page's
    own light surface (currently just the hero) rather than on a photo */
 .ctn.outline {
-    color: var(--terracotta-deep);
+    color: var(--accent-ink);
     background: transparent;
     border: 1.5px solid var(--border-bright);
     box-shadow: none;
@@ -476,10 +434,10 @@ strong {
     justify-content: space-between;
     gap: 16px;
     padding: 16px var(--gutter);
-    background: linear-gradient(180deg, rgba(250, 243, 230, 0.86), rgba(250, 243, 230, 0.62));
-    backdrop-filter: blur(18px) saturate(1.3);
-    -webkit-backdrop-filter: blur(18px) saturate(1.3);
-    border-bottom: 1px solid var(--border);
+    /* Transparent over the hero, so the bar stops cutting a band
+       across the opening photograph. */
+    background: transparent;
+    border-bottom: 1px solid transparent;
     transition: background var(--transition), padding var(--transition), box-shadow var(--transition);
     animation: nav-drop 1s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -490,9 +448,15 @@ strong {
 }
 
 .navbar.scrolled {
-    background: rgba(250, 243, 230, 0.94);
+    /* Past the hero the bar sits over running content, where fully
+       transparent would leave the links on top of whatever photograph
+       happens to be underneath. It earns a ground only then. */
+    background: rgb(var(--sh-ground-rgb) / 0.72);
+    backdrop-filter: blur(16px) saturate(1.25);
+    -webkit-backdrop-filter: blur(16px) saturate(1.25);
+    border-bottom-color: var(--border);
     padding: 10px var(--gutter);
-    box-shadow: 0 14px 34px rgba(120, 78, 40, 0.16);
+    box-shadow: var(--shadow);
 }
 
 .brand {
@@ -513,45 +477,37 @@ strong {
     height: 44px;
     width: 44px;
     flex: 0 0 44px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 30% 25%, #fbead0, #f0d7a6);
-    border: 1px solid var(--border-bright);
-    box-shadow: 0 6px 18px rgba(193, 89, 47, 0.24);
-    overflow: hidden;
-    transition: transform var(--transition), box-shadow var(--transition);
+    /* No disc behind it. The flag sat on a cream-and-gold circle with
+       a rim and a rotating sheen, which read as a yellow border ringing
+       it — and Nepal's is the one national flag that is not a
+       rectangle, so putting it in a circle throws away the only
+       silhouette it has. */
+    background: none;
+    border: 0;
+    box-shadow: none;
+    transition: transform var(--transition);
 }
 
-/* slow conic sheen sweeping around the rim */
-.embelem::before {
-    content: '';
-    position: absolute;
-    inset: -60%;
-    background: conic-gradient(from 0deg, transparent 0deg, rgba(193, 89, 47, 0.45) 60deg, transparent 130deg, transparent 360deg);
-    animation: rim-sweep 6s linear infinite;
-}
-
-@keyframes rim-sweep {
-    to { transform: rotate(360deg); }
-}
-
-.embelem::after {
-    content: '';
-    position: absolute;
-    inset: 2px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 30% 25%, #f8e7c4, #eed4a1);
-}
+/* The rim sheen and the inner disc went with the border — both
+   existed only to decorate a circle that is no longer there. */
 
 .embelem img {
     position: relative;
     z-index: 2;
-    width: 24px;
+    /* bigger, now that it is not squeezed inside a disc */
+    width: 34px;
     filter: drop-shadow(0 2px 5px rgba(60, 36, 14, 0.35));
 }
 
 .brand:hover .embelem {
-    transform: rotate(-8deg) scale(1.08);
-    box-shadow: 0 10px 26px rgba(193, 89, 47, 0.4);
+    transform: rotate(-8deg) scale(1.1);
+}
+
+/* With no bar behind them, the wordmark and links carry their own
+   legibility over whatever the hero photograph is doing. */
+.navbar:not(.scrolled) .logo,
+.navbar:not(.scrolled) .nav-link > li > a {
+    text-shadow: 0 1px 3px rgb(var(--sh-ground-rgb) / 0.9), 0 2px 16px rgb(var(--sh-ground-rgb) / 0.75);
 }
 
 .logo {
@@ -577,7 +533,7 @@ strong {
     height: 36px;
     width: 0;
     border-radius: 50px;
-    background: rgba(43, 32, 19, 0.06);
+    background: rgb(var(--ink-rgb) / 0.06);
     border: 1px solid var(--border-bright);
     opacity: 0;
     pointer-events: none;
@@ -601,7 +557,7 @@ strong {
     font-weight: 600;
     letter-spacing: 1.6px;
     text-transform: uppercase;
-    color: rgba(43, 32, 19, 0.72);
+    color: rgb(var(--ink-rgb) / 0.72);
     transition: color var(--transition);
 }
 
@@ -626,7 +582,7 @@ strong {
 }
 
 .nav-link li.active a {
-    color: var(--terracotta-deep);
+    color: var(--accent-ink);
 }
 
 .nav-link li.ctn-li a {
@@ -654,7 +610,7 @@ strong {
     gap: 5px;
     height: 46px;
     width: 46px;
-    background: rgba(43, 32, 19, 0.05);
+    background: rgb(var(--ink-rgb) / 0.05);
     border: 1px solid var(--border-bright);
     border-radius: 14px;
     cursor: pointer;
@@ -881,7 +837,7 @@ header .aurora {
 .hero-badge strong {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 1.6rem;
-    color: var(--terracotta-deep);
+    color: var(--accent-ink);
 }
 
 .hero-badge span {
@@ -970,7 +926,7 @@ header .aurora {
     inset: 0;
     z-index: 1;
     background:
-        linear-gradient(180deg, rgba(35, 22, 12, 0.86) 0%, rgba(35, 22, 12, 0.55) 46%, var(--bg) 100%),
+        linear-gradient(180deg, rgb(var(--scrim-rgb) / 0.86) 0%, rgb(var(--scrim-rgb) / 0.55) 46%, var(--bg) 100%),
         linear-gradient(130deg, rgba(147, 68, 31, 0.5), rgba(201, 154, 60, 0.36));
 }
 
@@ -1014,7 +970,7 @@ header .aurora {
 
 .flag-large {
     max-width: 280px;
-    filter: drop-shadow(0 24px 46px rgba(60, 36, 14, 0.35));
+    filter: drop-shadow(0 24px 46px rgb(0 0 0 / 0.45));
 }
 
 .label-note {
@@ -1249,7 +1205,7 @@ section {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, transparent 34%, rgba(35, 22, 12, 0.92) 100%);
+    background: linear-gradient(180deg, transparent 34%, rgb(var(--scrim-rgb) / 0.92) 100%);
 }
 
 .card-media .tag {
@@ -1263,6 +1219,10 @@ section {
     font-weight: 600;
     letter-spacing: 1.6px;
     text-transform: uppercase;
+    /* Deliberately NOT --accent-ink. That token means "accent on the
+       page background", and this pill brings its own cream one — it
+       stays light in both themes, so it wants the dark shade in both
+       themes too. */
     color: var(--terracotta-deep);
     background: rgba(253, 246, 234, 0.86);
     border: 1px solid rgba(255, 255, 255, 0.5);
@@ -1316,7 +1276,7 @@ section {
     padding: 7px 14px;
     font-size: 0.72rem;
     font-weight: 500;
-    color: var(--terracotta-deep);
+    color: var(--accent-ink);
     background: rgba(193, 89, 47, 0.1);
     border: 1px solid rgba(193, 89, 47, 0.22);
     border-radius: 50px;
@@ -1332,7 +1292,7 @@ section {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 1.7rem;
     font-weight: 700;
-    color: var(--terracotta-deep);
+    color: var(--accent-ink);
 }
 
 .price small {
@@ -1460,7 +1420,7 @@ section {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, transparent 38%, rgba(35, 22, 12, 0.9) 100%);
+    background: linear-gradient(180deg, transparent 38%, rgb(var(--scrim-rgb) / 0.9) 100%);
 }
 
 .food-item figcaption {
@@ -1489,7 +1449,7 @@ section {
    ============================================================ */
 .band {
     position: relative;
-    background: linear-gradient(180deg, var(--bg) 0%, #3c2a17 50%, var(--bg) 100%);
+    background: linear-gradient(180deg, var(--bg) 0%, var(--band-mid) 50%, var(--bg) 100%);
     text-align: center;
     isolation: isolate;
     overflow: hidden;
@@ -1526,7 +1486,7 @@ section {
     z-index: 1;
     pointer-events: none;
     background:
-        linear-gradient(180deg, var(--bg) 0%, rgba(35, 22, 12, 0.86) 26%, rgba(35, 22, 12, 0.86) 74%, var(--bg) 100%),
+        linear-gradient(180deg, var(--bg) 0%, rgb(var(--scrim-rgb) / 0.86) 26%, rgb(var(--scrim-rgb) / 0.86) 74%, var(--bg) 100%),
         linear-gradient(120deg, rgba(147, 68, 31, 0.5), rgba(201, 154, 60, 0.36));
 }
 
@@ -1559,7 +1519,7 @@ section {
     inset: 0;
     z-index: 1;
     pointer-events: none;
-    background: linear-gradient(180deg, var(--bg) 0%, rgba(35, 22, 12, 0.9) 20%, rgba(35, 22, 12, 0.9) 80%, var(--bg) 100%);
+    background: linear-gradient(180deg, var(--bg) 0%, rgb(var(--scrim-rgb) / 0.9) 20%, rgb(var(--scrim-rgb) / 0.9) 80%, var(--bg) 100%);
 }
 
 .section-photo .title h2 {
@@ -1841,12 +1801,12 @@ section {
     font-weight: 500;
     letter-spacing: -0.02em;
     white-space: nowrap;
-    color: rgba(43, 32, 19, 0.32);
+    color: rgb(var(--ink-rgb) / 0.32);
     transition: color var(--transition);
 }
 
 .marquee-track span:hover {
-    color: var(--terracotta-deep);
+    color: var(--accent-ink);
 }
 
 .marquee-track span::after {
@@ -1910,7 +1870,7 @@ section {
     font-family: 'DM Sans', sans-serif;
     font-size: 0.95rem;
     color: var(--fg);
-    background: rgba(43, 32, 19, 0.035);
+    background: rgb(var(--ink-rgb) / 0.035);
     border: 1.5px solid var(--border);
     border-radius: 14px;
     outline: none;
@@ -1964,7 +1924,7 @@ section {
 
 .form-note a {
     font-weight: 600;
-    color: var(--terracotta-deep);
+    color: var(--accent-ink);
     text-decoration: underline;
     text-underline-offset: 3px;
 }
@@ -2004,7 +1964,7 @@ section {
 .form-msg.ok::before { content: '✓'; }
 
 .form-msg.err {
-    color: var(--terracotta-deep);
+    color: var(--accent-ink);
     background: rgba(193, 89, 47, 0.1);
     border: 1px solid rgba(193, 89, 47, 0.32);
 }
@@ -2110,7 +2070,7 @@ section {
     align-items: center;
     justify-content: center;
     padding: 140px var(--gutter) 80px;
-    background: var(--bg) url("../img/mountain2.jpg") center/cover no-repeat;
+    background: var(--bg) url("../img/everest-stupa.jpg") center/cover no-repeat;
     isolation: isolate;
     overflow: hidden;
     animation: ken-burns 34s ease-in-out infinite alternate;
@@ -2121,12 +2081,15 @@ section {
     position: absolute;
     inset: 0;
     z-index: 1;
-    background: linear-gradient(150deg, rgba(35, 22, 12, 0.94) 0%, rgba(147, 68, 31, 0.68) 52%, rgba(201, 154, 60, 0.5) 100%);
+    background: linear-gradient(150deg,
+            rgb(var(--scrim-rgb) / 0.95) 0%,
+            rgb(var(--scrim-rgb) / 0.82) 48%,
+            rgba(147, 68, 31, 0.4) 100%);
 }
 
 .auth-page .aurora {
     z-index: 2;
-    opacity: 0.45;
+    opacity: 0.3;
 }
 
 .auth-box {
@@ -2138,7 +2101,7 @@ section {
     border: 1px solid var(--border-bright);
     border-radius: var(--radius-lg);
     overflow: hidden;
-    box-shadow: 0 46px 90px rgba(40, 24, 10, 0.4);
+    box-shadow: 0 46px 90px rgb(0 0 0 / 0.5);
     background: var(--surface);
 }
 
@@ -2168,7 +2131,7 @@ section {
     width: 78px;
     margin-bottom: 26px;
     border-radius: 4px;
-    filter: drop-shadow(0 12px 24px rgba(40, 20, 8, 0.45));
+    filter: drop-shadow(0 12px 24px rgb(0 0 0 / 0.5));
     animation: float 5s ease-in-out infinite;
 }
 
@@ -2231,7 +2194,7 @@ section {
 }
 
 .demo-notice strong {
-    color: var(--terracotta-deep);
+    color: var(--accent-ink);
 }
 
 .tabs {
@@ -2239,7 +2202,7 @@ section {
     gap: 6px;
     margin: 26px 0 6px;
     padding: 5px;
-    background: rgba(43, 32, 19, 0.05);
+    background: rgb(var(--ink-rgb) / 0.05);
     border: 1px solid var(--border);
     border-radius: 50px;
 }
@@ -2306,7 +2269,7 @@ section {
 
 .row-between a {
     font-weight: 600;
-    color: var(--terracotta-deep);
+    color: var(--accent-ink);
     text-decoration: underline;
     text-underline-offset: 3px;
 }
@@ -2321,7 +2284,7 @@ section {
     flex: 1;
     height: 5px;
     border-radius: 4px;
-    background: rgba(43, 32, 19, 0.08);
+    background: rgb(var(--ink-rgb) / 0.08);
     transition: background var(--transition);
 }
 
@@ -2352,7 +2315,7 @@ section {
 }
 
 .back-home:hover {
-    color: var(--terracotta-deep);
+    color: var(--accent-ink);
 }
 
 /* ============================================================
@@ -2454,7 +2417,7 @@ section {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 0.88rem;
     letter-spacing: 1.5px;
-    color: var(--terracotta-deep);
+    color: var(--accent-ink);
 }
 
 /* ============================================================
@@ -2469,7 +2432,7 @@ section {
     place-items: center;
     height: 54px;
     width: 54px;
-    color: var(--terracotta-deep);
+    color: var(--accent-ink);
     background: var(--surface);
     border: 1px solid var(--border-bright);
     border-radius: 50%;
@@ -2511,7 +2474,7 @@ section {
 }
 
 .to-top svg.ring .track {
-    stroke: rgba(43, 32, 19, 0.12);
+    stroke: rgb(var(--ink-rgb) / 0.12);
 }
 
 .to-top svg.ring .bar {
@@ -2529,8 +2492,35 @@ section {
    but only from JS, via this class, so the CSS behaviour stays in
    place untouched whenever the script doesn't run.
    ============================================================ */
-.has-smooth-scroll {
-    scroll-behavior: auto;
+/* ---- Lenis ----
+   The library's own required styles. `scroll-behavior: smooth` on
+   :root re-animates every position Lenis writes, so the two fight
+   and scrolling stutters — turning it off is the first thing Lenis
+   asks for. The class it puts on <html> replaces the one the old
+   homegrown engine used to add.
+
+   `lenis-stopped` matters for the mobile menu and anything else
+   that needs the page to hold still; `data-lenis-prevent` is the
+   opt-out for panes that own their own scrolling. */
+html.lenis,
+html.lenis body {
+    height: auto;
+}
+
+.lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+    overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+    pointer-events: none;
 }
 
 /* Lead paragraphs light word by word as they cross the viewport.
@@ -2595,7 +2585,7 @@ section {
     height: 10px;
     width: 10px;
     border-radius: 50%;
-    background: rgba(43, 32, 19, 0.22);
+    background: rgb(var(--ink-rgb) / 0.22);
     transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
 }
 
@@ -2613,7 +2603,7 @@ section {
     text-transform: uppercase;
     white-space: nowrap;
     color: var(--on-dark-fg);
-    background: rgba(40, 26, 14, 0.94);
+    background: rgb(var(--scrim-rgb) / 0.94);
     border: 1px solid rgba(253, 246, 234, 0.25);
     border-radius: 50px;
     opacity: 0;
@@ -2780,7 +2770,7 @@ section {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, transparent 42%, rgba(35, 22, 12, 0.94) 100%);
+    background: linear-gradient(180deg, transparent 42%, rgb(var(--scrim-rgb) / 0.94) 100%);
     opacity: calc(0.35 + var(--near) * 0.65);
 }
 
@@ -2830,44 +2820,442 @@ section {
 }
 
 /* ============================================================
-   The trail dog stage
+   Scroll-expansion hero
+
+   A photograph that opens. One sticky viewport holding three
+   layers: the backdrop photo, the media window that grows over it,
+   and the headline over that. The whole thing is driven by
+   scroll-hero.js writing custom properties — nothing here animates
+   on its own, because with the effect scrubbed by scroll position a
+   CSS transition would fight the scrubbing and lag a frame behind.
    ============================================================ */
-.dog-stage {
+
+/* ---- ground colour ----
+   The surround the photograph opens into, taken from the photograph
+   itself. Each value is the mean colour of that page's hero image,
+   weighted toward its shadows (a straight average of a snow shot
+   comes back near-white and is useless as a ground), scaled down to
+   a peak channel of ~34/255, then pushed away from neutral so the
+   hue survives the darkening — without that last step every page
+   lands on the same grey a couple of units apart, which nobody can
+   see. Sampled rather than eyeballed; the script lives in the
+   scratchpad, the numbers live here.
+
+   Held as space-separated channels rather than hex so the same
+   value can carry an alpha — `rgb(var(--sh-ground-rgb) / 0.5)` —
+   which the veils and the translucent navbar both need.
+
+   Named for the photograph, not the page, because that is what they
+   are derived from: swap a page's hero image and its ground class
+   should change with it. */
+:root {
+    --sh-ground-rgb: 12 16 22;
+    --sh-ground-soft-rgb: 26 34 46;
+
+    /* Scrubbed the length of the document by scroll-fx.js. Held
+       unitless because GSAP tweens custom properties as plain
+       numbers most reliably; the units are composed in calc()
+       where they are used. */
+    --atmos-y: 0;
+    --atmos-scale: 1.12;
+    --atmos-opacity: 0.09;
+}
+
+/* amadablam-dusk.jpg — cold blue cloud behind a gold-lit summit */
+body.sh-ground-dusk {
+    --page-photo: url("../img/amadablam-dusk.jpg");
+    --sh-ground-rgb: 13 25 31;
+    --sh-ground-soft-rgb: 27 49 63;
+}
+
+/* everest-stupa.jpg — the only one that isn't blue: the Namche
+   hillside puts enough juniper and scrub in frame to pull it green */
+body.sh-ground-namche {
+    --page-photo: url("../img/everest-stupa.jpg");
+    --sh-ground-rgb: 21 29 23;
+    --sh-ground-soft-rgb: 42 58 46;
+}
+
+/* mounteverest.jpg — deep sky over the cloud sea */
+body.sh-ground-everest {
+    --page-photo: url("../img/mounteverest.jpg");
+    --sh-ground-rgb: 13 23 32;
+    --sh-ground-soft-rgb: 25 46 65;
+}
+
+/* trekker-cairn.jpg — valley haze */
+body.sh-ground-cairn {
+    --page-photo: url("../img/trekker-cairn.jpg");
+    --sh-ground-rgb: 12 23 33;
+    --sh-ground-soft-rgb: 23 47 65;
+}
+
+/* amadablam-storm.jpg — slate cloud */
+body.sh-ground-storm {
+    --page-photo: url("../img/amadablam-storm.jpg");
+    --sh-ground-rgb: 15 24 31;
+    --sh-ground-soft-rgb: 30 48 62;
+}
+
+/* ---- the dark palette ----
+   The whole page, not just the hero, is now built out of that
+   page's ground colour. This is a token swap rather than a rewrite:
+   the sheet above already draws its surfaces from --bg / --surface /
+   --fg / --border / --shadow, so redefining those here re-themes
+   every card, form, footer and section at once.
+
+   Surfaces are mixed from the ground toward --lift rather than
+   toward plain white. Mixing to white desaturates as it lightens,
+   and three steps in, a blue-grey page has a set of neutral grey
+   cards sitting on it that belong to no photograph at all. Lifting
+   toward a colour keeps the whole ramp on the same hue as the
+   photograph it came from.
+
+   The selector is an attribute match so one rule covers all five
+   ground classes — each page brings its own --sh-ground-rgb, and
+   the entire ramp follows from it. */
+body[class*="sh-ground-"] {
+    --lift: #a9bed2;
+
+    --bg: rgb(var(--sh-ground-rgb));
+    --bg-2: color-mix(in srgb, rgb(var(--sh-ground-rgb)) 95%, var(--lift));
+    --surface: color-mix(in srgb, rgb(var(--sh-ground-rgb)) 92%, var(--lift));
+    --surface-2: color-mix(in srgb, rgb(var(--sh-ground-rgb)) 89%, var(--lift));
+    --surface-3: color-mix(in srgb, rgb(var(--sh-ground-rgb)) 83%, var(--lift));
+
+    --fg: #eef4fa;
+
+    /* Both tints invert. --ink going light is what carries the
+       borders and hairlines; --scrim becoming the ground is what
+       makes the gradients over photographs match the page they sit
+       in instead of staying warm brown. */
+    --ink-rgb: 226 236 250;
+    --scrim-rgb: var(--sh-ground-rgb);
+
+    --muted: rgb(var(--ink-rgb) / 0.74);
+    --dim: rgb(var(--ink-rgb) / 0.5);
+
+    --border: rgb(var(--ink-rgb) / 0.13);
+    --border-bright: rgb(var(--ink-rgb) / 0.26);
+
+    /* Warm-brown shadows are invisible on a dark ground and muddy
+       where they do show. On dark, depth comes from black. */
+    --shadow: 0 18px 40px rgb(0 0 0 / 0.45);
+    --shadow-lg: 0 32px 68px rgb(0 0 0 / 0.58);
+
+    /* a warm brown trough through a cool page reads as a stain */
+    --band-mid: rgb(var(--sh-ground-soft-rgb));
+
+    /* the deep terracotta reads at about 2.4:1 on these grounds;
+       the soft one clears 5:1 and keeps the brand hue */
+    --accent-ink: var(--terracotta-soft);
+}
+
+/* boudha.jpg — the stupa at sunrise, the one warm photograph in the
+   set. The other five grounds are all sampled off cold summit or
+   cloud light and land within a few points of each other; this is
+   the home page's way out of that cluster.
+
+   It sits AFTER the dark palette above, not up with its siblings,
+   because of --lift. `body.sh-ground-espresso` and
+   `body[class*="sh-ground-"]` have identical specificity, so the tie
+   goes to whichever is written last — and this rule has to win.
+   Everything else (--bg, the surface ramp) is composed through
+   var() and resolves from --sh-ground-rgb whatever the order.
+
+   --lift is why the override matters. The shared value is a cool
+   blue-grey, which is right for five cold-blue grounds and wrong
+   here: mixing a warm brown toward blue-grey walks the surface ramp
+   off the hue and the cards come out mauve. Lifting toward the warm
+   mirror of that colour keeps the ramp on the same brown. */
+body.sh-ground-espresso {
+    --page-photo: url("../img/boudha.jpg");
+    --sh-ground-rgb: 30 22 18;
+    --sh-ground-soft-rgb: 58 43 34;
+    --lift: #d2bda9;
+}
+
+/* The aurora is the brand's gold-and-terracotta glow, blended with
+   `screen`. Screen over cream barely registered; over a dark ground
+   it is the brightest thing on the page, and at full strength it
+   washed whole sections tan. Turned down, it does what it always
+   did — stops large flat areas reading as dead. */
+body[class*="sh-ground-"] .aurora {
+    opacity: 0.34;
+}
+
+/* The ambient wash is the page's own hero photograph, blurred past
+   recognition and held behind everything.
+
+   This is the difference between a background sampled FROM the
+   picture and a background that IS the picture: the colour, the
+   light and the shape of the frame all carry through, which a flat
+   fill can never do however carefully it is derived. Blurred hard
+   enough that no detail competes with the content, scaled up so the
+   blur's soft edges never reach the viewport, and scrubbed down the
+   whole document by scroll-fx.js so it drifts and brightens as you
+   read — the one effect that runs from the first pixel to the last
+   on every page. */
+body[class*="sh-ground-"]::before {
+    background-image: var(--page-photo);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center calc(50% + var(--atmos-y) * 1vh);
+    opacity: var(--atmos-opacity);
+    filter: blur(38px) saturate(1.3);
+    transform: scale(var(--atmos-scale));
+}
+
+.scroll-hero {
+    --sh-media-w: 300px;
+    --sh-media-h: 400px;
+    --sh-media-veil: 0.55;
+    --sh-bg-opacity: 1;
+    --sh-text-x: 0vw;
+    --sh-body-opacity: 0;
+    --sh-cue-opacity: 1;
+
     position: relative;
-    height: 460px;
-    margin: 0 auto;
-    max-width: 720px;
-    /* the canvas is transparent, so this glow is what gives the dog
-       ground to stand on */
-    background:
-        radial-gradient(ellipse 46% 30% at 50% 78%, rgba(201, 154, 60, 0.28), transparent 70%),
-        radial-gradient(ellipse 60% 50% at 50% 40%, rgba(222, 122, 77, 0.14), transparent 72%);
+    /* `section` carries 120px/6vw of padding site-wide, which on a
+       full-bleed hero inset the photograph from both edges and left
+       two cream bars down the sides of the black */
+    padding: 0;
+    background: rgb(var(--sh-ground-rgb));
+    color: var(--on-dark-fg);
 }
 
-.dog-stage canvas {
-    display: block;
-    width: 100%;
-    height: 100%;
+/* The scroll budget for the open-and-hold cycle. Two viewports: one
+   to open the photograph in, and one to hold it at full size before
+   the page moves on. */
+.scroll-hero-track {
+    height: 200vh;
 }
 
-/* Shown only until the module boots, and left up for good if WebGL
-   is unavailable or the import fails. */
-.dog-fallback {
-    position: absolute;
-    inset: 0;
+/* Sign-in is a job, not a visit. The hero still plays, but on a
+   shorter budget, so nobody has to scroll two screens to reach a
+   password field. */
+.sh-compact .scroll-hero-track {
+    height: 150vh;
+}
+
+.scroll-hero-layer {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100dvh;
     display: flex;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    padding: 0 30px;
-    font-size: 0.86rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--dim);
+    /* the media window grows past the viewport before its max-width
+       catches it, and the headline travels 150vw to get off screen */
+    overflow: hidden;
 }
 
-.dog-stage.dog-ready .dog-fallback {
-    display: none;
+.scroll-hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: var(--sh-bg-opacity);
+}
+
+.scroll-hero-bg img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* the backdrop is scenery, not the subject — knocked back so the
+   media window in front of it stays the thing being looked at */
+.scroll-hero-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg,
+            rgb(var(--sh-ground-rgb) / 0.66),
+            rgb(var(--sh-ground-rgb) / 0.5) 50%,
+            rgb(var(--sh-ground-rgb) / 0.8));
+}
+
+/* ---- the media window ----
+   The caps are the original component's maxWidth/maxHeight, kept as
+   CSS rather than folded into the growth curve: they are a viewport
+   limit, so a narrow screen reaches full size early instead of
+   opening more slowly. */
+.scroll-hero-media {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    width: var(--sh-media-w);
+    height: var(--sh-media-h);
+    max-width: 95vw;
+    max-height: 85vh;
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55);
+}
+
+.scroll-hero-media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* The wash over the photograph, lifting as it opens. The headline
+   sits on top of the closed thumbnail and has to stay readable
+   there; once the picture fills the screen it has earned the right
+   to be seen. */
+.scroll-hero-media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgb(var(--sh-ground-rgb) / var(--sh-media-veil));
+}
+
+.scroll-hero-fore {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 var(--gutter);
+    /* the layer spans the viewport and would otherwise swallow every
+       click aimed at the page beneath it */
+    pointer-events: none;
+}
+
+/* Lifted out of the centred stack and parked near the top. Left in
+   flow it lands in the middle of the photograph at full expansion,
+   where it is both unreadable and obviously an accident. It fades
+   with the scroll cue for the same reason: once the frame is open
+   the breadcrumb has said what it had to say. */
+.scroll-hero .crumb {
+    position: absolute;
+    top: 15vh;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    margin: 0;
+    color: rgba(233, 240, 250, 0.66);
+    opacity: var(--sh-cue-opacity);
+}
+
+/* The headline. `difference` is the reference's `textBlend`: over
+   the dark backdrop the type stays white, and over the bright snow
+   of an open photograph it inverts rather than dissolving into it. */
+.scroll-hero-title {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-size: clamp(2.4rem, 7vw, 4.8rem);
+    line-height: 1.02;
+    color: #eaf2ff;
+    mix-blend-mode: difference;
+}
+
+.sh-word {
+    display: block;
+    white-space: nowrap;
+    will-change: transform;
+}
+
+/* first word one way, the rest the other — the split that opens the
+   frame as the photograph fills it */
+.sh-word-a {
+    transform: translateX(calc(var(--sh-text-x) * -1));
+}
+
+.sh-word-b {
+    transform: translateX(var(--sh-text-x));
+}
+
+/* the two captions travel with the words they sit under, so the
+   whole text layer opens as one gesture rather than four parts */
+.scroll-hero-date {
+    position: relative;
+    z-index: 2;
+    margin-top: 26px;
+    font-size: 1.1rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(203, 224, 250, 0.86);
+    transform: translateX(calc(var(--sh-text-x) * -1));
+}
+
+.scroll-hero-cue {
+    position: relative;
+    z-index: 2;
+    margin-top: 10px;
+    font-size: 0.76rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(203, 224, 250, 0.7);
+    opacity: var(--sh-cue-opacity);
+    transform: translateX(var(--sh-text-x));
+}
+
+/* The closing copy, and the handover back to the warm palette the
+   rest of the site is built in. The gradient is the join: black at
+   the top where the photograph was, cream by the bottom where the
+   normal sections start. */
+.scroll-hero-body {
+    position: relative;
+    z-index: 2;
+    padding: 12vh var(--gutter) 16vh;
+    background: linear-gradient(180deg,
+            rgb(var(--sh-ground-rgb)) 0%,
+            rgb(var(--sh-ground-soft-rgb)) 45%,
+            var(--bg) 100%);
+    opacity: var(--sh-body-opacity);
+}
+
+/* the gradient alone, with no copy to make room for */
+.sh-body-blank {
+    padding: 0;
+    height: 34vh;
+}
+
+.scroll-hero-body-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.scroll-hero-body h2 {
+    color: #eaf2ff;
+}
+
+.scroll-hero-body p {
+    margin-top: 22px;
+    color: rgba(226, 236, 250, 0.82);
+}
+
+/* On a short viewport the open frame has nowhere to grow and the
+   headline collides with the photograph, so give the track less
+   travel and let the type sit smaller. */
+@media (max-height: 620px) {
+    .scroll-hero-track {
+        height: 160vh;
+    }
+
+    .scroll-hero-title {
+        font-size: clamp(1.8rem, 5vw, 2.6rem);
+    }
+
+    .scroll-hero-date {
+        margin-top: 14px;
+        font-size: 0.9rem;
+    }
 }
 
 @media (max-width: 900px) {
@@ -2875,10 +3263,348 @@ section {
         width: 72vw;
         height: 46vh;
     }
+}
 
-    .dog-stage {
-        height: 360px;
+/* ============================================================
+   Layered parallax — Osmo's component
+
+   Class names, structure and the four yPercent values are the
+   original's. The CSS is not: the demo's stylesheet was never part
+   of the integration notes, and its pre-cut transparent .webp
+   layers are not what this site has. So the rules below are written
+   to make the original's numbers produce the original's effect on
+   whole photographs.
+
+   The one thing worth understanding here: `yPercent` moves an
+   element by a percentage of ITS OWN height. Layer 1 travels 70% —
+   of a full-viewport layer that is 70vh, which slides almost the
+   entire frame away. Sizing each layer as a band rather than a
+   full-bleed sheet is what turns the spec's percentages into the
+   motion the demo actually has, and it is also closer to what the
+   original assets are: ridge cut-outs occupying a horizontal strip,
+   not four stacked screens.
+
+   Resulting travel, at the spec's percentages:
+     layer 1   70% of 46vh  =  32vh   (far ridge, moves most)
+     layer 2   55% of 54vh  =  30vh
+     layer 3   40% of 30vh  =  12vh   (the title)
+     layer 4   10% of 66vh  =   7vh   (near ridge, barely moves)
+   ============================================================ */
+.parallax {
+    position: relative;
+    /* `section` carries 120px/6vw site-wide; this one is full bleed */
+    padding: 0;
+    background: var(--bg);
+}
+
+.parallax__header {
+    position: relative;
+    padding: 0;
+}
+
+.parallax__visuals {
+    position: relative;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+}
+
+/* The backdrop the ridges slide over. Its original CSS was not
+   provided; the name is the only clue, so it is what the word says —
+   the flat dark the layers overflow onto. Graded rather than solid
+   so the band revealed above the ridges reads as sky. */
+.parallax__black-line-overflow {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(180deg,
+            rgb(var(--sh-ground-rgb)) 0%,
+            rgb(var(--sh-ground-soft-rgb)) 62%,
+            rgb(var(--sh-ground-rgb)) 100%);
+}
+
+/* ScrollTrigger's trigger element: start "0% 0%" to end "100% 0%"
+   means the scrub runs while this box travels its own height past
+   the top of the viewport, so its height is the scroll budget. */
+.parallax__layers {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.parallax__layer-img {
+    /* The photograph, on layer 4. yPercent moves an element by a
+       percentage of its own height, so 10% of 112vh is 11vh — small
+       enough that a full-bleed frame stays in shot for the whole
+       scrub. Any faster layer would slide the picture off screen,
+       which is why the original's fast layers are transparent
+       cut-outs and not photographs. */
+    position: absolute;
+    left: 0;
+    top: -12vh;
+    width: 100%;
+    height: 112vh;
+    z-index: 1;
+    object-fit: cover;
+    object-position: center;
+    will-change: transform;
+}
+
+/* Layers 1 and 2 carry light, not pictures. They travel 70% and 55%
+   of their own height, which no photograph survives — and two
+   photographs moving over each other read as a double exposure
+   rather than as depth. Gradients at those rates read as weather. */
+.parallax__layer-sky {
+    position: absolute;
+    left: 0;
+    top: -46vh;
+    width: 100%;
+    height: 66vh;
+    z-index: 3;
+    pointer-events: none;
+    will-change: transform;
+    background: linear-gradient(180deg,
+            rgb(var(--sh-ground-rgb)) 0%,
+            rgb(var(--sh-ground-rgb) / 0.86) 42%,
+            transparent 100%);
+}
+
+.parallax__layer-haze {
+    position: absolute;
+    left: 0;
+    top: -34vh;
+    width: 100%;
+    height: 58vh;
+    z-index: 2;
+    pointer-events: none;
+    will-change: transform;
+    background: linear-gradient(180deg,
+            rgb(var(--sh-ground-soft-rgb) / 0.5) 0%,
+            rgb(var(--sh-ground-soft-rgb) / 0.16) 55%,
+            transparent 100%);
+}
+
+.parallax__layer-title {
+    position: absolute;
+    left: 0;
+    top: 26vh;
+    width: 100%;
+    height: 30vh;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 var(--gutter);
+    pointer-events: none;
+    will-change: transform;
+}
+
+.parallax__title {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    font-size: clamp(2.6rem, 9vw, 7rem);
+    line-height: 0.94;
+    letter-spacing: -0.02em;
+    color: #f6faff;
+    /* the type sits over lit snow as often as over sky; a glow in
+       the page's ground colour holds it at either extreme */
+    text-shadow:
+        0 2px 10px rgb(var(--sh-ground-rgb) / 0.85),
+        0 8px 44px rgb(var(--sh-ground-rgb) / 0.75);
+}
+
+.parallax__subtitle {
+    display: block;
+    margin-top: 16px;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-size: 0.84rem;
+    font-weight: 600;
+    letter-spacing: 3.2px;
+    text-transform: uppercase;
+    color: rgb(var(--ink-rgb) / 0.98);
+    text-shadow:
+        0 1px 3px rgb(var(--sh-ground-rgb) / 0.95),
+        0 2px 18px rgb(var(--sh-ground-rgb) / 0.9);
+}
+
+/* the join back into the page — without it the frame ends on a hard
+   horizontal cut across the photographs */
+.parallax__fade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 20vh;
+    z-index: 5;
+    pointer-events: none;
+    background: linear-gradient(180deg, transparent, var(--bg) 84%);
+}
+
+/* The fade already lands the frame on the page colour, so the next
+   section's full 120px on top of it reads as a dead panel rather
+   than as breathing room. */
+.parallax + section,
+.parallax + header {
+    padding-top: 56px;
+}
+
+/* Sign-in is a job, not a visit — the same reasoning as the compact
+   hero above it. */
+.parallax--compact .parallax__visuals {
+    height: 74vh;
+}
+
+.parallax--compact .parallax__title {
+    font-size: clamp(2rem, 6vw, 3.4rem);
+}
+
+@media (max-height: 620px) {
+    .parallax__title {
+        font-size: clamp(1.8rem, 6vw, 2.8rem);
     }
+}
+
+/* ============================================================
+   Photo hover — the pictures below the fold lift on hover
+
+   The <img> is the target, deliberately, not its wrapper. main.js
+   builds a `.media-inner` around every one of these and writes a
+   scroll parallax transform onto it every frame; a hover transform
+   on the same element would be overwritten between frames and the
+   effect would flicker. The image inside is untouched by that
+   engine, so a transform here composes with the parallax above it
+   instead of fighting it.
+
+   The card itself is off limits for the same reason — initTilt owns
+   its transform on pointer move.
+   ============================================================ */
+.card-media img,
+.food-item img,
+.split-media img,
+.shot img {
+    transition:
+        transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+        filter 0.5s ease;
+}
+
+.card:hover .card-media img,
+.food-item:hover img,
+.split-media:hover img,
+.shot:hover img {
+    transform: scale(1.09);
+    filter: brightness(1.08) saturate(1.12);
+}
+
+/* the frame lifts with its picture, and its shadow deepens under it */
+.card-media,
+.food-item,
+.split-media,
+.shot {
+    transition:
+        transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.food-item:hover,
+.split-media:hover,
+.shot:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* A card's own frame cannot be lifted — the tilt engine writes to
+   .card and would erase it — so the caption plate rises instead,
+   which reads as the picture stepping forward. */
+.card-media .caption {
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card:hover .card-media .caption {
+    transform: translateY(-8px);
+}
+
+/* Touch has no hover state; leaving these on means the first tap
+   fires them and they stick until something else is tapped. */
+@media (hover: none) {
+    .card:hover .card-media img,
+    .food-item:hover img,
+    .split-media:hover img,
+    .shot:hover img {
+        transform: none;
+        filter: none;
+    }
+
+    .food-item:hover,
+    .split-media:hover,
+    .shot:hover {
+        transform: none;
+    }
+}
+
+/* ============================================================
+   Section seams
+
+   Where one section meets the next used to be a butt joint: two
+   flat slabs of the same colour, and the boundary read as nothing
+   at all. Each top-level section now gets a seam — a graded join in
+   the page's own ground colour that dissolves the previous
+   section's bottom edge into this one, plus a hairline that draws
+   itself across as the boundary crosses the viewport.
+
+   The element is appended by scroll-fx.js rather than written into
+   six pages of markup, and it is deliberately shorter than a
+   section's top padding so it lives in empty space and never dims
+   the heading beneath it.
+   ============================================================ */
+.sect-seam {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 130px;
+    z-index: 3;
+    pointer-events: none;
+    /* the join: this section's ground, opaque at the very edge and
+       gone well before any content starts */
+    background: linear-gradient(180deg,
+            rgb(var(--sh-ground-rgb) / 0.55) 0%,
+            rgb(var(--sh-ground-rgb) / 0.18) 38%,
+            transparent 78%);
+}
+
+/* the hairline, drawn across the boundary as it arrives */
+.sect-seam::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    height: 1px;
+    width: var(--seam-w, 0%);
+    transform: translateX(-50%);
+    opacity: var(--seam-glow, 0);
+    background: linear-gradient(90deg,
+            transparent,
+            rgb(var(--ink-rgb) / 0.55) 22%,
+            var(--gold-soft) 50%,
+            rgb(var(--ink-rgb) / 0.55) 78%,
+            transparent);
+    box-shadow: 0 0 18px rgb(var(--ink-rgb) / 0.28);
+}
+
+/* A photo band brings its own full-bleed scrim, so a ground-coloured
+   seam over the top of it would read as a grey bar rather than a
+   join. There, the hairline alone does the work. */
+.band-photo > .sect-seam {
+    background: none;
+}
+
+/* The seam sits at the top of a section; the footer wants the same
+   join but its own top padding is smaller. */
+.footer > .sect-seam {
+    height: 90px;
 }
 
 /* ============================================================
@@ -2900,7 +3626,9 @@ section {
         flex-direction: column;
         justify-content: center;
         gap: 26px;
-        background: linear-gradient(165deg, rgba(250, 243, 230, 0.98), rgba(240, 222, 193, 0.96));
+        background: linear-gradient(165deg,
+                rgb(var(--sh-ground-rgb) / 0.99),
+                color-mix(in srgb, rgb(var(--sh-ground-rgb)) 84%, var(--lift, #a9bed2)));
         backdrop-filter: blur(18px);
         -webkit-backdrop-filter: blur(18px);
         transform: translateX(100%);
@@ -2998,5 +3726,168 @@ section {
     .to-top {
         right: 14px;
         bottom: 14px;
+    }
+}
+
+/* ============================================================
+   Card fan — Chapter Six.
+
+   Two states. Without card-fan.js the cards are a plain horizontal
+   strip that scrolls with a finger or a trackpad; the module adds
+   .fan-ready and takes over, at which point every card stacks in the
+   middle of the container and GSAP alone decides where it sits.
+
+   Cards are centred with `inset: 0; margin: auto` rather than a
+   translate, because GSAP writes the whole `transform` property and
+   a centring translate would be gone after the first tween. Heights
+   below match the ideal-height table in card-fan.js — change one and
+   the vertical spread stops fitting its box.
+   ============================================================ */
+.fan-layout {
+    display: flex;
+    gap: 18px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    padding-bottom: 12px;
+    scroll-snap-type: x mandatory;
+}
+
+.fan-card {
+    flex: 0 0 auto;
+    width: 8rem;
+    height: 14rem;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--surface-2);
+    box-shadow: var(--shadow);
+    scroll-snap-align: center;
+}
+
+.fan-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* ---- the module is driving ---- */
+.fan-layout.fan-ready {
+    display: block;
+    position: relative;
+    height: 22rem;
+    overflow: visible;
+    padding-bottom: 0;
+    scroll-snap-type: none;
+}
+
+.fan-layout.fan-ready .fan-card {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    opacity: 0;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    box-shadow: var(--shadow-lg);
+}
+
+.fan-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 34px;
+}
+
+.fan-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    flex: 0 0 auto;
+    border: 1.5px solid var(--border-bright);
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--muted);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: color var(--transition), border-color var(--transition), transform var(--transition);
+}
+
+.fan-arrow svg {
+    width: 19px;
+    height: 19px;
+}
+
+.fan-arrow:hover {
+    color: var(--accent-ink);
+    border-color: var(--terracotta);
+    transform: translateY(-2px);
+}
+
+.fan-arrow:active {
+    transform: translateY(0);
+}
+
+.fan-dots {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.fan-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgb(var(--ink-rgb) / 0.18);
+    transition: background var(--transition), transform var(--transition);
+}
+
+.fan-dot.is-current {
+    background: var(--terracotta);
+    transform: scale(1.4);
+}
+
+@media (min-width: 480px) {
+    .fan-card {
+        width: 9.5rem;
+        height: 16.6rem;
+    }
+
+    .fan-layout.fan-ready {
+        height: 26rem;
+    }
+}
+
+@media (min-width: 640px) {
+    .fan-card {
+        width: 10.5rem;
+        height: 18.4rem;
+    }
+
+    .fan-layout.fan-ready {
+        height: 28rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .fan-card {
+        width: 12.5rem;
+        height: 21.9rem;
+    }
+
+    .fan-layout.fan-ready {
+        height: 34rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .fan-card {
+        width: 14rem;
+        height: 24.5rem;
+    }
+
+    .fan-layout.fan-ready {
+        height: 38rem;
     }
 }

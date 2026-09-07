@@ -8,7 +8,7 @@
 
     <link rel="icon" type="image/webp" href="assets/img/flag.webp">
     <meta name="description" content="About Nepal — its peaks, its 125 ethnic groups, its cuisine, and the only non-rectangular national flag in the world.">
-    <meta name="theme-color" content="#faf3e6">
+    <meta name="theme-color" content="#111e29">
     <title>About — NEPAL</title>
     <meta property="og:type" content="website">
     <meta property="og:title" content="About — NEPAL">
@@ -25,7 +25,7 @@
 
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body>
+<body class="sh-ground-cairn">
     <a class="skip-link" href="#main">Skip to content</a>
     <div class="progress-bar" role="presentation"></div>
 
@@ -51,15 +51,67 @@
     <!-- @end -->
 
     <main id="main">
-        <section class="page-hero hero-about">
-            <div class="aurora" aria-hidden="true"></div>
-            <div class="page-hero-content">
-                <p class="crumb">Home / About</p>
-                <h1 data-split>About Nepal</h1>
-                <div class="line"></div>
-                <p>A landlocked country of 30 million people between India and China, holding the highest ground on Earth and one of the densest concentrations of living culture anywhere.</p>
+        <!--Scroll-expansion hero: a photograph that opens as you
+        scroll, over a second photograph that fades out behind it.
+        See assets/js/scroll-hero.js.-->
+        <section class="scroll-hero">
+            <div class="scroll-hero-track">
+                <div class="scroll-hero-layer">
+                    <div class="scroll-hero-bg">
+                        <img src="assets/img/mountain2.jpg" width="412" height="612" alt="" loading="eager" decoding="async">
+                    </div>
+                    <!--The window that opens. Its size is written by
+                    scroll-hero.js as you scroll; everything else about it,
+                    including the 95vw/85vh ceiling, is in the stylesheet.-->
+                    <figure class="scroll-hero-media">
+                        <img src="assets/img/trekker-cairn.jpg" width="1800" height="1200" alt="A trekker at a stone cairn looking out over a Himalayan valley" loading="eager" decoding="async">
+                    </figure>
+                    <div class="scroll-hero-fore">
+                        <p class="crumb">Home / About</p>
+                    <h1 class="scroll-hero-title">About Nepal</h1>
+                        <p class="scroll-hero-date">30 million people</p>
+                        <p class="scroll-hero-cue">Scroll to expand</p>
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-hero-body">
+                <div class="scroll-hero-body-inner">
+                    <h2>The highest ground on Earth</h2>
+                    <p>A landlocked country between India and China, holding one of the densest concentrations of living culture anywhere — 125 ethnic groups across 800 kilometres.</p>
+                </div>
             </div>
         </section>
+
+        <!--Layered parallax, from Osmo's GSAP/ScrollTrigger
+        component. The timeline and its 70/55/40/10 yPercent values are
+        reproduced verbatim in assets/js/parallax.js; GSAP, ScrollTrigger
+        and Lenis are vendored under assets/js/vendor/ because the CSP
+        forbids CDNs.
+        
+        One photograph, not three. The original stacks pre-cut
+        transparent ridge artwork; stacking whole photographs instead
+        just reads as two pictures laid over each other. So the image
+        takes layer 4 — the 10% layer, the only rate at which a
+        full-bleed frame stays in shot — and the fast layers carry
+        light and haze instead of more pictures.-->
+        <div class="parallax" aria-hidden="true">
+            <section class="parallax__header">
+                <div class="parallax__visuals">
+                    <div class="parallax__black-line-overflow"></div>
+                    <div data-parallax-layers class="parallax__layers">
+                        <div data-parallax-layer="1" class="parallax__layer-sky"></div>
+                        <div data-parallax-layer="2" class="parallax__layer-haze"></div>
+                        <div data-parallax-layer="3" class="parallax__layer-title">
+                            <h2 class="parallax__title">Scale
+                                <span class="parallax__subtitle">60 m to 8,849 m in under 200 km</span>
+                            </h2>
+                        </div>
+                        <img src="assets/img/amadablam-storm.jpg" loading="eager" width="1800" height="1200" data-parallax-layer="4" alt="" class="parallax__layer-img">
+                    </div>
+                    <div class="parallax__fade"></div>
+                </div>
+            </section>
+        </div>
 
         <!--Peaks-->
         <section id="peaks">

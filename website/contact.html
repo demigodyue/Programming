@@ -8,7 +8,7 @@
 
     <link rel="icon" type="image/webp" href="assets/img/flag.webp">
     <meta name="description" content="Contact us to plan a trek or tour in Nepal — enquiries, bookings and the Kathmandu office.">
-    <meta name="theme-color" content="#faf3e6">
+    <meta name="theme-color" content="#141f28">
     <title>Contact — NEPAL</title>
     <meta property="og:type" content="website">
     <meta property="og:title" content="Contact — NEPAL">
@@ -25,7 +25,7 @@
 
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body>
+<body class="sh-ground-storm">
     <a class="skip-link" href="#main">Skip to content</a>
     <div class="progress-bar" role="presentation"></div>
 
@@ -51,15 +51,67 @@
     <!-- @end -->
 
     <main id="main">
-        <section class="page-hero hero-contact">
-            <div class="aurora" aria-hidden="true"></div>
-            <div class="page-hero-content">
-                <p class="crumb">Home / Contact</p>
-                <h1 data-split>Contact Us</h1>
-                <div class="line"></div>
-                <p>Tell us when you want to travel and how high you want to go — we'll come back with a route, a price and an honest opinion about the weather.</p>
+        <!--Scroll-expansion hero: a photograph that opens as you
+        scroll, over a second photograph that fades out behind it.
+        See assets/js/scroll-hero.js.-->
+        <section class="scroll-hero">
+            <div class="scroll-hero-track">
+                <div class="scroll-hero-layer">
+                    <div class="scroll-hero-bg">
+                        <img src="assets/img/boudha.jpg" width="612" height="408" alt="" loading="eager" decoding="async">
+                    </div>
+                    <!--The window that opens. Its size is written by
+                    scroll-hero.js as you scroll; everything else about it,
+                    including the 95vw/85vh ceiling, is in the stylesheet.-->
+                    <figure class="scroll-hero-media">
+                        <img src="assets/img/amadablam-storm.jpg" width="1800" height="1200" alt="Ama Dablam's north face under heavy cloud, snow streaming off the ridge" loading="eager" decoding="async">
+                    </figure>
+                    <div class="scroll-hero-fore">
+                        <p class="crumb">Home / Contact</p>
+                    <h1 class="scroll-hero-title">Contact Us</h1>
+                        <p class="scroll-hero-date">Reply within one working day</p>
+                        <p class="scroll-hero-cue">Scroll to expand</p>
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-hero-body">
+                <div class="scroll-hero-body-inner">
+                    <h2>Tell us where you want to go</h2>
+                    <p>Say when you can travel and how high you want to climb — we'll come back with a route, a price and an honest opinion about the weather.</p>
+                </div>
             </div>
         </section>
+
+        <!--Layered parallax, from Osmo's GSAP/ScrollTrigger
+        component. The timeline and its 70/55/40/10 yPercent values are
+        reproduced verbatim in assets/js/parallax.js; GSAP, ScrollTrigger
+        and Lenis are vendored under assets/js/vendor/ because the CSP
+        forbids CDNs.
+        
+        One photograph, not three. The original stacks pre-cut
+        transparent ridge artwork; stacking whole photographs instead
+        just reads as two pictures laid over each other. So the image
+        takes layer 4 — the 10% layer, the only rate at which a
+        full-bleed frame stays in shot — and the fast layers carry
+        light and haze instead of more pictures.-->
+        <div class="parallax" aria-hidden="true">
+            <section class="parallax__header">
+                <div class="parallax__visuals">
+                    <div class="parallax__black-line-overflow"></div>
+                    <div data-parallax-layers class="parallax__layers">
+                        <div data-parallax-layer="1" class="parallax__layer-sky"></div>
+                        <div data-parallax-layer="2" class="parallax__layer-haze"></div>
+                        <div data-parallax-layer="3" class="parallax__layer-title">
+                            <h2 class="parallax__title">Arrival
+                                <span class="parallax__subtitle">Kathmandu, then wherever you like</span>
+                            </h2>
+                        </div>
+                        <img src="assets/img/boudhanath-aerial.jpg" loading="eager" width="1800" height="1200" data-parallax-layer="4" alt="" class="parallax__layer-img">
+                    </div>
+                    <div class="parallax__fade"></div>
+                </div>
+            </section>
+        </div>
 
         <section>
             <div class="wrap">

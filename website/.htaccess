@@ -1,0 +1,56 @@
+# Apache configuration for the deployed site.
+#
+# Needs "AllowOverride All" on the directory in your vhost, otherwise
+# Apache ignores every .htaccess in this project — including the ones in
+# api/ and sql/ that keep credentials and the schema unreadable. Check
+# with: apachectl -t -D DUMP_INCLUDES, or just request /api/config.php
+# and confirm you get 403 rather than a blank 200.
+#
+# The nginx equivalent of this file is deploy/nginx.conf.
+
+# index.html is already Apache's default, but state it so the entry point
+# is explicit rather than inherited.
+DirectoryIndex index.html
+
+# Three of these can ONLY be delivered as real HTTP headers — the
+# <meta http-equiv> CSP in each page cannot carry frame-ancestors, and
+# meta cannot carry HSTS or nosniff at all. Without this block the site
+# has no clickjacking protection.
+<IfModule mod_headers.c>
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; form-action 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), interest-cohort=()"
+    Header always set Cross-Origin-Opener-Policy "same-origin"
+    Header always set Cross-Origin-Resource-Policy "same-origin"
+
+    # Only meaningful over TLS, and harmful if you are still on plain
+    # http:// — a browser that sees this will refuse http for a year.
+    # Uncomment once HTTPS is actually working.
+    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+    # Fonts are self-hosted and never change — cache hard.
+    <FilesMatch "\.woff2$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+</IfModule>
+
+# Directory listings would expose assets/img/ and partials/ wholesale.
+Options -Indexes
+
+# The build script, the Netlify/Cloudflare header file, and the project
+# documentation are all repo furniture rather than site content. Apache
+# would happily serve build.pl and SECURITY.md as plain text.
+<FilesMatch "^(build\.pl|_headers)$|\.md$">
+    Require all denied
+</FilesMatch>
+
+# partials/ holds nav/footer fragments that build.pl inlines into the
+# pages; they are build inputs, not documents, and render as broken
+# half-pages if requested directly.
+<IfModule mod_alias.c>
+    RedirectMatch 404 ^/partials/
+
+    # deploy/ holds this server's own config and the runbook.
+    RedirectMatch 404 ^/deploy/
+</IfModule>

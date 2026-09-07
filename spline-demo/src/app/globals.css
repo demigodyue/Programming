@@ -128,3 +128,52 @@
     @apply font-sans;
   }
 }
+/* Card-fan carousel (card-fan-carousel.tsx).
+   The component only writes transforms via GSAP — position, size and the
+   layout's reserved height live here. Cards are centred with
+   `inset: 0; margin: auto` rather than a translate(-50%,-50%), because GSAP
+   owns the whole `transform` property and would overwrite a CSS centring
+   translate on the first tween.
+   Heights match the ideal-height breakpoints in getHeightMultiplier(). */
+.fan-layout {
+  position: relative;
+  height: 22rem;
+}
+
+.fan-card {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 8rem;
+  height: 14rem;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  opacity: 0;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+}
+
+@media (min-width: 480px) {
+  .fan-layout { height: 26rem; }
+  .fan-card { width: 9.5rem; height: 16.6rem; }
+}
+
+@media (min-width: 640px) {
+  .fan-layout { height: 28rem; }
+  .fan-card { width: 10.5rem; height: 18.4rem; }
+}
+
+@media (min-width: 768px) {
+  .fan-layout { height: 34rem; }
+  .fan-card { width: 12.5rem; height: 21.9rem; border-radius: 1rem; }
+}
+
+@media (min-width: 1024px) {
+  .fan-layout { height: 38rem; }
+  .fan-card { width: 14rem; height: 24.5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fan-card { will-change: auto; }
+}

@@ -8,7 +8,7 @@
 
     <link rel="icon" type="image/webp" href="assets/img/flag.webp">
     <meta name="description" content="Explore the beauty of Nepal: towering Himalayan peaks, rich culture, and unforgettable cuisine.">
-    <meta name="theme-color" content="#faf3e6">
+    <meta name="theme-color" content="#131f28">
     <title>NEPAL — A Wonderful Gift</title>
     <meta property="og:type" content="website">
     <meta property="og:title" content="NEPAL — A Wonderful Gift">
@@ -25,7 +25,7 @@
 
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body>
+<body class="sh-ground-espresso">
     <a class="skip-link" href="#main">Skip to content</a>
     <div class="progress-bar" role="presentation"></div>
 
@@ -51,6 +51,73 @@
     <!-- @end -->
 
     <main id="main">
+        <!--Scroll-expansion hero: a photograph that opens as you
+        scroll, over a second photograph that fades out behind it.
+        See assets/js/scroll-hero.js.
+
+        The headline here is a <p>, not an <h1>: the real <h1> is in
+        the <header> immediately below, and a page with two of them
+        leaves a screen reader with no way to tell which one is the
+        page.-->
+        <section class="scroll-hero">
+            <div class="scroll-hero-track">
+                <div class="scroll-hero-layer">
+                    <div class="scroll-hero-bg">
+                        <img src="assets/img/mountain.jpg" width="612" height="408" alt="" loading="eager" decoding="async">
+                    </div>
+                    <!--The window that opens. Its size is written by
+                    scroll-hero.js as you scroll; everything else about it,
+                    including the 95vw/85vh ceiling, is in the stylesheet.-->
+                    <figure class="scroll-hero-media">
+                        <img src="assets/img/amadablam-dusk.jpg" width="1800" height="1200" alt="Ama Dablam's summit lit gold by the last sun, wrapped in cloud" loading="eager" decoding="async">
+                    </figure>
+                    <div class="scroll-hero-fore">
+                        <p class="crumb">Sagarmatha 8,849 m</p>
+                        <p class="scroll-hero-title">Nepal Awaits</p>
+                        <p class="scroll-hero-date">Eight of the world's ten highest peaks</p>
+                        <p class="scroll-hero-cue">Scroll to expand</p>
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-hero-body">
+                <div class="scroll-hero-body-inner">
+                    <h2>Eight of the ten highest peaks on Earth</h2>
+                    <p>Sagarmatha stands at 8,849 m, and seven more of the world's ten tallest mountains share this border with it. Keep scrolling for the peaks, the culture and the food.</p>
+                </div>
+            </div>
+        </section>
+
+        <!--Layered parallax, from Osmo's GSAP/ScrollTrigger
+        component. The timeline and its 70/55/40/10 yPercent values are
+        reproduced verbatim in assets/js/parallax.js; GSAP, ScrollTrigger
+        and Lenis are vendored under assets/js/vendor/ because the CSP
+        forbids CDNs.
+        
+        One photograph, not three. The original stacks pre-cut
+        transparent ridge artwork; stacking whole photographs instead
+        just reads as two pictures laid over each other. So the image
+        takes layer 4 — the 10% layer, the only rate at which a
+        full-bleed frame stays in shot — and the fast layers carry
+        light and haze instead of more pictures.-->
+        <div class="parallax" aria-hidden="true">
+            <section class="parallax__header">
+                <div class="parallax__visuals">
+                    <div class="parallax__black-line-overflow"></div>
+                    <div data-parallax-layers class="parallax__layers">
+                        <div data-parallax-layer="1" class="parallax__layer-sky"></div>
+                        <div data-parallax-layer="2" class="parallax__layer-haze"></div>
+                        <div data-parallax-layer="3" class="parallax__layer-title">
+                            <h2 class="parallax__title">Depth
+                                <span class="parallax__subtitle">Eight thousand metres of it</span>
+                            </h2>
+                        </div>
+                        <img src="assets/img/trekker-cairn.jpg" loading="eager" width="1800" height="1200" data-parallax-layer="4" alt="" class="parallax__layer-img">
+                    </div>
+                    <div class="parallax__fade"></div>
+                </div>
+            </section>
+        </div>
+
         <!--Hero: split layout — copy left, floating photo cluster right,
         so the very first thing visitors see is composition, not a flat banner-->
         <header>
@@ -250,70 +317,47 @@
             </div>
         </section>
 
-        <!--Chapter 5: the gallery — scrolls sideways as you scroll down.
-        The section height is set by main.js from the strip's real width,
-        so it never needs a hard-coded scroll budget.-->
-        <section class="gallery-section" id="gallery">
-            <div class="gallery-sticky">
-                <div class="gallery-head title reveal reveal-blur">
-                    <span class="eyebrow">Chapter Five</span>
-                    <h2>The Long View</h2>
-                    <div class="line"></div>
-                </div>
-                <div class="gallery-track">
-                    <figure class="shot">
-                        <img src="assets/img/everest-stupa.jpg" width="1800" height="1200" alt="A whitewashed stupa on the Namche trail with Everest and Lhotse behind it" loading="lazy" decoding="async">
-                        <figcaption>
-                            <strong>The Namche Stupa</strong>
-                            <span>Everest &amp; Lhotse, Khumbu</span>
-                        </figcaption>
-                    </figure>
-                    <figure class="shot">
-                        <img src="assets/img/amadablam-dusk.jpg" width="1800" height="1200" alt="Ama Dablam's summit lit gold by the last sun, wrapped in cloud" loading="lazy" decoding="async">
-                        <figcaption>
-                            <strong>Ama Dablam at Dusk</strong>
-                            <span>6,812 m · Khumbu</span>
-                        </figcaption>
-                    </figure>
-                    <figure class="shot">
-                        <img src="assets/img/boudhanath-aerial.jpg" width="1800" height="1200" alt="Boudhanath Stupa seen from above, ringed by the rooftops of Kathmandu" loading="lazy" decoding="async">
-                        <figcaption>
-                            <strong>Boudhanath from Above</strong>
-                            <span>Kathmandu Valley</span>
-                        </figcaption>
-                    </figure>
-                    <figure class="shot">
-                        <img src="assets/img/trekker-cairn.jpg" width="1800" height="1200" alt="A trekker standing at a stone cairn looking out over a Himalayan valley" loading="lazy" decoding="async">
-                        <figcaption>
-                            <strong>The Cairn</strong>
-                            <span>Where the valley opens</span>
-                        </figcaption>
-                    </figure>
-                    <figure class="shot">
-                        <img src="assets/img/amadablam-storm.jpg" width="1800" height="1200" alt="Ama Dablam's north face under heavy cloud, snow streaming off the ridge" loading="lazy" decoding="async">
-                        <figcaption>
-                            <strong>Weather Coming In</strong>
-                            <span>North face, Ama Dablam</span>
-                        </figcaption>
-                    </figure>
-                </div>
-                <p class="gallery-hint">Keep scrolling — the gallery moves sideways</p>
-            </div>
-        </section>
-
-        <!--Chapter 6: the trail dog. three.js is loaded on demand by
-        main.js only once this stage is close to the viewport.-->
-        <section class="section-alt" id="dog">
+        <!--Chapter 5: the long view — the photographs dealt out as a fan
+        of cards, driven by card-fan.js. Nothing here carries .card, .shot
+        or .reveal: main.js writes transforms to all three, and GSAP owns
+        the whole matrix on .fan-card.-->
+        <section class="fan-section" id="gallery">
             <div class="title reveal reveal-blur">
-                <span class="eyebrow">Chapter Six</span>
-                <h2>Trail Company</h2>
+                <span class="eyebrow">Chapter Five</span>
+                <h2>The Long View</h2>
                 <div class="line"></div>
-                <p>Half the teahouses on the Khumbu have a dog who decides, without consulting anyone, that it is coming with you. This one watches your cursor.</p>
             </div>
-            <div class="wrap">
-                <div class="dog-stage reveal reveal-zoom">
-                    <p class="dog-fallback">The trail dog needs WebGL</p>
-                </div>
+            <div class="fan-layout" role="group" aria-label="Photographs from Nepal">
+                <figure class="fan-card">
+                    <img src="assets/img/everest-stupa.jpg" width="1800" height="1200" alt="A whitewashed stupa on the Namche trail with Everest and Lhotse behind it" loading="lazy" decoding="async">
+                </figure>
+                <figure class="fan-card">
+                    <img src="assets/img/amadablam-dusk.jpg" width="1800" height="1200" alt="Ama Dablam's summit lit gold by the last sun, wrapped in cloud" loading="lazy" decoding="async">
+                </figure>
+                <figure class="fan-card">
+                    <img src="assets/img/boudhanath-aerial.jpg" width="1800" height="1200" alt="Boudhanath Stupa seen from above, ringed by the rooftops of Kathmandu" loading="lazy" decoding="async">
+                </figure>
+                <figure class="fan-card">
+                    <img src="assets/img/trekker-cairn.jpg" width="1800" height="1200" alt="A trekker standing at a stone cairn looking out over a Himalayan valley" loading="lazy" decoding="async">
+                </figure>
+                <figure class="fan-card">
+                    <img src="assets/img/amadablam-storm.jpg" width="1800" height="1200" alt="Ama Dablam's north face under heavy cloud, snow streaming off the ridge" loading="lazy" decoding="async">
+                </figure>
+                <figure class="fan-card">
+                    <img src="assets/img/mounteverest.jpg" width="2800" height="2100" alt="Mount Everest rising above a stone cairn and a sea of cloud" loading="lazy" decoding="async">
+                </figure>
+                <figure class="fan-card">
+                    <img src="assets/img/mountain2.jpg" width="412" height="612" alt="Yak caravan passing a chorten on the trail below Ama Dablam" loading="lazy" decoding="async">
+                </figure>
+                <figure class="fan-card">
+                    <img src="assets/img/kumari.jpg" width="2600" height="1733" alt="The Kumari, Nepal's living goddess, in red and gold festival dress" loading="lazy" decoding="async">
+                </figure>
+                <figure class="fan-card">
+                    <img src="assets/img/boudha.jpg" width="612" height="408" alt="Boudhanath Stupa at sunrise, pigeons in flight beneath its prayer flags" loading="lazy" decoding="async">
+                </figure>
+                <figure class="fan-card">
+                    <img src="assets/img/mountain3.jpg" width="612" height="350" alt="Base camp tents and resting yaks on a snowfield below Ama Dablam" loading="lazy" decoding="async">
+                </figure>
             </div>
         </section>
 
@@ -412,6 +456,7 @@
         </div>
     </footer>
     <!-- @end -->
+
 
     <script src="assets/js/main.js"></script>
 </body>

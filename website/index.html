@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; form-action 'self'; base-uri 'none'; object-src 'none'">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    <!--
+      The home page is mainpage.html; this file exists only so the site has
+      a working entry point at "/". Every web server already looks for
+      index.html by default, so hosting needs no DirectoryIndex tweak.
+
+      A meta refresh rather than a script: the CSP above is script-src
+      'self', so an inline redirect would be blocked. The link below is the
+      fallback for anything that ignores the refresh.
+    -->
+    <meta http-equiv="refresh" content="0; url=mainpage.html">
+    <link rel="canonical" href="mainpage.html">
+    <meta name="robots" content="noindex">
+
+    <link rel="icon" type="image/webp" href="assets/img/flag.webp">
+    <title>NEPAL — A Wonderful Gift</title>
+</head>
+<body>
+    <p><a href="mainpage.html">Continue to the NEPAL home page</a></p>
+</body>
+</html>
