@@ -52,7 +52,7 @@ export default async function CuisinePage({ params }: PageProps<"/cuisine/[name]
           </Link>
           <span>{cuisine.country}</span>
         </div>
-        <div className="flex flex-col items-center border-t pt-12 pb-14 text-center md:pt-16 md:pb-20">
+        <div className="rule-draw flex flex-col items-center pt-12 pb-14 text-center md:pt-16 md:pb-20">
           <WordReveal
             id="cuisine-title"
             text={cuisine.name}
@@ -68,7 +68,7 @@ export default async function CuisinePage({ params }: PageProps<"/cuisine/[name]
       </div>
 
       <section aria-label={`${cuisine.name} recipes`} className="container-page py-20 md:py-28">
-        <p className="label-caps text-muted-foreground mb-10 flex justify-between border-t pt-4">
+        <p className="rule-draw label-caps text-muted-foreground mb-10 flex justify-between pt-4">
           <span>{recipes.length} {recipes.length === 1 ? "dish" : "dishes"}</span>
           <span>From {cuisine.country}</span>
         </p>
@@ -88,7 +88,7 @@ export default async function CuisinePage({ params }: PageProps<"/cuisine/[name]
         </h2>
         <ul className="flex flex-wrap justify-center gap-2">
           {others.map((c) => (
-            <li key={c.slug}>
+            <li key={c.slug} className="sd-rise">
               <Link
                 href={`/cuisine/${c.slug}`}
                 className="hover-fine:bg-foreground hover-fine:text-background inline-flex min-h-11 items-center rounded-full border px-5 text-sm transition-colors duration-200"

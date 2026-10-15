@@ -173,7 +173,7 @@ export function WidgetWall({
             <Link href={`/recipes/${quickest.slug}`} className="group flex h-full min-h-64 flex-col justify-between gap-6 p-5 md:min-h-72">
               <span className="label-caps text-muted-foreground">Quickest tonight</span>
               <span>
-                <span className="font-display group-hover-fine:underline block text-2xl leading-tight decoration-1 underline-offset-4">
+                <span className="font-display link-u-group text-2xl leading-tight">
                   {quickest.title}
                 </span>
                 <span className="mt-3 flex flex-wrap gap-1.5">

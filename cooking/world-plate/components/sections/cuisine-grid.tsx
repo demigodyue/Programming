@@ -26,14 +26,14 @@ export function CuisineGrid({ cuisines }: { cuisines: CuisineSummary[] }) {
                 href={`/cuisine/${c.slug}`}
                 className="group flex flex-col items-center gap-4 text-center focus-visible:outline-offset-8"
               >
-                <h3 className="text-[1.375rem] leading-tight font-normal">{c.name}</h3>
-                <span className="bg-muted relative block aspect-square w-full max-w-[200px] overflow-hidden rounded-full">
+                <h3 className="text-[1.375rem] leading-tight font-normal transition-transform duration-500 ease-(--ease-ld) group-hover-fine:-translate-y-1">{c.name}</h3>
+                <span className="bg-muted group-hover-fine:scale-[1.04] relative block aspect-square w-full max-w-[200px] overflow-hidden rounded-full transition-[scale] duration-500 ease-(--ease-ld)">
                   <Image
                     src={c.image}
                     alt={c.imageAlt}
                     fill
                     sizes="(min-width: 1024px) 200px, (min-width: 640px) 30vw, 45vw"
-                    className="group-hover-fine:scale-[1.08] object-cover transition-transform duration-700 ease-(--ease-out)"
+                    className="sd-img group-hover-fine:scale-[1.08] object-cover transition-[scale] duration-700 ease-(--ease-ld)"
                   />
                 </span>
                 <span className="label-caps text-muted-foreground flex items-center gap-2">

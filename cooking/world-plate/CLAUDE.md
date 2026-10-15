@@ -137,7 +137,12 @@ tests/unit, tests/e2e    Vitest and Playwright
   entrances (700ms; widgets rise 120px + fade, staggered, then drift via `.widget` / `.widget-float`), `--ease-morph` =
   cubic-bezier(.32,.72,0,1) for 350ms shape morphs (`.morph-shape`: stepper circle → filled square, marquee cards),
   `.line-reveal` / `.grow-bar` for charts, `.btn-swap` for the filled → outlined pill hover (300ms ease). Headlines
-  just fade up as a block (`.rise`); page changes are a plain crossfade. Scroll-spy steppers use `useActiveIndex`.
+  rise in (`.rise`, hero lines staggered; wordmark `.letter`s). Page changes: old page lifts away, new page rises
+  120px (`wp-page-out` / `wp-page-in`). Scroll-spy steppers use `useActiveIndex`.
+- Everything moves: header chips `.drop-in`; links `.link-u` / `.link-u-group` (underline draws in); `.btn-swap` press +
+  arrow nudge; mobile menu unrolls (clip-path) with staggered links. Scroll-driven CSS (`animation-timeline`, with
+  graceful fallback): `.sd-img` photo settle, `.sd-rise`, `.rule-draw` hairlines, `.sd-hero-out`, `.sd-wordmark`,
+  `.scroll-progress`. Image hover zooms use the `scale` property so they compose with `.sd-img`'s `transform`.
 - Animate only `transform` and `opacity` (`clip-path` allowed for reveals; blur only on short hero entrances).
 - `prefers-reduced-motion`: no parallax, floating, Ken Burns or layout morphs — simple opacity fades only.
 - No animation hides or delays content for more than ~1s. Scroll reveals run once.

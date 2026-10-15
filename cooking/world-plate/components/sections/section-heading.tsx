@@ -26,7 +26,7 @@ export function SectionHeading({
   return (
     <div className="mb-12 md:mb-16">
       {(index || label) && (
-        <div className="label-caps text-muted-foreground mb-10 flex justify-between border-t pt-4">
+        <div className="rule-draw label-caps text-muted-foreground mb-10 flex justify-between pt-4">
           <span>{index}</span>
           <span>{label}</span>
         </div>
@@ -45,7 +45,7 @@ export function SectionHeading({
             <RevealItem>
               <Link
                 href={action.href}
-                className="hover-fine:underline inline-flex min-h-11 items-center text-sm underline-offset-4"
+                className="link-u inline-flex items-center py-3 text-sm"
               >
                 {action.label}
               </Link>

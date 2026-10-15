@@ -37,13 +37,13 @@ export function RecipeCard({ recipe, morph = true, sizes, className, eager, head
       fill
       loading={eager ? "eager" : undefined}
       sizes={sizes ?? "(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"}
-      className="group-hover-fine:scale-[1.05] object-cover transition-transform duration-700 ease-(--ease-out)"
+      className="sd-img group-hover-fine:scale-[1.05] object-cover transition-[scale] duration-700 ease-(--ease-ld)"
     />
   );
 
   return (
     <article className={cn("group relative h-full", className)}>
-      <div className="bg-card text-card-foreground relative flex h-full flex-col overflow-hidden rounded-lg border group-has-focus-visible:outline-ring group-has-focus-visible:outline-2 group-has-focus-visible:outline-offset-2">
+      <div className="bg-card text-card-foreground group-hover-fine:-translate-y-1.5 relative flex h-full flex-col overflow-hidden rounded-lg border transition-[translate] duration-500 ease-(--ease-ld) group-has-focus-visible:outline-ring group-has-focus-visible:outline-2 group-has-focus-visible:outline-offset-2">
         <div className="bg-muted relative aspect-[4/3] overflow-hidden">
           {morph ? (
             <ViewTransition name={recipeImageTransitionName(recipe.slug)} share="morph" default="none">
@@ -61,7 +61,7 @@ export function RecipeCard({ recipe, morph = true, sizes, className, eager, head
           <Heading className="text-[1.625rem] leading-[1.1] font-normal">
             <Link
               href={`/recipes/${recipe.slug}`}
-              className="group-hover-fine:underline decoration-1 underline-offset-4 after:absolute after:inset-0 after:rounded-lg focus-visible:outline-none"
+              className="link-u-group underline-offset-4 after:absolute after:inset-0 after:rounded-lg focus-visible:outline-none"
             >
               {recipe.title}
             </Link>

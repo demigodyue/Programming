@@ -45,17 +45,33 @@
       [hidden] { display: none; }
     </style>
     <script>
-      // Go straight to the static site. If it hasn't been built yet, show how to build it.
+      // Go straight to the static site. If it hasn't been built yet — or was built for a different
+      // Live Server root (its CSS/JS would 404 and the page would look plain) — say how to fix it.
       (function () {
-        fetch("site/index.html", { method: "HEAD", cache: "no-store" })
+        var expected = window.location.pathname.replace(/[^/]*$/, "") + "site";
+        function show(id, text) {
+          document.documentElement.dataset.problem = id;
+          window.__wpFix = text || "";
+          var el = document.getElementById(id);
+          if (el) {
+            el.hidden = false;
+            var code = el.querySelector("[data-fix]");
+            if (code) code.textContent = text;
+          }
+        }
+        fetch("site/index.html", { cache: "no-store" })
           .then(function (r) {
-            if (r.ok) window.location.replace("site/");
-            else throw new Error("missing");
+            if (!r.ok) throw new Error("missing");
+            return r.text();
+          })
+          .then(function (html) {
+            var m = html.match(/(?:href|src)="([^"]*?)\/_next\//);
+            var built = m ? m[1] : "";
+            if (built === expected) window.location.replace("site/");
+            else show("wrong-root", '$env:BASE_PATH="' + expected + '"; npm run build');
           })
           .catch(function () {
-            document.documentElement.dataset.missing = "true";
-            var el = document.getElementById("missing");
-            if (el) el.hidden = false;
+            show("missing");
           });
       })();
     </script>
@@ -73,9 +89,23 @@
           <li>Reload this page in Live Server.</li>
         </ol>
       </div>
+      <div id="wrong-root" hidden>
+        <p>
+          The site was built for a different Live Server folder, so its styles and animations can’t load here.
+          Rebuild it for this location — in a PowerShell terminal in <code>cooking/world-plate</code> run:
+        </p>
+        <p><code data-fix></code></p>
+        <p>Then reload this page.</p>
+      </div>
     </main>
     <script>
-      if (document.documentElement.dataset.missing) document.getElementById("missing").hidden = false;
+      var problem = document.documentElement.dataset.problem;
+      if (problem) {
+        var el = document.getElementById(problem);
+        el.hidden = false;
+        var code = el.querySelector("[data-fix]");
+        if (code) code.textContent = window.__wpFix;
+      }
     </script>
   </body>
 </html>

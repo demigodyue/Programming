@@ -102,7 +102,7 @@ export function RecipeKitchen({
             <button
               type="button"
               onClick={() => setServings(baseServings)}
-              className="text-accent-ink mt-3 inline-flex items-center gap-1.5 text-sm font-medium underline-offset-4 hover-fine:underline"
+              className="text-accent-ink mt-3 inline-flex items-center gap-1.5 text-sm font-medium underline-offset-4 link-u"
             >
               <RotateCcw className="size-3.5" strokeWidth={2} aria-hidden />
               Back to original {baseServings} servings
@@ -118,7 +118,7 @@ export function RecipeKitchen({
                     const isChecked = checked.has(index);
                     const qty = formatQuantity(ing.amount, ing.unit, baseServings, servings);
                     return (
-                      <li key={index} data-checked={isChecked}>
+                      <li key={index} data-checked={isChecked} className="sd-rise">
                         <label className="group flex cursor-pointer items-start gap-3 py-3">
                           <input type="checkbox" checked={isChecked} onChange={() => toggle(index)} className="peer sr-only" />
                           <span

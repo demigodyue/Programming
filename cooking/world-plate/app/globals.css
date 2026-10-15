@@ -239,19 +239,34 @@
   --ease-morph: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-/* Route changes: a plain, quick crossfade (no wipe). */
+/* Route changes: the old page lifts away (up 60px, shrinks a touch, fades) while the new page
+   rises in from 120px below on the same curve as the hero widgets — a deliberate ~0.85s hand-off.
+   The header stays put; a clicked recipe photo morphs into the recipe page's hero image. */
 ::view-transition {
   pointer-events: none;
 }
 ::view-transition-group(.morph) {
-  animation-duration: 500ms;
+  animation-duration: 750ms;
   animation-timing-function: var(--ease-ld);
 }
 ::view-transition-old(.page-fade) {
-  animation: 180ms ease both wp-fade-out;
+  animation: 450ms var(--ease-ld) both wp-page-out;
+  transform-origin: 50% 0;
 }
 ::view-transition-new(.page-fade) {
-  animation: 300ms ease 60ms both wp-fade-in;
+  animation: 750ms var(--ease-ld) 120ms both wp-page-in;
+}
+@keyframes wp-page-out {
+  to {
+    opacity: 0;
+    transform: translate3d(0, -60px, 0) scale(0.97);
+  }
+}
+@keyframes wp-page-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 120px, 0);
+  }
 }
 ::view-transition-group(site-header) {
   animation: none;
@@ -382,16 +397,194 @@
   /* Pill CTA: filled → outlined on hover, 300ms ease. */
   .btn-swap {
     border: 1px solid var(--primary);
-    transition:
-      background-color 300ms ease,
-      color 300ms ease,
-      border-color 300ms ease;
   }
   @media (hover: hover) and (pointer: fine) {
     .btn-swap:hover {
       background-color: transparent;
       color: var(--foreground);
       border-color: var(--foreground);
+    }
+  }
+}
+
+/* ---------- Everything moves: shared motion utilities ---------- */
+@keyframes wp-drop-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -24px, 0);
+  }
+}
+@keyframes wp-slide-in {
+  from {
+    opacity: 0;
+    transform: translate3d(var(--from-x, -40px), 0, 0);
+  }
+}
+@keyframes wp-letter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.5em, 0);
+  }
+}
+@keyframes wp-sd-zoom {
+  from {
+    transform: scale(1.18);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes wp-sd-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 36px, 0);
+  }
+}
+@keyframes wp-sd-rule {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes wp-sd-hero-out {
+  to {
+    opacity: 0.15;
+    transform: translate3d(0, -80px, 0) scale(0.96);
+  }
+}
+@keyframes wp-sd-wordmark {
+  to {
+    transform: translate3d(0, -12%, 0) scale(1.06);
+  }
+}
+@keyframes wp-sd-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@layer components {
+  /* Header chips drop in on first load. */
+  .drop-in {
+    animation: wp-drop-in 700ms var(--ease-ld) both;
+    animation-delay: calc(var(--i, 0) * 90ms + 100ms);
+  }
+  /* Corner labels slide in from their side (--from-x). */
+  .slide-in {
+    animation: wp-slide-in 800ms var(--ease-ld) both;
+    animation-delay: var(--delay, 150ms);
+  }
+  /* Wordmark letters rise one by one. */
+  .letter {
+    display: inline-block;
+    animation: wp-letter 900ms var(--ease-ld) both;
+    animation-delay: calc(var(--delay, 0ms) + var(--i, 0) * 55ms);
+  }
+
+  /* Links: underline draws in from the left on hover / for the current page. */
+  .link-u {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-origin: content-box; /* the line hugs the text, not the padded tap area */
+    background-position: 0 100%;
+    background-size: 0% 1px;
+    transition: background-size 350ms var(--ease-ld);
+  }
+  .link-u[aria-current="page"] {
+    background-size: 100% 1px;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .link-u:hover,
+    .group:hover .link-u-group {
+      background-size: 100% 1px;
+    }
+  }
+  .link-u-group {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 1px;
+    transition: background-size 350ms var(--ease-ld);
+  }
+
+  /* Buttons: press feedback and a nudging arrow. */
+  .btn-swap {
+    transition:
+      background-color 300ms ease,
+      color 300ms ease,
+      border-color 300ms ease,
+      transform 160ms var(--ease-out);
+  }
+  .btn-swap:active {
+    transform: scale(0.97);
+  }
+  .btn-swap svg {
+    transition: transform 300ms var(--ease-ld);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .btn-swap:hover svg {
+      transform: translateX(3px);
+    }
+  }
+
+  /* A hairline that draws itself left → right (replaces border-t on section label rows). */
+  .rule-draw {
+    position: relative;
+  }
+  .rule-draw::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: var(--border);
+    transform-origin: left center;
+  }
+
+  /* Scroll-progress hairline under the header. */
+  .scroll-progress {
+    transform-origin: left center;
+    transform: scaleX(0);
+  }
+}
+
+/* Scroll-driven motion (runs on the compositor, tied to scroll position). Browsers without
+   scroll timelines simply show everything in its resting state. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* Photos settle from a slight zoom as they scroll into view. Uses `transform`, so it
+       composes with Tailwind's hover `scale`. */
+    .sd-img {
+      animation: wp-sd-zoom linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+    /* Blocks fade up as they enter. */
+    .sd-rise {
+      animation: wp-sd-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 80%;
+    }
+    .rule-draw::before {
+      animation: wp-sd-rule linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 30%;
+    }
+    /* Hero copy recedes as you scroll away; the wordmark lifts and grows. */
+    .sd-hero-out {
+      animation: wp-sd-hero-out linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 70vh;
+    }
+    .sd-wordmark {
+      animation: wp-sd-wordmark linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 90vh;
+    }
+    .scroll-progress {
+      animation: wp-sd-progress linear both;
+      animation-timeline: scroll(root);
     }
   }
 }
@@ -460,6 +653,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .drop-in,
+  .slide-in,
+  .letter,
   .rise,
   .frame-in,
   .widget {
@@ -477,6 +673,12 @@
   }
   ::view-transition-group(*) {
     animation-duration: 0.01ms !important;
+  }
+  ::view-transition-old(.page-fade) {
+    animation: 200ms ease both wp-fade-out;
+  }
+  ::view-transition-new(.page-fade) {
+    animation: 250ms ease both wp-fade-in;
   }
   .strike::after {
     transition-duration: 0.01ms;

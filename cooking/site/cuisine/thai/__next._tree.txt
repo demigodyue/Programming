@@ -1,7 +1,7 @@
-:HL["/Programming/cooking/site/_next/static/chunks/2lltgsjd-aiu2.css","style"]
+:HL["/Programming/cooking/site/_next/static/chunks/37xw48y_ydvtx.css","style"]
 :HL["/Programming/cooking/site/_next/static/media/f06bf9da926bae75-s.p.2874ccu1_u7jf.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HC"https://images.unsplash.com"
 3:[["children",{"s":"__PAGE__","h":160}]]
 2:[["children",{"s":{"n":"name","t":"d","k":"thai","s":[]},"h":65632,"c":"$Q3"}]]
 1:[["children",{"s":"cuisine","h":131136,"c":"$Q2"}]]
-0:{"b":"rxQnjpyyYU4yHiLSyIRmG","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}
+0:{"b":"PV9VAMQP4TRh4gp7u6JOh","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}

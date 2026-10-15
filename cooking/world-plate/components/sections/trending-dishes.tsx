@@ -24,7 +24,7 @@ export function TrendingDishes({ recipes }: { recipes: RecipeCard[] }) {
 
   return (
     <section aria-labelledby="trending-title" className="container-page py-24 md:py-32">
-      <div className="label-caps text-muted-foreground mb-12 flex justify-between border-t pt-4">
+      <div className="rule-draw label-caps text-muted-foreground mb-12 flex justify-between pt-4">
         <span>01</span>
         <span>This week</span>
       </div>
@@ -53,14 +53,14 @@ export function TrendingDishes({ recipes }: { recipes: RecipeCard[] }) {
               </li>
             ))}
           </ol>
-          <Link href="/recipes" className="hover-fine:underline mt-8 inline-flex min-h-11 items-center text-sm underline-offset-4">
+          <Link href="/recipes" className="link-u mt-8 inline-flex items-center py-3 text-sm">
             All recipes
           </Link>
         </div>
 
         <ol>
           {rows.map((r, i) => (
-            <li key={r.slug} id={`trend-${r.slug}`} ref={register(i)} className="scroll-mt-28 border-t pb-12">
+            <li key={r.slug} id={`trend-${r.slug}`} ref={register(i)} className="rule-draw scroll-mt-28 pb-12">
               <Reveal>
                 <RevealItem className="flex items-center gap-4 py-5">
                   <span
@@ -94,7 +94,7 @@ export function TrendingDishes({ recipes }: { recipes: RecipeCard[] }) {
                           alt=""
                           fill
                           sizes="(min-width: 1024px) 34vw, (min-width: 640px) 55vw, 90vw"
-                          className="group-hover-fine:scale-[1.04] object-cover transition-transform duration-500 ease-(--ease-ld)"
+                          className="sd-img group-hover-fine:scale-[1.04] object-cover transition-[scale] duration-500 ease-(--ease-ld)"
                         />
                       </span>
                     </ViewTransition>

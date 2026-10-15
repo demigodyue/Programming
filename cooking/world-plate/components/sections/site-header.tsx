@@ -4,7 +4,7 @@ import { Menu, Search, X } from "lucide-react";
 import { m, AnimatePresence, useMotionValueEvent, useReducedMotion, useScroll } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { LogoMark } from "@/components/logo";
 import { cn } from "@/lib/utils";
 import { ThemeIconToggle } from "@/components/theme-switch";
@@ -17,6 +17,7 @@ const NAV = [
 ];
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
+const EASE_LD = [0.22, 0.61, 0.36, 1] as const;
 
 function isActive(pathname: string, href: string) {
   if (href.startsWith("/#")) return pathname.startsWith("/cuisine");
@@ -65,10 +66,17 @@ export function SiteHeader() {
         transition={{ duration: 0.3, ease: EASE_OUT }}
         className="bg-background pointer-events-none absolute inset-0 border-b"
       />
+      {/* Reading progress: a hairline that fills as you scroll (scroll-driven, no JS). */}
+      <span aria-hidden className="scroll-progress bg-foreground pointer-events-none absolute inset-x-0 top-0 h-px" />
       <div className="container-page relative">
         <div className="text-foreground">
           <nav aria-label="Main" className="relative flex h-16 items-center justify-between gap-2 pt-2">
-            <Link href="/" className={cn(chip, "flex h-11 items-center rounded-full pr-1 pl-1.5")} aria-label="World Plate home">
+            <Link
+              href="/"
+              className={cn(chip, "drop-in flex h-11 items-center rounded-full pr-1 pl-1.5")}
+              style={{ "--i": 0 } as CSSProperties}
+              aria-label="World Plate home"
+            >
               <LogoMark />
               {/* The name collapses into the monogram on scroll (LaunchDarkly's wordmark → arrow). */}
               <span
@@ -81,12 +89,15 @@ export function SiteHeader() {
               </span>
             </Link>
 
-            <ul className="bg-card absolute left-1/2 hidden h-11 -translate-x-1/2 items-center gap-6 rounded-full border px-6 md:flex">
+            <ul
+              className="drop-in bg-card absolute left-1/2 hidden h-11 -translate-x-1/2 items-center gap-6 rounded-full border px-6 md:flex"
+              style={{ "--i": 1 } as CSSProperties}
+            >
               {NAV.map((item) => {
                 const active = isActive(pathname, item.href);
                 return (
                   <li key={item.href}>
-                    <Link href={item.href} aria-current={active ? "page" : undefined} className="relative block py-2 text-[0.8125rem]">
+                    <Link href={item.href} aria-current={active ? "page" : undefined} className="link-u relative block py-2 text-[0.8125rem]">
                       {item.label}
                       {active && (
                         <m.span
@@ -101,7 +112,7 @@ export function SiteHeader() {
               })}
             </ul>
 
-            <div className={cn(chip, "flex h-11 items-center gap-0.5 rounded-full px-0.5")}>
+            <div className={cn(chip, "drop-in flex h-11 items-center gap-0.5 rounded-full px-0.5")} style={{ "--i": 2 } as CSSProperties}>
               <Link
                 href="/recipes"
                 aria-label="Search recipes"
@@ -131,25 +142,26 @@ export function SiteHeader() {
             {open && (
               <m.div
                 id="mobile-menu"
-                initial={{ opacity: 0, transform: reduce ? "none" : "translateY(-6px)" }}
-                animate={{ opacity: 1, transform: "translateY(0px)" }}
-                exit={{ opacity: 0, transform: reduce ? "none" : "translateY(-6px)" }}
-                transition={{ duration: 0.22, ease: EASE_OUT }}
+                // The panel unrolls downward (clip-path), LaunchDarkly curve; reduced motion: fade.
+                initial={reduce ? { opacity: 0 } : { clipPath: "inset(0 0 100% 0)" }}
+                animate={reduce ? { opacity: 1 } : { clipPath: "inset(0 0 0% 0)" }}
+                exit={reduce ? { opacity: 0 } : { clipPath: "inset(0 0 100% 0)" }}
+                transition={{ duration: 0.45, ease: EASE_LD }}
                 className="relative pt-2 pb-6 md:hidden"
               >
                 <ul className="grid">
                   {NAV.map((item, i) => (
                     <m.li
                       key={item.href}
-                      initial={{ opacity: 0, transform: reduce ? "none" : "translateY(8px)" }}
+                      initial={{ opacity: 0, transform: reduce ? "none" : "translateY(40px)" }}
                       animate={{ opacity: 1, transform: "translateY(0px)" }}
-                      transition={{ duration: 0.3, delay: 0.04 * i, ease: EASE_OUT }}
+                      transition={{ duration: 0.7, delay: 0.12 + 0.07 * i, ease: EASE_LD }}
                     >
                       <Link
                         href={item.href}
                         onClick={() => setOpen(false)}
                         aria-current={isActive(pathname, item.href) ? "page" : undefined}
-                        className="aria-[current=page]:underline flex items-center justify-between border-b py-3 font-display text-4xl leading-none font-medium underline-offset-[6px] decoration-1"
+                        className="aria-[current=page]:underline flex items-center justify-between border-b py-3 font-display text-4xl leading-none font-medium underline-offset-[6px]"
                       >
                         {item.label}
                         <span aria-hidden className="hex-outline" />

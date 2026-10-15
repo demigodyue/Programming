@@ -28,7 +28,7 @@ export function Footer1({ logo, description, aside, linkGroups, copyright }: Foo
     <footer className="bg-chalk w-full overflow-hidden border-t">
       <div className="container-page pt-16 pb-8 sm:pt-20">
         <div className="flex flex-col justify-between gap-12 xl:flex-row xl:gap-24">
-          <div className="shrink-0 space-y-6 xl:w-[400px]">
+          <div className="sd-rise shrink-0 space-y-6 xl:w-[400px]">
             {logo}
             <p className="text-muted-foreground max-w-sm text-[0.9375rem] leading-relaxed">{description}</p>
             {aside}
@@ -36,14 +36,14 @@ export function Footer1({ logo, description, aside, linkGroups, copyright }: Foo
 
           <div className="grid flex-1 grid-cols-2 gap-8 sm:grid-cols-3 xl:gap-8">
             {linkGroups.map((group) => (
-              <div key={group.title} className="space-y-5">
+              <div key={group.title} className="sd-rise space-y-5">
                 <h2 className="label-caps text-muted-foreground">{group.title}</h2>
                 <ul className="space-y-3">
                   {group.links.map((link) => (
                     <li key={link.href}>
                       <Link
                         href={link.href}
-                        className="hover-fine:underline text-sm underline-offset-4"
+                        className="link-u text-sm underline-offset-4"
                       >
                         {link.label}
                       </Link>
@@ -55,7 +55,7 @@ export function Footer1({ logo, description, aside, linkGroups, copyright }: Foo
           </div>
         </div>
 
-        <div className="mt-14 flex flex-col items-center justify-between gap-3 border-t pt-8 sm:flex-row">
+        <div className="rule-draw mt-14 flex flex-col items-center justify-between gap-3 pt-8 sm:flex-row">
           <p className="text-muted-foreground text-xs">{copyright}</p>
           <p className="text-muted-foreground text-xs">
             Photos from{" "}
@@ -67,7 +67,7 @@ export function Footer1({ logo, description, aside, linkGroups, copyright }: Foo
       </div>
       <p
         aria-hidden
-        className="font-display -mb-[0.2em] text-center text-[19.5vw] leading-[0.84] font-medium tracking-[-0.03em] whitespace-nowrap select-none"
+        className="sd-rise font-display -mb-[0.2em] text-center text-[19.5vw] leading-[0.84] font-medium tracking-[-0.03em] whitespace-nowrap select-none"
       >
         World Plate
       </p>

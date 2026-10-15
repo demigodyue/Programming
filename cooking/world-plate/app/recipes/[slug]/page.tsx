@@ -70,7 +70,7 @@ export default async function RecipePage({ params }: PageProps<"/recipes/[slug]"
             All recipes
           </Link>
 
-          <div className="mt-4 grid items-center gap-10 border-t pt-10 lg:grid-cols-2 lg:gap-16">
+          <div className="rule-draw mt-4 grid items-center gap-10 pt-10 lg:grid-cols-2 lg:gap-16">
             <div className="lg:order-2">
               <ViewTransition name={recipeImageTransitionName(recipe.slug)} share="morph" default="none">
                 <div className="bg-muted relative aspect-[4/3] overflow-hidden rounded-lg lg:aspect-[4/5]">
@@ -150,7 +150,8 @@ export default async function RecipePage({ params }: PageProps<"/recipes/[slug]"
           <Reveal as="ul" className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((r) => (
               <RevealItem as="li" key={r.slug}>
-                <RecipeCard recipe={r} />
+                {/* No morph: only the clicked dish should fly into the hero, not these below-the-fold cards. */}
+                <RecipeCard recipe={r} morph={false} />
               </RevealItem>
             ))}
           </Reveal>
