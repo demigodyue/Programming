@@ -1,0 +1,177 @@
+"use client";
+
+import { ArrowLeft, ArrowRight, Check, X } from "lucide-react";
+import { m, AnimatePresence, useReducedMotion } from "motion/react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { StepIndicator } from "@/components/watermelon/step-indicator";
+
+const EASE_OUT = [0.23, 1, 0.32, 1] as const;
+
+/**
+ * Full-screen, one-step-at-a-time view for cooking with messy hands:
+ * huge text, big buttons, arrow keys / space to advance, Esc to exit, screen kept awake.
+ */
+export function CookMode({ title, steps, onClose }: { title: string; steps: string[]; onClose: () => void }) {
+  const [index, setIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const reduce = useReducedMotion();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const isLast = index === steps.length - 1;
+
+  const go = useCallback(
+    (next: number) => {
+      if (next < 0 || next >= steps.length) return;
+      setDirection(next > index ? 1 : -1);
+      setIndex(next);
+    },
+    [index, steps.length],
+  );
+
+  // Focus, scroll lock, keyboard, restore focus on close.
+  useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    dialogRef.current?.focus();
+    const root = document.documentElement;
+    const prevOverflow = root.style.overflow;
+    root.style.overflow = "hidden";
+    return () => {
+      root.style.overflow = prevOverflow;
+      previouslyFocused?.focus();
+    };
+  }, []);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      else if (e.key === "ArrowRight" || (e.key === " " && (e.target as HTMLElement).tagName !== "BUTTON")) {
+        e.preventDefault();
+        go(index + 1);
+      } else if (e.key === "ArrowLeft") go(index - 1);
+      else if (e.key === "Tab") {
+        // Keep focus inside the dialog.
+        const focusables = dialogRef.current?.querySelectorAll<HTMLElement>("button:not([disabled])");
+        if (!focusables?.length) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [go, index, onClose]);
+
+  // Keep the screen on while cooking, where supported.
+  useEffect(() => {
+    let lock: WakeLockSentinel | undefined;
+    navigator.wakeLock
+      ?.request("screen")
+      .then((l) => (lock = l))
+      .catch(() => {});
+    return () => {
+      lock?.release().catch(() => {});
+    };
+  }, []);
+
+  const offset = reduce ? 0 : 40;
+
+  return createPortal(
+    <m.div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="cook-mode-title"
+      tabIndex={-1}
+      data-lenis-prevent
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25 }}
+      className="bg-background fixed inset-0 z-50 flex flex-col overflow-y-auto outline-none"
+    >
+      <div className="container-page flex items-center justify-between gap-4 pt-5">
+        <div className="min-w-0">
+          <p className="label-caps text-muted-foreground">Cook Mode</p>
+          <h2 id="cook-mode-title" className="truncate text-xl font-medium">
+            {title}
+          </h2>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Exit Cook Mode"
+          className="bg-card hover-fine:bg-muted grid size-12 shrink-0 place-items-center rounded-full border"
+        >
+          <X className="size-5" strokeWidth={1.75} aria-hidden />
+        </button>
+      </div>
+
+      <div className="container-page mt-10">
+        <StepIndicator
+          steps={steps.map((_, i) => ({ id: String(i), label: `Step ${i + 1}` }))}
+          current={index}
+          onStepChange={go}
+        />
+      </div>
+
+      <div className="container-page flex flex-1 flex-col justify-center py-10">
+        <p className="text-accent-ink font-display text-2xl" aria-live="polite">
+          Step {index + 1} of {steps.length}
+        </p>
+        <div className="relative mt-4">
+          <AnimatePresence mode="wait" initial={false} custom={direction}>
+            <m.p
+              key={index}
+              custom={direction}
+              initial={{ opacity: 0, transform: `translateX(${direction * offset}px)` }}
+              animate={{ opacity: 1, transform: "translateX(0px)" }}
+              exit={{ opacity: 0, transform: `translateX(${direction * -offset}px)` }}
+              transition={{ duration: 0.3, ease: EASE_OUT }}
+              className="font-display max-w-[30ch] text-[clamp(1.75rem,4.6vw,3.25rem)] leading-[1.2] text-pretty"
+            >
+              {steps[index]}
+            </m.p>
+          </AnimatePresence>
+        </div>
+      </div>
+
+      <div className="container-page flex items-center justify-between gap-3 pb-8">
+        <button
+          type="button"
+          onClick={() => go(index - 1)}
+          disabled={index === 0}
+          className="bg-card hover-fine:bg-muted inline-flex h-16 items-center gap-2 rounded-full border px-6 text-lg font-medium disabled:opacity-40 sm:px-8"
+        >
+          <ArrowLeft className="size-5" strokeWidth={1.75} aria-hidden />
+          Back
+        </button>
+        {isLast ? (
+          <button
+            type="button"
+            onClick={onClose}
+            className="bg-primary text-primary-foreground inline-flex h-16 items-center gap-2 rounded-full px-8 text-lg font-medium transition-transform duration-150 active:scale-[0.97]"
+          >
+            <Check className="size-5" strokeWidth={2} aria-hidden />
+            Done — enjoy
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => go(index + 1)}
+            className="bg-primary text-primary-foreground inline-flex h-16 items-center gap-2 rounded-full px-8 text-lg font-medium transition-transform duration-150 active:scale-[0.97]"
+          >
+            Next step
+            <ArrowRight className="size-5" strokeWidth={1.75} aria-hidden />
+          </button>
+        )}
+      </div>
+    </m.div>,
+    document.body,
+  );
+}

@@ -1,0 +1,484 @@
+@import "tailwindcss";
+@import "shadcn/tailwind.css";
+@import "lenis/dist/lenis.css";
+
+@custom-variant dark (&:is(.dark *));
+/* Hover effects only on devices that truly hover (touch fires false hovers on tap). */
+@custom-variant hover-fine {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @slot;
+    }
+  }
+}
+@custom-variant group-hover-fine {
+  @media (hover: hover) and (pointer: fine) {
+    &:is(:where(.group):hover *) {
+      @slot;
+    }
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-heading: var(--font-display);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-scrim: var(--scrim);
+  --color-chalk: var(--chalk);
+  /* Structured system: links/chips 2px, every card and image 9px, buttons are pills (rounded-full). */
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: var(--radius);
+  --radius-xl: var(--radius);
+  --radius-2xl: var(--radius);
+  --radius-3xl: var(--radius);
+  --radius-4xl: var(--radius);
+  /* Entirely flat — depth comes from light/dark section cuts, never elevation. */
+  --shadow-2xs: 0 0 #0000;
+  --shadow-xs: 0 0 #0000;
+  --shadow-sm: 0 0 #0000;
+  --shadow-md: 0 0 #0000;
+  --shadow-lg: 0 0 #0000;
+  --shadow-xl: 0 0 #0000;
+  --shadow-2xl: 0 0 #0000;
+  --shadow-soft: 0 0 #0000;
+  --shadow-lift: 0 0 #0000;
+  --text-display: clamp(3.25rem, 11vw, 5.875rem); /* 94px section titles */
+  --text-display--line-height: 0.84;
+  --text-display--letter-spacing: -0.009em;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --animate-marquee: marquee var(--duration) linear infinite;
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-100% - var(--gap)));
+    }
+  }
+}
+
+/* Palette — the only place hex colours live. See CLAUDE.md "Design rules".
+   Structured: putty gallery wall, black ink, bone cards, no saturated colour, no shadows. */
+:root {
+  --background: #c4c3b6; /* putty canvas */
+  --foreground: #000000; /* ink */
+  --card: #e7e5e4; /* bone */
+  --card-foreground: #000000;
+  --popover: #e7e5e4;
+  --popover-foreground: #000000;
+  --primary: #000000; /* the pill button: ink fill, paper text */
+  --primary-foreground: #ffffff;
+  --secondary: #e7e5e4;
+  --secondary-foreground: #000000;
+  --muted: #b8b7aa; /* one step into the putty, for image wells */
+  --muted-foreground: #45443f; /* graphite, darkened to 5.5:1 on putty */
+  --accent: #dfdcd5; /* vellum */
+  --accent-foreground: #000000;
+  --accent-ink: #000000;
+  --destructive: #8a1c12;
+  --border: #9f9e92; /* hairline that reads on putty and bone */
+  --input: #9f9e92;
+  --ring: #000000;
+  --scrim: #000000;
+  --chalk: #ebebeb;
+  --shadow-color: transparent;
+  --shadow-color-strong: transparent;
+  --radius: 9px;
+  --room-background: #000000;
+  --room-foreground: #ffffff;
+  --room-card: #141413;
+  --room-muted: #1d1d1b;
+  --room-muted-foreground: #b4b3a8;
+  --room-primary: #ffffff;
+  --room-primary-foreground: #000000;
+  --room-border: #3a3936;
+}
+
+.dark {
+  --background: #0b0b0a; /* ink room */
+  --foreground: #ffffff;
+  --card: #161614;
+  --card-foreground: #ffffff;
+  --popover: #161614;
+  --popover-foreground: #ffffff;
+  --primary: #c4c3b6; /* putty pill on ink */
+  --primary-foreground: #000000;
+  --secondary: #1d1d1b;
+  --secondary-foreground: #ffffff;
+  --muted: #1d1d1b;
+  --muted-foreground: #b4b3a8;
+  --accent: #262623;
+  --accent-foreground: #ffffff;
+  --accent-ink: #ffffff;
+  --destructive: #e58a80;
+  --border: #3a3936;
+  --input: #3a3936;
+  --ring: #ffffff;
+  --scrim: #000000;
+  --chalk: #121211;
+  /* In dark mode the alternating "room" flips to the putty gallery wall. */
+  --room-background: #c4c3b6;
+  --room-foreground: #000000;
+  --room-card: #e7e5e4;
+  --room-muted: #b8b7aa;
+  --room-muted-foreground: #45443f;
+  --room-primary: #000000;
+  --room-primary-foreground: #ffffff;
+  --room-border: #9f9e92;
+}
+
+/* A "room" is the hard-cut contrasting section (ink on the putty site, putty on the dark site).
+   It re-points the theme tokens, so everything inside — cards, buttons, borders — just works. */
+.room {
+  --background: var(--room-background);
+  --foreground: var(--room-foreground);
+  --card: var(--room-card);
+  --card-foreground: var(--room-foreground);
+  --popover: var(--room-card);
+  --popover-foreground: var(--room-foreground);
+  --secondary: var(--room-muted);
+  --secondary-foreground: var(--room-foreground);
+  --muted: var(--room-muted);
+  --muted-foreground: var(--room-muted-foreground);
+  --primary: var(--room-primary);
+  --primary-foreground: var(--room-primary-foreground);
+  --accent-ink: var(--room-foreground);
+  --border: var(--room-border);
+  --input: var(--room-border);
+  --ring: var(--room-foreground);
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    -webkit-tap-highlight-color: transparent;
+    text-size-adjust: 100%;
+  }
+  html,
+  body {
+    overflow-x: clip; /* the hero wordmark is cropped at the viewport edge on purpose */
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display text-balance;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    letter-spacing: -0.009em;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  /* Visible, consistent keyboard focus everywhere. */
+  :focus-visible {
+    outline: 1.5px solid var(--ring);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  ::selection {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+}
+
+@utility container-page {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+  @media (width >= 40rem) {
+    padding-inline: 1.5rem;
+  }
+  @media (width >= 64rem) {
+    padding-inline: 2.5rem;
+  }
+}
+
+/* ---------- Motion — modelled on launchdarkly.com ----------
+   Recorded from the live site: widgets rise 120px + fade over 700ms on cubic-bezier(.22,.61,.36,1),
+   staggered, then drift forever; chart lines draw on with a mask; shapes morph on
+   cubic-bezier(.32,.72,0,1) over 350ms; hovers are 300ms colour swaps. Headlines don't do tricks. */
+:root {
+  --ease-ld: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-morph: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Route changes: a plain, quick crossfade (no wipe). */
+::view-transition {
+  pointer-events: none;
+}
+::view-transition-group(.morph) {
+  animation-duration: 500ms;
+  animation-timing-function: var(--ease-ld);
+}
+::view-transition-old(.page-fade) {
+  animation: 180ms ease both wp-fade-out;
+}
+::view-transition-new(.page-fade) {
+  animation: 300ms ease 60ms both wp-fade-in;
+}
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+@keyframes wp-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes wp-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/* Above-the-fold entrances: pure CSS so they start at first paint, before hydration.
+   Stagger with style={{ "--i": n }}; extra offset with --delay. */
+@keyframes wp-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 40px, 0);
+  }
+}
+/* LaunchDarkly widgetFadeSlideIn. */
+@keyframes wp-widget-in {
+  from {
+    opacity: 0;
+    transform: translate3d(var(--entry-x, 0px), var(--entry-y, 120px), 0);
+  }
+}
+/* LaunchDarkly widgetFloat: a slow figure-of-eight drift around the resting spot. */
+@keyframes wp-widget-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  25% {
+    transform: translate3d(calc(var(--float-x, 5px) * var(--float-dir, 1) * 0.6), calc(var(--float-y, 8px) * 0.55), 0);
+  }
+  50% {
+    transform: translate3d(calc(var(--float-x, 5px) * var(--float-dir, 1)), calc(var(--float-y, 8px) * -0.4), 0);
+  }
+  75% {
+    transform: translate3d(calc(var(--float-x, 5px) * var(--float-dir, 1) * -0.5), calc(var(--float-y, 8px) * -0.9), 0);
+  }
+}
+/* LaunchDarkly costLineReveal: the chart line is drawn left → right by growing a mask. */
+@keyframes wp-line-reveal {
+  from {
+    mask-size: 0% 100%;
+  }
+  to {
+    mask-size: 100% 100%;
+  }
+}
+/* LaunchDarkly growFromBottom. */
+@keyframes wp-grow-bar {
+  from {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes wp-pill-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@layer components {
+  .rise {
+    animation: wp-rise 700ms var(--ease-ld) both;
+    animation-delay: calc(var(--delay, 0ms) + var(--i, 0) * 80ms);
+  }
+  /* Kept for older markup: a whole-block fade-rise (no per-word tricks). */
+  .mask {
+    display: inline-block;
+  }
+  .frame-in {
+    animation: wp-rise 700ms var(--ease-ld) both;
+    animation-delay: var(--delay, 0ms);
+  }
+  /* Outer element slides in; the inner one drifts, so the two transforms never fight. */
+  .widget {
+    animation: wp-widget-in 700ms var(--ease-ld) both;
+    animation-delay: var(--delay, 0ms);
+  }
+  .widget > .widget-float {
+    animation: wp-widget-float var(--float-duration, 9s) ease-in-out infinite;
+    animation-delay: calc(var(--delay, 0ms) + 700ms);
+  }
+  .line-reveal {
+    mask-image: linear-gradient(#000, #000);
+    mask-repeat: no-repeat;
+    mask-size: 0% 100%;
+    animation: wp-line-reveal 1000ms linear forwards;
+    animation-delay: var(--delay, 600ms);
+  }
+  .pill-scroll {
+    animation: wp-pill-scroll 22s linear infinite;
+  }
+  .grow-bar {
+    transform-origin: center bottom;
+    animation: wp-grow-bar 800ms var(--ease-ld) both;
+    animation-delay: var(--delay, 0ms);
+  }
+  /* Hold the wall's entrance until it scrolls into view (data-inview is set by WidgetWall). */
+  .widget-wall:not([data-inview]) :is(.widget, .widget-float, .line-reveal, .grow-bar) {
+    animation-play-state: paused;
+  }
+  /* Shape morph — LaunchDarkly's stepper squares and logo cards. */
+  .morph-shape {
+    transition:
+      border-radius 350ms var(--ease-morph),
+      background-color 350ms var(--ease-morph),
+      color 350ms var(--ease-morph),
+      border-color 350ms var(--ease-morph);
+  }
+  /* Pill CTA: filled → outlined on hover, 300ms ease. */
+  .btn-swap {
+    border: 1px solid var(--primary);
+    transition:
+      background-color 300ms ease,
+      color 300ms ease,
+      border-color 300ms ease;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .btn-swap:hover {
+      background-color: transparent;
+      color: var(--foreground);
+      border-color: var(--foreground);
+    }
+  }
+}
+
+@layer components {
+/* ---------- Hexagon: the secondary brand shape (indicators, separators) ---------- */
+.hex {
+  display: inline-block;
+  width: 0.75rem;
+  aspect-ratio: 1;
+  flex-shrink: 0;
+  background: currentColor;
+  clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0 50%);
+}
+.hex-outline {
+  display: inline-block;
+  width: 0.75rem;
+  aspect-ratio: 1;
+  flex-shrink: 0;
+  background: currentColor;
+  clip-path: polygon(
+    evenodd,
+    25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0 50%, 25% 3%,
+    31% 14%, 8% 50%, 31% 86%, 69% 86%, 92% 50%, 69% 14%, 31% 14%
+  );
+}
+
+/* Notched card: corner cuts instead of radius. */
+.notched {
+  --notch: 22px;
+  clip-path: polygon(
+    var(--notch) 0, calc(100% - var(--notch)) 0, 100% var(--notch), 100% calc(100% - var(--notch)),
+    calc(100% - var(--notch)) 100%, var(--notch) 100%, 0 calc(100% - var(--notch)), 0 var(--notch)
+  );
+}
+}
+
+/* Small uppercase museum-label type. */
+@utility label-caps {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  line-height: 1.25;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ---------- Ingredient strike-through ---------- */
+.strike {
+  position: relative;
+}
+.strike::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 55%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 320ms var(--ease-out);
+}
+[data-checked="true"] .strike::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise,
+  .frame-in,
+  .widget {
+    animation-name: wp-fade-in;
+    animation-duration: 300ms;
+  }
+  .widget > .widget-float,
+  .pill-scroll,
+  .grow-bar {
+    animation: none;
+  }
+  .line-reveal {
+    animation: none;
+    mask-size: 100% 100%;
+  }
+  ::view-transition-group(*) {
+    animation-duration: 0.01ms !important;
+  }
+  .strike::after {
+    transition-duration: 0.01ms;
+  }
+}

@@ -53,7 +53,8 @@
     --border-bright: rgb(var(--ink-rgb) / 0.20);
 
     /* ---- gradients ---- */
-    --grad-brand: linear-gradient(135deg, var(--gold) 0%, var(--terracotta) 100%);
+    /* blue → violet → rose, taken from the reference design */
+    --grad-brand: linear-gradient(90deg, #4f5beb 0%, #7c42d6 50%, #e8336b 100%);
     --grad-brand-soft: linear-gradient(135deg, #7c3d1e 0%, #a9602c 52%, #cd9143 100%);
 
     /* ---- text on the dark / photo-backed surfaces (hero, banners,
@@ -65,7 +66,7 @@
     /* ---- elevation — soft warm shadows, not glow ---- */
     --shadow: 0 18px 40px rgba(120, 78, 40, 0.14);
     --shadow-lg: 0 32px 68px rgba(120, 78, 40, 0.20);
-    --glow-terracotta: 0 14px 36px rgba(193, 89, 47, 0.32);
+    --glow-terracotta: 0 14px 36px rgba(124, 66, 214, 0.38);
     --glow-gold: 0 14px 36px rgba(201, 154, 60, 0.28);
 
     --transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
@@ -688,7 +689,7 @@ header .aurora {
 
 .header-content h1 em {
     font-style: normal;
-    background: linear-gradient(100deg, var(--terracotta-deep), var(--terracotta), var(--gold-deep));
+    background: linear-gradient(90deg, #4f5beb, #7c42d6, #e8336b);
     background-size: 250% 100%;
     -webkit-background-clip: text;
     background-clip: text;
@@ -2973,6 +2974,42 @@ body.sh-ground-espresso {
     --sh-ground-rgb: 30 22 18;
     --sh-ground-soft-rgb: 58 43 34;
     --lift: #d2bda9;
+}
+
+/* nightfall — not sampled off a photograph but off a reference
+   screenshot: navy sky top-left, near-black violet through the
+   middle, a crimson glow pooling bottom-right. Sits after the dark
+   palette for the same --lift reason as espresso: the cool
+   blue-grey lift would walk this violet ground off its hue. */
+body.sh-ground-nightfall {
+    --sh-ground-rgb: 18 14 30;
+    --sh-ground-soft-rgb: 38 28 58;
+    --lift: #b9b0d8;
+
+    /* Every section, and body itself, paints var(--bg) solid, which
+       buried the gradient below under one flat colour. Clearing it
+       lets the fixed wash show through the whole page; the fades
+       that run to var(--bg) now fade to the wash instead. */
+    --bg: transparent;
+    background: transparent;
+}
+
+body.sh-ground-nightfall .scroll-hero {
+    background: transparent;
+}
+
+/* No photo to blur here, so the wash is the gradient itself, held
+   at full strength instead of the faint scroll-scrubbed photo. */
+body.sh-ground-nightfall::before {
+    background:
+        radial-gradient(70% 70% at 0% 0%, #142961, transparent 70%),
+        radial-gradient(60% 60% at 0% 55%, #0f1b3b, transparent 70%),
+        radial-gradient(65% 70% at 100% 100%, #4d1425, transparent 70%),
+        radial-gradient(45% 50% at 100% 55%, #341120, transparent 70%),
+        rgb(var(--sh-ground-rgb));
+    opacity: 1;
+    filter: none;
+    transform: none;
 }
 
 /* The aurora is the brand's gold-and-terracotta glow, blended with

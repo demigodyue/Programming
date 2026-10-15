@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>World Plate</title>
+    <meta name="description" content="Opens the static World Plate site in ./site with Live Server." />
+    <style>
+      :root {
+        --putty: #c4c3b6;
+        --ink: #000000;
+        --muted: #45443f;
+        --border: #9f9e92;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --putty: #0b0b0a;
+          --ink: #ffffff;
+          --muted: #b4b3a8;
+          --border: #3a3936;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        display: grid;
+        place-items: center;
+        padding: 24px 16px;
+        background: var(--putty);
+        color: var(--ink);
+        font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        text-align: center;
+      }
+      main { max-width: 520px; }
+      h1 { font: 500 clamp(2.5rem, 9vw, 3.25rem)/1 Georgia, "Times New Roman", serif; letter-spacing: -0.01em; margin: 0 0 16px; }
+      p { margin: 0 0 12px; color: var(--muted); }
+      code {
+        display: inline-block; padding: 2px 8px; border: 1px solid var(--border); border-radius: 2px;
+        color: var(--ink); font: 0.85rem ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      ol { text-align: left; color: var(--muted); padding-left: 1.25rem; margin: 16px auto 0; display: inline-block; }
+      li { margin: 8px 0; }
+      a { color: var(--ink); }
+      [hidden] { display: none; }
+    </style>
+    <script>
+      // Go straight to the static site. If it hasn't been built yet, show how to build it.
+      (function () {
+        fetch("site/index.html", { method: "HEAD", cache: "no-store" })
+          .then(function (r) {
+            if (r.ok) window.location.replace("site/");
+            else throw new Error("missing");
+          })
+          .catch(function () {
+            document.documentElement.dataset.missing = "true";
+            var el = document.getElementById("missing");
+            if (el) el.hidden = false;
+          });
+      })();
+    </script>
+  </head>
+  <body>
+    <main>
+      <h1>World Plate</h1>
+      <noscript><p><a href="site/">Open the site</a></p></noscript>
+      <div id="missing" hidden>
+        <p>The static site hasn’t been built yet.</p>
+        <ol>
+          <li>Open a terminal in <code>cooking/world-plate</code></li>
+          <li>First time only: <code>npm install</code></li>
+          <li>Build it: <code>npm run build</code></li>
+          <li>Reload this page in Live Server.</li>
+        </ol>
+      </div>
+    </main>
+    <script>
+      if (document.documentElement.dataset.missing) document.getElementById("missing").hidden = false;
+    </script>
+  </body>
+</html>
