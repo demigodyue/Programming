@@ -5,6 +5,7 @@ import { Reveal, RevealItem } from "@/components/motion/reveal";
 import { CuisineGrid } from "@/components/sections/cuisine-grid";
 import { DishMarquee } from "@/components/sections/dish-marquee";
 import { Hero } from "@/components/sections/hero";
+import { Manifesto } from "@/components/sections/manifesto";
 import { QuickMeals } from "@/components/sections/quick-meals";
 import { TrendingDishes } from "@/components/sections/trending-dishes";
 import { db } from "@/db/db";
@@ -29,6 +30,7 @@ export default async function HomePage() {
         cuisines={cuisines}
       />
       <DishMarquee items={all.map((r) => r.title)} />
+      <Manifesto recipeCount={all.length} cuisineCount={cuisines.length} />
       <TrendingDishes recipes={trending} />
       <CuisineGrid cuisines={cuisines} />
       <QuickMeals recipes={quick} morphExclude={new Set(trending.map((r) => r.slug))} />

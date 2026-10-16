@@ -3,6 +3,7 @@
 // - <a> → next/link, fixed shadows removed in favour of theme tokens
 // - Structured restyle: full-bleed chalk band, uppercase group labels, cropped serif wordmark at the foot
 import Link from "next/link";
+import { Scramble } from "@/components/motion/scramble";
 import type { ReactNode } from "react";
 
 export interface FooterLink {
@@ -37,7 +38,9 @@ export function Footer1({ logo, description, aside, linkGroups, copyright }: Foo
           <div className="grid flex-1 grid-cols-2 gap-8 sm:grid-cols-3 xl:gap-8">
             {linkGroups.map((group) => (
               <div key={group.title} className="sd-rise space-y-5">
-                <h2 className="label-caps text-muted-foreground">{group.title}</h2>
+                <h2 className="label-caps text-muted-foreground">
+                  <Scramble text={group.title} />
+                </h2>
                 <ul className="space-y-3">
                   {group.links.map((link) => (
                     <li key={link.href}>

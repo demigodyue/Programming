@@ -143,6 +143,11 @@ tests/unit, tests/e2e    Vitest and Playwright
   arrow nudge; mobile menu unrolls (clip-path) with staggered links. Scroll-driven CSS (`animation-timeline`, with
   graceful fallback): `.sd-img` photo settle, `.sd-rise`, `.rule-draw` hairlines, `.sd-hero-out`, `.sd-wordmark`,
   `.scroll-progress`. Image hover zooms use the `scale` property so they compose with `.sd-img`'s `transform`.
+- svz.io scroll transitions (recorded from the live site): the homepage hero is sticky and blurs/dims/shrinks
+  (`.sd-hero-stack`) while the widget panel (rounded top) slides over it; `Manifesto` lights words in reading order
+  from one `--p` variable; `Scramble` flickers labels into place (in view, or on hover for nav links); trending photos
+  drift with `.sd-parallax`; `Cursor` is a trailing dot that swells over links and shows "View" over
+  `[data-cursor='view']` photos (fine pointers, no reduced motion).
 - Animate only `transform` and `opacity` (`clip-path` allowed for reveals; blur only on short hero entrances).
 - `prefers-reduced-motion`: no parallax, floating, Ken Burns or layout morphs — simple opacity fades only.
 - No animation hides or delays content for more than ~1s. Scroll reveals run once.

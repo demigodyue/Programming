@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState, type CSSProperties } from "react";
 import { LogoMark } from "@/components/logo";
 import { cn } from "@/lib/utils";
+import { Scramble } from "@/components/motion/scramble";
 import { ThemeIconToggle } from "@/components/theme-switch";
 import { LazyThemeSwitch } from "@/components/theme-switch-lazy";
 
@@ -98,7 +99,7 @@ export function SiteHeader() {
                 return (
                   <li key={item.href}>
                     <Link href={item.href} aria-current={active ? "page" : undefined} className="link-u relative block py-2 text-[0.8125rem]">
-                      {item.label}
+                      <Scramble text={item.label} onHover duration={450} />
                       {active && (
                         <m.span
                           layoutId="nav-active"

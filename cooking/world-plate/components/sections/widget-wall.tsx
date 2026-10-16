@@ -35,7 +35,7 @@ function Widget({ motion, className, children }: { motion: Motion; className?: s
 function DishWidget({ recipe, motion, className }: { recipe: RecipeCard; motion: Motion; className?: string }) {
   return (
     <Widget motion={motion} className={className}>
-      <Link href={`/recipes/${recipe.slug}`} className="group flex h-full flex-col overflow-hidden rounded-lg">
+      <Link href={`/recipes/${recipe.slug}`} data-cursor="view" className="group flex h-full flex-col overflow-hidden rounded-lg">
         <span className="bg-muted relative block min-h-32 flex-1 overflow-hidden">
           <Image
             src={recipe.image}
@@ -100,7 +100,7 @@ export function WidgetWall({
   const pills = cuisines.map((cu) => cu.name);
 
   return (
-    <section aria-label="A look inside the collection" className="room overflow-hidden py-16 md:py-24">
+    <section aria-label="A look inside the collection" className="room relative z-10 overflow-hidden rounded-t-[28px] py-16 md:rounded-t-[40px] md:py-24">
       <div
         ref={ref}
         data-inview={inView || undefined}

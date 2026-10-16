@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MaskReveal } from "@/components/motion/mask-reveal";
+import { Scramble } from "@/components/motion/scramble";
 import { Reveal, RevealItem } from "@/components/motion/reveal";
 
 /**
@@ -27,8 +28,8 @@ export function SectionHeading({
     <div className="mb-12 md:mb-16">
       {(index || label) && (
         <div className="rule-draw label-caps text-muted-foreground mb-10 flex justify-between pt-4">
-          <span>{index}</span>
-          <span>{label}</span>
+          <span>{index && <Scramble text={index} />}</span>
+          <span>{label && <Scramble text={label} />}</span>
         </div>
       )}
       <h2 id={id} className="text-display mx-auto max-w-[14ch] text-center text-balance">

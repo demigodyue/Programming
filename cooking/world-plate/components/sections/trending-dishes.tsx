@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ViewTransition } from "react";
 import { MaskReveal } from "@/components/motion/mask-reveal";
+import { Scramble } from "@/components/motion/scramble";
 import { Reveal, RevealItem } from "@/components/motion/reveal";
 import { useActiveIndex } from "@/components/motion/use-active-index";
 import { recipeImageTransitionName } from "@/components/recipe/recipe-card";
@@ -25,8 +26,8 @@ export function TrendingDishes({ recipes }: { recipes: RecipeCard[] }) {
   return (
     <section aria-labelledby="trending-title" className="container-page py-24 md:py-32">
       <div className="rule-draw label-caps text-muted-foreground mb-12 flex justify-between pt-4">
-        <span>01</span>
-        <span>This week</span>
+        <Scramble text="01" />
+        <Scramble text="This week" />
       </div>
       <div className="grid gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
         <div className="lg:sticky lg:top-28 lg:self-start">
@@ -86,7 +87,7 @@ export function TrendingDishes({ recipes }: { recipes: RecipeCard[] }) {
                       <ArrowRight className="size-4" strokeWidth={1.5} aria-hidden />
                     </Link>
                   </div>
-                  <Link href={`/recipes/${r.slug}`} tabIndex={-1} aria-hidden className="group bg-muted relative block aspect-[4/3] overflow-hidden rounded-lg">
+                  <Link href={`/recipes/${r.slug}`} tabIndex={-1} aria-hidden data-cursor="view" className="group bg-muted relative block aspect-[4/3] overflow-hidden rounded-lg">
                     <ViewTransition name={recipeImageTransitionName(r.slug)} share="morph" default="none">
                       <span className="absolute inset-0">
                         <Image
@@ -94,7 +95,7 @@ export function TrendingDishes({ recipes }: { recipes: RecipeCard[] }) {
                           alt=""
                           fill
                           sizes="(min-width: 1024px) 34vw, (min-width: 640px) 55vw, 90vw"
-                          className="sd-img group-hover-fine:scale-[1.04] object-cover transition-[scale] duration-500 ease-(--ease-ld)"
+                          className="sd-parallax group-hover-fine:scale-[1.04] object-cover transition-[scale] duration-500 ease-(--ease-ld)"
                         />
                       </span>
                     </ViewTransition>

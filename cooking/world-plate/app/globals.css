@@ -456,6 +456,22 @@
     transform: translate3d(0, -12%, 0) scale(1.06);
   }
 }
+/* svz.io: the hero stays pinned while the next panel slides over it — blurring, dimming, shrinking. */
+@keyframes wp-sd-hero-stack {
+  to {
+    filter: blur(10px) brightness(0.55);
+    transform: scale(0.9);
+  }
+}
+/* svz.io parallax photo: drifts against the scroll inside its frame. */
+@keyframes wp-sd-parallax {
+  from {
+    transform: translate3d(0, -9%, 0) scale(1.2);
+  }
+  to {
+    transform: translate3d(0, 9%, 0) scale(1.2);
+  }
+}
 @keyframes wp-sd-progress {
   from {
     transform: scaleX(0);
@@ -542,6 +558,65 @@
     transform-origin: left center;
   }
 
+  /* svz.io cursor follower (components/motion/cursor.tsx). One 76px disc, scaled per state so
+     only transform/opacity ever animate. `difference` keeps it visible on any surface. */
+  .wp-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 60;
+    display: none;
+    pointer-events: none;
+    mix-blend-mode: difference;
+  }
+  .wp-cursor[data-on] {
+    display: block;
+  }
+  .wp-cursor-dot {
+    display: grid;
+    place-items: center;
+    width: 76px;
+    height: 76px;
+    margin: -38px 0 0 -38px;
+    border-radius: 999px;
+    background: #fff;
+    transform: scale(0.15);
+    transition:
+      transform 450ms var(--ease-ld),
+      opacity 200ms ease;
+  }
+  .wp-cursor[data-state="hover"] .wp-cursor-dot {
+    transform: scale(0.55);
+  }
+  /* Over photos: a solid ink disc with a readable label (no inversion over busy images). */
+  .wp-cursor[data-state="view"] {
+    mix-blend-mode: normal;
+  }
+  .wp-cursor[data-state="view"] .wp-cursor-dot {
+    transform: scale(1);
+    background: var(--foreground);
+  }
+  .wp-cursor[data-state="hidden"] .wp-cursor-dot {
+    opacity: 0;
+  }
+  .wp-cursor-label {
+    color: var(--background);
+    font: 500 0.6875rem/1 var(--font-sans);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+  .wp-cursor[data-state="view"] .wp-cursor-label {
+    opacity: 1;
+  }
+
+  /* svz.io manifesto: words light up in order from one --p (0–1) set by Manifesto. */
+  .manifesto-word {
+    opacity: clamp(0.16, calc(var(--p, 1) * (var(--n) + 6) - var(--i)), 1);
+    transition: opacity 180ms linear;
+  }
+
   /* Scroll-progress hairline under the header. */
   .scroll-progress {
     transform-origin: left center;
@@ -585,6 +660,16 @@
     .scroll-progress {
       animation: wp-sd-progress linear both;
       animation-timeline: scroll(root);
+    }
+    .sd-hero-stack {
+      transform-origin: 50% 30%;
+      animation: wp-sd-hero-stack linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 100vh;
+    }
+    .sd-parallax {
+      animation: wp-sd-parallax linear both;
+      animation-timeline: view();
     }
   }
 }
@@ -653,6 +738,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .manifesto-word {
+    opacity: 1;
+  }
   .drop-in,
   .slide-in,
   .letter,

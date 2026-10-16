@@ -44,7 +44,7 @@ export function RecipeCard({ recipe, morph = true, sizes, className, eager, head
   return (
     <article className={cn("group relative h-full", className)}>
       <div className="bg-card text-card-foreground group-hover-fine:-translate-y-1.5 relative flex h-full flex-col overflow-hidden rounded-lg border transition-[translate] duration-500 ease-(--ease-ld) group-has-focus-visible:outline-ring group-has-focus-visible:outline-2 group-has-focus-visible:outline-offset-2">
-        <div className="bg-muted relative aspect-[4/3] overflow-hidden">
+        <div data-cursor="view" className="bg-muted relative aspect-[4/3] overflow-hidden">
           {morph ? (
             <ViewTransition name={recipeImageTransitionName(recipe.slug)} share="morph" default="none">
               <div className="absolute inset-0">{image}</div>

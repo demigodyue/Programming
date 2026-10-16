@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Instrument_Sans } from "next/font/google";
 import { preconnect } from "react-dom";
+import { Cursor } from "@/components/motion/cursor";
 import { LenisProvider } from "@/components/motion/lenis-provider";
 import { MotionProvider } from "@/components/motion/motion-provider";
 import { SiteFooter } from "@/components/sections/site-footer";
@@ -57,6 +58,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             Skip to content
           </a>
           <LenisProvider />
+          <Cursor />
           <SiteHeader />
           <main id="main" className="flex-1">
             {children}

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { CountUp } from "@/components/motion/count-up";
+import { Scramble } from "@/components/motion/scramble";
 import type { CuisineSummary } from "@/db/queries/cuisines";
 import type { RecipeCard } from "@/db/queries/recipes";
 import { WidgetWall } from "./widget-wall";
@@ -9,8 +10,9 @@ const WORDMARK = "World Plate";
 
 /**
  * Gallery-wall hero with LaunchDarkly's motion: labels slide in from their corners, the headline
- * rises line by line, the counts tick up and the wordmark rises letter by letter. Scrolling away
- * makes the copy recede and the wordmark lift; then the floating widget wall rises in below.
+ * rises line by line, the counts tick up and the wordmark rises letter by letter. Then, as on
+ * svz.io, the hero stays pinned while the widget panel slides up over it (rounded top corners)
+ * and the hero blurs, dims and shrinks behind it.
  */
 export function Hero({
   recipeCount,
@@ -26,18 +28,19 @@ export function Hero({
   cuisines: CuisineSummary[];
 }) {
   return (
-    <>
-      <section aria-labelledby="hero-title" className="relative flex min-h-[92svh] flex-col overflow-hidden">
+    // The wrapper bounds the sticky hero, so it only stays pinned until the widget panel has covered it.
+    <div className="relative">
+      <section aria-labelledby="hero-title" className="sd-hero-stack sticky top-0 z-0 flex min-h-[100svh] flex-col overflow-hidden">
         <div className="container-page label-caps text-muted-foreground flex justify-between overflow-hidden pt-24">
           <span className="slide-in" style={{ "--from-x": "-40px" } as CSSProperties}>
-            A kitchen atlas
+            <Scramble text="A kitchen atlas" duration={900} />
           </span>
           <span className="slide-in" style={{ "--from-x": "40px" } as CSSProperties}>
-            Recipes and their stories
+            <Scramble text="Recipes and their stories" duration={900} />
           </span>
         </div>
 
-        <div className="sd-hero-out container-page flex flex-1 flex-col items-center justify-center py-14 text-center">
+        <div className="container-page flex flex-1 flex-col items-center justify-center py-14 text-center">
           <h1 id="hero-title" className="max-w-[16ch] text-[clamp(2.4rem,6vw,3.25rem)] leading-none">
             {/* Two lines rise one after the other. */}
             <span className="rise block" style={{ "--i": 0 } as CSSProperties}>
@@ -78,7 +81,7 @@ export function Hero({
         {/* The wordmark is the brand: larger than the screen, cropped at the edges and the floor. */}
         <p
           aria-hidden
-          className="sd-wordmark font-display -mb-[0.16em] origin-bottom text-center text-[19.5vw] leading-[0.84] font-medium tracking-[-0.03em] whitespace-nowrap select-none"
+          className="font-display -mb-[0.16em] origin-bottom text-center text-[19.5vw] leading-[0.84] font-medium tracking-[-0.03em] whitespace-nowrap select-none"
         >
           {Array.from(WORDMARK).map((ch, i) => (
             <span key={i} className="letter" style={{ "--i": i, "--delay": "350ms" } as CSSProperties}>
@@ -89,6 +92,6 @@ export function Hero({
       </section>
 
       <WidgetWall recipes={recipes} allMinutes={allMinutes} cuisines={cuisines} />
-    </>
+    </div>
   );
 }
