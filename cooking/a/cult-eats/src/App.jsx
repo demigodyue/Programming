@@ -185,7 +185,7 @@ const INITIAL_DISHES = [
     tagline: 'CRUNCHY HERB FRITTERS DROWNING IN TAHINI & HARISSA',
     story: 'The undisputed crown jewel of Rue des Rosiers in Paris. Overstuffed pillowy pita layered in strict architectural order: pickled purple cabbage, silky fried eggplant, emerald-green herb falafel balls, golden tahini, and fiery red Yemenite zhoug.',
     secretTrick: 'Never use canned chickpeas. Soak dried chickpeas for 18 hours with a pinch of baking soda and pulse raw with parsley, cilantro, and garlic so the center stays neon green and fluffy while the crust shatters.',
-    image: 'https://images.unsplash.com/photo-1593001874117-c99c800e3eb7?auto=format&fit=crop&w=1000&q=85',
+    image: 'https://images.unsplash.com/photo-1593001872095-7d5b3868fb1d?auto=format&fit=crop&w=1000&q=85',
     maskShape: 'mask-blob-3',
     featured: false,
     ingredients: [
@@ -895,170 +895,20 @@ export default function App() {
   const savedCount = Object.keys(savedVault).length;
 
   return (
-    <div className="min-h-screen bg-[#260212] text-[#ffffff] selection:bg-[#e10600] selection:text-[#ffffff] overflow-x-hidden relative font-body">
-      {/* ==========================================
-          GOOGLE FONTS & STRICT IMPOSSIBLE DESIGN TOKENS
-          ========================================== */}
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
-
-        :root {
-          --color-velvet-wine: #260212;
-          --color-burgundy-stage: #4f0423;
-          --color-impossible-red: #e10600;
-          --color-blush-highlight: #ffc7c6;
-          --color-butcher-black: #000000;
-          --color-bone-white: #ffffff;
-        }
-
-        .font-meat {
-          font-family: 'Anton', 'Barlow Condensed', Impact, sans-serif;
-          text-transform: uppercase;
-        }
-
-        .font-ui-meat {
-          font-family: 'Barlow Condensed', 'Inter', sans-serif;
-          text-transform: uppercase;
-          letter-spacing: 0.03em;
-        }
-
-        .font-body {
-          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-
-        /* Massive Impossible Display Scale: line-height 0.75, positive tracking 0.05em */
-        .display-hero {
-          font-family: 'Anton', 'Barlow Condensed', sans-serif;
-          font-size: clamp(68px, 13.5vw, 195px);
-          line-height: 0.78;
-          letter-spacing: 0.04em;
-          color: #e10600;
-          text-transform: uppercase;
-        }
-
-        .display-section {
-          font-family: 'Anton', 'Barlow Condensed', sans-serif;
-          font-size: clamp(54px, 9.5vw, 132px);
-          line-height: 0.78;
-          letter-spacing: 0.035em;
-          color: #e10600;
-          text-transform: uppercase;
-        }
-
-        /* Rough Asymmetric Organic Mask-Cut Food Shapes (Zero Circles/Rectangles) */
-        .mask-blob-1 {
-          clip-path: polygon(12% 3%, 84% 0%, 100% 28%, 92% 79%, 66% 100%, 18% 94%, 0% 62%, 4% 22%);
-        }
-        .mask-blob-2 {
-          clip-path: polygon(24% 0%, 91% 9%, 100% 48%, 83% 93%, 39% 100%, 4% 82%, 0% 35%);
-        }
-        .mask-blob-3 {
-          clip-path: polygon(8% 14%, 68% 0%, 97% 19%, 100% 69%, 74% 100%, 19% 92%, 0% 51%);
-        }
-        .mask-blob-4 {
-          clip-path: polygon(19% 0%, 82% 5%, 100% 38%, 89% 88%, 48% 100%, 7% 86%, 0% 41%);
-        }
-
-        /* Kinetic Slam Text Entrance */
-        @keyframes slamReveal {
-          0% {
-            transform: translateY(36px) scaleY(1.12);
-            opacity: 0;
-          }
-          100% {
-            transform: translateY(0) scaleY(1);
-            opacity: 1;
-          }
-        }
-        .animate-slam {
-          animation: slamReveal 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        /* High-Contrast Flat Button Micro-Interaction (No Shadows/Gradients) */
-        .btn-primary-impossible {
-          background-color: #e10600;
-          color: #ffffff;
-          border: 1px solid #000000;
-          border-radius: 15px;
-          padding: 10px 16px;
-          font-family: 'Barlow Condensed', sans-serif;
-          font-weight: 700;
-          font-size: 15px;
-          letter-spacing: 0.04em;
-          text-transform: uppercase;
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          transition: transform 0.12s ease, background-color 0.12s ease, color 0.12s ease;
-        }
-        .btn-primary-impossible:hover {
-          background-color: #ffffff;
-          color: #000000;
-          transform: translate(2px, -2px);
-        }
-
-        .btn-ghost-impossible {
-          background-color: transparent;
-          color: #ffffff;
-          border: 1px solid #ffffff;
-          border-radius: 15px;
-          padding: 10px 16px;
-          font-family: 'Barlow Condensed', sans-serif;
-          font-weight: 700;
-          font-size: 15px;
-          letter-spacing: 0.04em;
-          text-transform: uppercase;
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          transition: transform 0.12s ease, background-color 0.12s ease, color 0.12s ease, border-color 0.12s ease;
-        }
-        .btn-ghost-impossible:hover {
-          background-color: #ffc7c6;
-          color: #000000;
-          border-color: #000000;
-          transform: translate(2px, -2px);
-        }
-
-        /* Filter Pill Toggle (15px radius) */
-        .pill-toggle {
-          border-radius: 15px;
-          padding: 10px 16px;
-          font-family: 'Barlow Condensed', sans-serif;
-          font-weight: 700;
-          font-size: 16px;
-          letter-spacing: 0.03em;
-          text-transform: uppercase;
-          transition: all 0.15s ease;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-          width: 8px;
-          height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-          background: #260212;
-        }
-        ::-webkit-scrollbar-thumb {
-          background: #e10600;
-          border: 1px solid #000000;
-        }
-      `}</style>
-
+    <div className="min-h-screen bg-velvet-wine text-bone-white selection:bg-impossible-red selection:text-bone-white overflow-x-hidden relative font-body">
       {/* ==========================================
           FULL-SCREEN BUTCHER CURTAIN PAGE TRANSITION
           ========================================== */}
       {isTransitioning && (
         <div className="fixed inset-0 z-[100] pointer-events-none flex flex-col">
-          <div className="flex-1 bg-[#e10600] border-b border-[#000000] flex items-center justify-center overflow-hidden">
-            <div className="bg-[#000000] text-[#ffffff] px-8 py-4 rounded-[15px] border border-[#ffffff]">
-              <span className="font-meat text-5xl md:text-8xl tracking-wider text-[#e10600] block leading-none">
+          <div className="flex-1 bg-impossible-red border-b border-butcher-black flex items-center justify-center overflow-hidden">
+            <div className="bg-butcher-black text-bone-white px-8 py-4 rounded-xl-2 border border-bone-white">
+              <span className="font-meat text-5xl md:text-8xl tracking-wider text-impossible-red block leading-none">
                 ◂ {transitionLabel} ▸
               </span>
             </div>
           </div>
-          <div className="h-24 bg-[#000000] flex items-center justify-between px-8 text-[#ffc7c6] font-ui-meat text-sm tracking-widest">
+          <div className="h-24 bg-butcher-black flex items-center justify-between px-8 text-blush-highlight font-ui-meat text-sm tracking-widest">
             <span>ZERO GATEKEEPING MANIFESTO</span>
             <span>WORLD FAMOUS STREET CONTRABAND</span>
             <span>100% AUTHENTIC FORMULA</span>
@@ -1070,8 +920,8 @@ export default function App() {
           PUNK POSTER TOAST NOTIFICATION
           ========================================== */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-[90] bg-[#e10600] text-[#ffffff] border border-[#000000] rounded-[15px] px-5 py-3 flex items-center gap-3 animate-slam">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#000000] inline-block" />
+        <div className="fixed bottom-6 right-6 z-[90] bg-impossible-red text-bone-white border border-butcher-black rounded-xl-2 px-5 py-3 flex items-center gap-3 animate-slam">
+          <span className="w-2.5 h-2.5 rounded-full bg-butcher-black inline-block" />
           <span className="font-ui-meat font-bold text-base tracking-wider">{toastMessage}</span>
         </div>
       )}
@@ -1079,11 +929,11 @@ export default function App() {
       {/* ==========================================
           STICKY TOP NAVIGATION (#000000 BAR)
           ========================================== */}
-      <header className="sticky top-0 z-50 w-full bg-[#000000] border-b border-[#4f0423] px-4 md:px-8 h-16 flex items-center justify-between">
+      <header className="sticky top-0 z-50 w-full bg-butcher-black px-4 md:px-8 h-16 flex items-center justify-between">
         {/* Left Brand Mark in White Pill */}
         <button
           onClick={() => navigateWithCurtain('HOME', 'CULT EATS')}
-          className="bg-[#ffffff] text-[#e10600] px-3.5 py-1 rounded-[15px] font-meat text-xl tracking-tight hover:bg-[#ffc7c6] transition-colors flex items-center gap-1.5"
+          className="bg-bone-white text-impossible-red px-3.5 py-1 rounded-xl-2 font-meat text-xl tracking-tight whitespace-nowrap shrink-0 hover:bg-blush-highlight transition-colors flex items-center gap-1.5"
         >
           <span>CULT EATS</span>
         </button>
@@ -1103,11 +953,11 @@ export default function App() {
                 key={navItem.id}
                 onClick={() => navigateWithCurtain(navItem.id, navItem.label)}
                 className={`font-ui-meat text-base font-bold tracking-wider flex items-center gap-1.5 transition-colors ${
-                  isActive ? 'text-[#e10600]' : 'text-[#ffffff] hover:text-[#ffc7c6]'
+                  isActive ? 'text-impossible-red' : 'text-bone-white hover:text-blush-highlight'
                 }`}
               >
                 <span>{navItem.label}</span>
-                <span className="text-xs text-[#e10600]">▾</span>
+                <span className="text-xs text-impossible-red">▾</span>
               </button>
             );
           })}
@@ -1120,9 +970,9 @@ export default function App() {
             className="btn-ghost-impossible !py-1.5 !px-3 text-xs sm:text-sm"
             title="Saved Recipes Vault"
           >
-            <Bookmark className="w-3.5 h-3.5 text-[#e10600] fill-[#e10600]" />
+            <Bookmark className="w-3.5 h-3.5 text-impossible-red fill-impossible-red" />
             <span className="hidden sm:inline">VAULT</span>
-            <span className="bg-[#4f0423] text-[#ffffff] px-1.5 py-0.5 rounded-full text-xs">
+            <span className="bg-burgundy-stage text-bone-white px-1.5 py-0.5 rounded-full text-xs">
               {savedCount}
             </span>
           </button>
@@ -1130,9 +980,10 @@ export default function App() {
           <button
             onClick={() => setShowAuthModal(true)}
             className="btn-ghost-impossible !py-1.5 !px-3 text-xs sm:text-sm"
+            aria-label={chefAlias ? chefAlias : 'Chef login'}
           >
-            <User className="w-3.5 h-3.5 text-[#ffc7c6]" />
-            <span>{chefAlias ? chefAlias : 'CHEF LOGIN'}</span>
+            <User className="w-3.5 h-3.5 text-blush-highlight" />
+            <span className="hidden sm:inline">{chefAlias ? chefAlias : 'CHEF LOGIN'}</span>
           </button>
 
           <button
@@ -1146,7 +997,7 @@ export default function App() {
       </header>
 
       {/* Mobile Sub-Navigation Bar */}
-      <div className="lg:hidden bg-[#000000] border-b border-[#4f0423] px-3 py-2 flex items-center justify-center gap-2 overflow-x-auto">
+      <div className="lg:hidden bg-butcher-black px-3 py-2 flex items-center justify-center gap-2 overflow-x-auto">
         {[
           { id: 'HOME', label: 'HOME' },
           { id: 'ATLAS', label: 'ATLAS' },
@@ -1157,10 +1008,10 @@ export default function App() {
           <button
             key={item.id}
             onClick={() => navigateWithCurtain(item.id, item.label)}
-            className={`px-3 py-1 rounded-[15px] font-ui-meat text-xs font-bold whitespace-nowrap ${
+            className={`px-3 py-1 rounded-xl-2 font-ui-meat text-xs font-bold whitespace-nowrap ${
               activePage === item.id
-                ? 'bg-[#e10600] text-[#ffffff]'
-                : 'bg-[#4f0423] text-[#ffc7c6]'
+                ? 'bg-impossible-red text-bone-white'
+                : 'bg-burgundy-stage text-blush-highlight'
             }`}
           >
             {item.label}
@@ -1188,7 +1039,7 @@ export default function App() {
                 alt={INITIAL_DISHES[0].name}
                 className="w-full h-full object-cover mask-blob-1 saturate-150 contrast-125 group-hover:scale-105 transition-transform"
               />
-              <span className="absolute bottom-2 left-4 bg-[#000000] text-[#ffc7c6] font-ui-meat text-xs px-2.5 py-0.5 rounded-[15px] border border-[#e10600]">
+              <span className="absolute bottom-2 left-4 bg-butcher-black text-blush-highlight font-ui-meat text-xs px-2.5 py-0.5 rounded-xl-2 border border-impossible-red">
                 BANGKOK • CRAB OMELETTE ▸
               </span>
             </div>
@@ -1206,7 +1057,7 @@ export default function App() {
                 alt={INITIAL_DISHES[1].name}
                 className="w-full h-full object-cover mask-blob-2 saturate-150 contrast-125 group-hover:scale-105 transition-transform"
               />
-              <span className="absolute bottom-2 right-4 bg-[#000000] text-[#ffc7c6] font-ui-meat text-xs px-2.5 py-0.5 rounded-[15px] border border-[#e10600]">
+              <span className="absolute bottom-2 right-4 bg-butcher-black text-blush-highlight font-ui-meat text-xs px-2.5 py-0.5 rounded-xl-2 border border-impossible-red">
                 NYC • ADOBADA TACO ▸
               </span>
             </div>
@@ -1224,7 +1075,7 @@ export default function App() {
                 alt={INITIAL_DISHES[4].name}
                 className="w-full h-full object-cover mask-blob-3 saturate-150 contrast-125 group-hover:scale-105 transition-transform"
               />
-              <span className="absolute top-2 left-4 bg-[#000000] text-[#ffc7c6] font-ui-meat text-xs px-2.5 py-0.5 rounded-[15px] border border-[#e10600]">
+              <span className="absolute top-2 left-4 bg-butcher-black text-blush-highlight font-ui-meat text-xs px-2.5 py-0.5 rounded-xl-2 border border-impossible-red">
                 NAPLES • DA MICHELE ▸
               </span>
             </div>
@@ -1242,14 +1093,14 @@ export default function App() {
                 alt={INITIAL_DISHES[7].name}
                 className="w-full h-full object-cover mask-blob-4 saturate-150 contrast-125 group-hover:scale-105 transition-transform"
               />
-              <span className="absolute top-2 right-4 bg-[#000000] text-[#ffc7c6] font-ui-meat text-xs px-2.5 py-0.5 rounded-[15px] border border-[#e10600]">
+              <span className="absolute top-2 right-4 bg-butcher-black text-blush-highlight font-ui-meat text-xs px-2.5 py-0.5 rounded-xl-2 border border-impossible-red">
                 MUMBAI • VADA PAV ▸
               </span>
             </div>
 
             {/* CENTERED HERO DISPLAY STACK */}
             <div className="relative z-20 flex flex-col items-center text-center max-w-5xl mx-auto animate-slam">
-              <div className="font-ui-meat text-[#e10600] text-sm md:text-lg font-bold tracking-[0.06em] mb-4">
+              <div className="font-ui-meat text-impossible-red text-sm md:text-lg font-bold tracking-[0.06em] mb-4">
                 ◂ WORLD FAMOUS STREET CONTRABAND ▸
               </div>
 
@@ -1258,7 +1109,7 @@ export default function App() {
                 <span className="block text-[0.72em] mt-2">(FROM FAMOUS PLACES)</span>
               </h1>
 
-              <p className="mt-6 max-w-xl text-[#ffc7c6] text-base md:text-lg font-medium leading-snug">
+              <p className="mt-6 max-w-xl text-blush-highlight text-base md:text-lg font-medium leading-snug">
                 Skip the 4-hour cobblestone queue. We reverse-engineered the exact recipes, wok temperatures, and secret ratios from the planet’s most guarded street stalls.
               </p>
 
@@ -1275,7 +1126,7 @@ export default function App() {
                   onClick={() => navigateWithCurtain('ATLAS', 'WORLD TOUR ATLAS')}
                   className="btn-ghost-impossible text-base px-6 py-3"
                 >
-                  <MapPin className="w-4 h-4 text-[#e10600]" />
+                  <MapPin className="w-4 h-4 text-impossible-red" />
                   <span>EXPLORE FAMOUS PLACES</span>
                 </button>
               </div>
@@ -1304,7 +1155,7 @@ export default function App() {
               ========================================================= */}
           <section className="max-w-[1280px] mx-auto px-4 md:px-8 py-12">
             <div className="text-center mb-8">
-              <p className="font-ui-meat text-[#e10600] text-sm md:text-base font-bold tracking-widest mb-2">
+              <p className="font-ui-meat text-impossible-red text-sm md:text-base font-bold tracking-widest mb-2">
                 ◂ PICK YOUR CONTINENT OF ORIGIN ▸
               </p>
               <h2 className="display-section">
@@ -1323,19 +1174,19 @@ export default function App() {
                     key={region}
                     onClick={() => setActiveRegionTab(region)}
                     className={`group flex items-center gap-2.5 pb-2 border-b-4 transition-all ${
-                      isActive ? 'border-[#e10600]' : 'border-transparent'
+                      isActive ? 'border-impossible-red' : 'border-transparent'
                     }`}
                   >
                     <span
                       className={`font-ui-meat text-xl md:text-2xl font-bold tracking-wider ${
-                        isActive ? 'text-[#ffffff]' : 'text-[#ffc7c6] group-hover:text-[#ffffff]'
+                        isActive ? 'text-bone-white' : 'text-blush-highlight group-hover:text-bone-white'
                       }`}
                     >
                       {region}
                     </span>
                     <span
-                      className={`w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center border border-[#000000] ${
-                        isActive ? 'bg-[#e10600] text-[#ffffff]' : 'bg-[#4f0423] text-[#ffffff]'
+                      className={`w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center border border-butcher-black ${
+                        isActive ? 'bg-impossible-red text-bone-white' : 'bg-burgundy-stage text-bone-white'
                       }`}
                     >
                       {count}
@@ -1354,31 +1205,31 @@ export default function App() {
                     <div
                       key={dish.id}
                       onClick={() => navigateWithCurtain('RECIPE_LAB', dish.name, dish)}
-                      className="bg-[#4f0423] border border-[#000000] rounded-[12px] overflow-hidden flex flex-col justify-between cursor-pointer group transition-transform duration-150 hover:-translate-y-1"
+                      className="bg-burgundy-stage border border-butcher-black rounded-xl overflow-hidden flex flex-col justify-between cursor-pointer group transition-transform duration-150 hover:-translate-y-1"
                     >
                       {/* Top 60% Edge-to-Edge Packaging/Dish Photo */}
-                      <div className="relative h-64 w-full bg-[#000000] overflow-hidden border-b border-[#000000]">
+                      <div className="relative h-64 w-full bg-butcher-black overflow-hidden border-b border-butcher-black">
                         <img
                           src={dish.image}
                           alt={dish.name}
                           className="w-full h-full object-cover saturate-125 group-hover:scale-105 transition-transform duration-300"
                         />
-                        <div className="absolute top-3 left-3 bg-[#000000] text-[#ffffff] px-3 py-1 rounded-[15px] font-ui-meat text-xs font-bold tracking-wider flex items-center gap-1.5">
-                          <MapPin className="w-3 h-3 text-[#e10600]" />
+                        <div className="absolute top-3 left-3 bg-butcher-black text-bone-white px-3 py-1 rounded-xl-2 font-ui-meat text-xs font-bold tracking-wider flex items-center gap-1.5">
+                          <MapPin className="w-3 h-3 text-impossible-red" />
                           <span>{dish.city}</span>
                         </div>
                         <button
                           onClick={(e) => toggleSaveDish(dish, e)}
-                          className={`absolute top-3 right-3 px-3 py-1 rounded-[15px] border border-[#000000] font-ui-meat text-xs font-bold flex items-center gap-1 transition-colors ${
+                          className={`absolute top-3 right-3 px-3 py-1 rounded-xl-2 border border-butcher-black font-ui-meat text-xs font-bold flex items-center gap-1 transition-colors ${
                             isSaved
-                              ? 'bg-[#e10600] text-[#ffffff]'
-                              : 'bg-[#000000] text-[#ffc7c6] hover:bg-[#e10600] hover:text-[#ffffff]'
+                              ? 'bg-impossible-red text-bone-white'
+                              : 'bg-butcher-black text-blush-highlight hover:bg-impossible-red hover:text-bone-white'
                           }`}
                         >
-                          <Heart className={`w-3.5 h-3.5 ${isSaved ? 'fill-[#ffffff]' : ''}`} />
+                          <Heart className={`w-3.5 h-3.5 ${isSaved ? 'fill-bone-white' : ''}`} />
                           <span>{isSaved ? 'SAVED' : 'SAVE'}</span>
                         </button>
-                        <div className="absolute bottom-3 left-3 bg-[#e10600] text-[#ffffff] border border-[#000000] px-2.5 py-0.5 rounded-[15px] font-ui-meat text-xs font-bold">
+                        <div className="absolute bottom-3 left-3 bg-impossible-red text-bone-white border border-butcher-black px-2.5 py-0.5 rounded-xl-2 font-ui-meat text-xs font-bold">
                           REAL LINE: {dish.waitTimeRealLife} → HOME: {dish.cookTimeHome}
                         </div>
                       </div>
@@ -1386,19 +1237,19 @@ export default function App() {
                       {/* Card Body */}
                       <div className="p-5 flex-1 flex flex-col justify-between">
                         <div>
-                          <div className="text-xs font-ui-meat text-[#ffc7c6] tracking-widest mb-1">
+                          <div className="text-xs font-ui-meat text-blush-highlight tracking-widest mb-1">
                             {dish.spotName}
                           </div>
-                          <h3 className="font-meat text-3xl text-[#ffc7c6] group-hover:text-[#ffffff] tracking-wide leading-none">
-                            {dish.name} <span className="text-[#e10600] block text-xl mt-1">{dish.parenthetical}</span>
+                          <h3 className="font-meat text-3xl text-blush-highlight group-hover:text-bone-white tracking-wide leading-none">
+                            {dish.name} <span className="text-impossible-red block text-xl mt-1">{dish.parenthetical}</span>
                           </h3>
-                          <p className="mt-3 text-sm text-[#ffffff] line-clamp-2 leading-relaxed">
+                          <p className="mt-3 text-sm text-bone-white line-clamp-2 leading-relaxed">
                             {dish.story}
                           </p>
                         </div>
 
                         {/* Two CTAs Side by Side (LEARN MORE filled + FIND IT ghost) */}
-                        <div className="mt-5 pt-4 border-t border-[#260212] flex items-center gap-2.5">
+                        <div className="mt-5 pt-4 border-t border-velvet-wine flex items-center gap-2.5">
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -1417,7 +1268,7 @@ export default function App() {
                             }}
                             className="btn-ghost-impossible justify-center"
                           >
-                            <MapPin className="w-3.5 h-3.5 text-[#e10600]" />
+                            <MapPin className="w-3.5 h-3.5 text-impossible-red" />
                             <span>FIND IT</span>
                           </button>
                         </div>
@@ -1434,8 +1285,8 @@ export default function App() {
                     key={r}
                     onClick={() => setActiveRegionTab(r)}
                     aria-label={`Select ${r}`}
-                    className={`h-3 rounded-full border border-[#000000] transition-all ${
-                      activeRegionTab === r ? 'w-10 bg-[#e10600]' : 'w-3 bg-[#4f0423]'
+                    className={`h-3 rounded-full border border-butcher-black transition-all ${
+                      activeRegionTab === r ? 'w-10 bg-impossible-red' : 'w-3 bg-burgundy-stage'
                     }`}
                   />
                 ))}
@@ -1447,20 +1298,20 @@ export default function App() {
               PROMINENT 38PX-RADIUS FEATURE SPOTLIGHT CARD
               ========================================================= */}
           <section className="max-w-[1280px] mx-auto px-4 md:px-8 py-12">
-            <div className="bg-[#4f0423] border-2 border-[#000000] rounded-[38px] p-6 md:p-12 overflow-hidden relative">
+            <div className="bg-burgundy-stage border-2 border-butcher-black rounded-3xl p-6 md:p-12 overflow-hidden relative">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                 <div className="lg:col-span-7 space-y-5">
-                  <div className="inline-flex items-center gap-2 bg-[#000000] text-[#e10600] px-4 py-1.5 rounded-[15px] font-ui-meat text-sm font-bold">
+                  <div className="inline-flex items-center gap-2 bg-butcher-black text-impossible-red px-4 py-1.5 rounded-xl-2 font-ui-meat text-sm font-bold">
                     <span>◂ LEGEND OF THE WEEK SPOTLIGHT ▸</span>
                   </div>
 
-                  <h2 className="display-section !text-[#ffffff]">
-                    <span className="block text-[#e10600]">JAY FAI</span>
+                  <h2 className="display-section !text-bone-white">
+                    <span className="block text-impossible-red">JAY FAI</span>
                     <span className="block">CRAB OMELETTE</span>
-                    <span className="block text-[0.55em] text-[#ffc7c6] mt-2">(MICHELIN STREET STALL • BANGKOK)</span>
+                    <span className="block text-[0.55em] text-blush-highlight mt-2">(MICHELIN STREET STALL • BANGKOK)</span>
                   </h2>
 
-                  <p className="text-[#ffffff] text-base md:text-lg leading-relaxed max-w-2xl">
+                  <p className="text-bone-white text-base md:text-lg leading-relaxed max-w-2xl">
                     People fly across the globe and wait 4.5 hours on Maha Chai Road just to taste Supinya Junsuta’s charcoal-fired crab omelette. We broke down the exact rice-flour slurry and 400°F oil pour height so you can pull it off in 18 minutes tonight.
                   </p>
 
@@ -1478,7 +1329,7 @@ export default function App() {
                     >
                       <Heart
                         className={`w-4 h-4 ${
-                          savedVault[INITIAL_DISHES[0].id] ? 'fill-[#e10600] text-[#e10600]' : 'text-[#ffffff]'
+                          savedVault[INITIAL_DISHES[0].id] ? 'fill-impossible-red text-impossible-red' : 'text-bone-white'
                         }`}
                       />
                       <span>
@@ -1496,8 +1347,8 @@ export default function App() {
                       alt="Jay Fai Crab Omelette"
                       className="w-full h-full object-cover mask-blob-1 saturate-150"
                     />
-                    <div className="absolute -bottom-3 right-2 bg-[#000000] text-[#ffffff] border border-[#e10600] rounded-[15px] px-4 py-2 font-ui-meat text-sm">
-                      <span className="text-[#e10600] font-bold">SECRET RATIO:</span> 250G LUMP CRAB / 4 DUCK EGGS
+                    <div className="absolute -bottom-3 right-2 bg-butcher-black text-bone-white border border-impossible-red rounded-xl-2 px-4 py-2 font-ui-meat text-sm">
+                      <span className="text-impossible-red font-bold">SECRET RATIO:</span> 250G LUMP CRAB / 4 DUCK EGGS
                     </div>
                   </div>
                 </div>
@@ -1510,7 +1361,7 @@ export default function App() {
               ========================================================= */}
           <section className="max-w-[1280px] mx-auto px-4 md:px-8 py-14">
             <div className="text-center mb-12">
-              <div className="font-ui-meat text-[#e10600] text-sm md:text-base font-bold tracking-[0.05em] mb-3">
+              <div className="font-ui-meat text-impossible-red text-sm md:text-base font-bold tracking-[0.05em] mb-3">
                 ◂ FLEX ON EVERYONE AT ▸
               </div>
               <h2 className="display-section">
@@ -1527,44 +1378,44 @@ export default function App() {
                   <div
                     key={dish.id}
                     onClick={() => navigateWithCurtain('RECIPE_LAB', dish.name, dish)}
-                    className="bg-[#4f0423] border border-[#000000] rounded-[12px] p-4 flex flex-col justify-between cursor-pointer group hover:bg-[#000000] transition-colors"
+                    className="bg-burgundy-stage border border-butcher-black rounded-xl p-4 flex flex-col justify-between cursor-pointer group hover:bg-butcher-black transition-colors"
                   >
                     <div>
-                      <div className="relative h-44 w-full rounded-[8px] overflow-hidden border border-[#000000] mb-4">
+                      <div className="relative h-44 w-full rounded-[8px] overflow-hidden border border-butcher-black mb-4">
                         <img
                           src={dish.image}
                           alt={dish.name}
                           className="w-full h-full object-cover saturate-125 group-hover:scale-105 transition-transform"
                         />
-                        <span className="absolute top-2 left-2 bg-[#000000] text-[#ffc7c6] px-2.5 py-0.5 rounded-[15px] font-ui-meat text-xs font-bold">
+                        <span className="absolute top-2 left-2 bg-butcher-black text-blush-highlight px-2.5 py-0.5 rounded-xl-2 font-ui-meat text-xs font-bold">
                           {dish.city}
                         </span>
                         <button
                           onClick={(e) => toggleSaveDish(dish, e)}
-                          className={`absolute top-2 right-2 w-8 h-8 rounded-full border border-[#000000] flex items-center justify-center ${
-                            isSaved ? 'bg-[#e10600] text-[#ffffff]' : 'bg-[#000000] text-[#ffffff]'
+                          className={`absolute top-2 right-2 w-8 h-8 rounded-full border border-butcher-black flex items-center justify-center ${
+                            isSaved ? 'bg-impossible-red text-bone-white' : 'bg-butcher-black text-bone-white'
                           }`}
                         >
-                          <Heart className={`w-4 h-4 ${isSaved ? 'fill-[#ffffff]' : ''}`} />
+                          <Heart className={`w-4 h-4 ${isSaved ? 'fill-bone-white' : ''}`} />
                         </button>
                       </div>
 
-                      <div className="font-ui-meat text-xs text-[#e10600] font-bold tracking-wider">
+                      <div className="font-ui-meat text-xs text-impossible-red font-bold tracking-wider">
                         {dish.cookTimeHome} • {dish.difficulty}
                       </div>
-                      <h3 className="font-meat text-2xl text-[#ffffff] mt-0.5 leading-tight">
+                      <h3 className="font-meat text-2xl text-bone-white mt-0.5 leading-tight">
                         {dish.name}
                       </h3>
-                      <div className="font-ui-meat text-sm text-[#ffc7c6] font-bold">
+                      <div className="font-ui-meat text-sm text-blush-highlight font-bold">
                         {dish.parenthetical}
                       </div>
                     </div>
 
-                    <div className="mt-4 pt-3 border-t border-[#260212] flex items-center justify-between">
-                      <span className="font-ui-meat text-xs text-[#ffc7c6]">
+                    <div className="mt-4 pt-3 border-t border-velvet-wine flex items-center justify-between">
+                      <span className="font-ui-meat text-xs text-blush-highlight">
                         {dish.ingredients.length} INGREDIENTS
                       </span>
-                      <span className="bg-[#e10600] text-[#ffffff] px-3 py-1 rounded-[15px] font-ui-meat text-xs font-bold">
+                      <span className="bg-impossible-red text-bone-white px-3 py-1 rounded-xl-2 font-ui-meat text-xs font-bold">
                         COOK IT ▸
                       </span>
                     </div>
@@ -1583,7 +1434,7 @@ export default function App() {
         <main className="max-w-[1280px] mx-auto px-4 md:px-8 py-14 pb-24">
           {/* Hero Header */}
           <div className="text-center mb-12 animate-slam">
-            <div className="font-ui-meat text-[#e10600] text-sm md:text-base font-bold tracking-[0.05em] mb-3">
+            <div className="font-ui-meat text-impossible-red text-sm md:text-base font-bold tracking-[0.05em] mb-3">
               ◂ EXACT COORDINATES & STREET LORE ▸
             </div>
             <h1 className="display-hero">
@@ -1600,10 +1451,10 @@ export default function App() {
                 <button
                   key={city}
                   onClick={() => setSelectedCityFilter(city)}
-                  className={`pill-toggle border border-[#000000] ${
+                  className={`pill-toggle border border-butcher-black ${
                     active
-                      ? 'bg-[#e10600] text-[#ffffff]'
-                      : 'bg-[#4f0423] text-[#ffc7c6] hover:text-[#ffffff]'
+                      ? 'bg-impossible-red text-bone-white'
+                      : 'bg-burgundy-stage text-blush-highlight hover:text-bone-white'
                   }`}
                 >
                   {city}
@@ -1621,66 +1472,66 @@ export default function App() {
                 return (
                   <div
                     key={dish.id}
-                    className="bg-[#4f0423] border border-[#000000] rounded-[12px] overflow-hidden flex flex-col justify-between"
+                    className="bg-burgundy-stage border border-butcher-black rounded-xl overflow-hidden flex flex-col justify-between"
                   >
-                    <div className="grid grid-cols-1 sm:grid-cols-12 border-b border-[#000000]">
-                      <div className="sm:col-span-5 relative min-h-[220px] bg-[#000000]">
+                    <div className="grid grid-cols-1 sm:grid-cols-12 border-b border-butcher-black">
+                      <div className="sm:col-span-5 relative min-h-[220px] bg-butcher-black">
                         <img
                           src={dish.image}
                           alt={dish.name}
                           className="w-full h-full object-cover saturate-125"
                         />
-                        <div className="absolute top-3 left-3 bg-[#000000] text-[#e10600] px-3 py-1 rounded-[15px] font-ui-meat text-xs font-bold border border-[#e10600]">
+                        <div className="absolute top-3 left-3 bg-butcher-black text-impossible-red px-3 py-1 rounded-xl-2 font-ui-meat text-xs font-bold border border-impossible-red">
                           {dish.city} • {dish.region}
                         </div>
                       </div>
 
                       <div className="sm:col-span-7 p-5 flex flex-col justify-between">
                         <div>
-                          <div className="flex items-center justify-between gap-2 text-xs font-ui-meat text-[#ffc7c6]">
+                          <div className="flex items-center justify-between gap-2 text-xs font-ui-meat text-blush-highlight">
                             <span className="flex items-center gap-1">
-                              <MapPin className="w-3.5 h-3.5 text-[#e10600]" />
+                              <MapPin className="w-3.5 h-3.5 text-impossible-red" />
                               {dish.coordinates}
                             </span>
                             <button
                               onClick={(e) => toggleSaveDish(dish, e)}
-                              className={`px-2.5 py-0.5 rounded-[15px] border border-[#000000] font-bold ${
-                                isSaved ? 'bg-[#e10600] text-[#ffffff]' : 'bg-[#000000] text-[#ffc7c6]'
+                              className={`px-2.5 py-0.5 rounded-xl-2 border border-butcher-black font-bold ${
+                                isSaved ? 'bg-impossible-red text-bone-white' : 'bg-butcher-black text-blush-highlight'
                               }`}
                             >
                               {isSaved ? '★ SAVED' : '+ VAULT'}
                             </button>
                           </div>
 
-                          <h3 className="font-meat text-3xl text-[#ffffff] mt-2 leading-none">
+                          <h3 className="font-meat text-3xl text-bone-white mt-2 leading-none">
                             {dish.name}
                           </h3>
-                          <div className="font-ui-meat text-base text-[#e10600] font-bold mt-0.5">
+                          <div className="font-ui-meat text-base text-impossible-red font-bold mt-0.5">
                             {dish.spotName}
                           </div>
 
-                          <p className="mt-3 text-sm text-[#ffc7c6] leading-relaxed">
+                          <p className="mt-3 text-sm text-blush-highlight leading-relaxed">
                             {dish.story}
                           </p>
                         </div>
 
                         {/* Wait Time in Real Life vs Cook Time at Home Bar */}
-                        <div className="mt-4 bg-[#260212] border border-[#000000] rounded-[12px] p-3">
+                        <div className="mt-4 bg-velvet-wine border border-butcher-black rounded-xl p-3">
                           <div className="flex items-center justify-between text-xs font-ui-meat">
-                            <span className="text-[#ffc7c6]">STALL QUEUE: {dish.waitTimeRealLife}</span>
-                            <span className="text-[#e10600] font-bold">HOME LAB: {dish.cookTimeHome}</span>
+                            <span className="text-blush-highlight">STALL QUEUE: {dish.waitTimeRealLife}</span>
+                            <span className="text-impossible-red font-bold">HOME LAB: {dish.cookTimeHome}</span>
                           </div>
-                          <div className="w-full h-2 bg-[#000000] rounded-full mt-1.5 overflow-hidden flex">
-                            <div className="w-4/5 bg-[#4f0423] h-full" />
-                            <div className="w-1/5 bg-[#e10600] h-full" />
+                          <div className="w-full h-2 bg-butcher-black rounded-full mt-1.5 overflow-hidden flex">
+                            <div className="w-4/5 bg-burgundy-stage h-full" />
+                            <div className="w-1/5 bg-impossible-red h-full" />
                           </div>
                         </div>
                       </div>
                     </div>
 
                     {/* Footer Actions */}
-                    <div className="p-4 bg-[#000000] flex flex-wrap items-center justify-between gap-3">
-                      <span className="font-ui-meat text-xs text-[#ffc7c6] tracking-wider">
+                    <div className="p-4 bg-butcher-black flex flex-wrap items-center justify-between gap-3">
+                      <span className="font-ui-meat text-xs text-blush-highlight tracking-wider">
                         SIGNATURE SECRET: {dish.tagline}
                       </span>
                       <div className="flex items-center gap-2">
@@ -1708,7 +1559,7 @@ export default function App() {
           {/* Top Recipe Selector Bar */}
           <div className="mb-10">
             <div className="text-center mb-6">
-              <div className="font-ui-meat text-[#e10600] text-sm font-bold tracking-widest mb-2">
+              <div className="font-ui-meat text-impossible-red text-sm font-bold tracking-widest mb-2">
                 ◂ REVERSE-ENGINEERED STREET FORMULAS ▸
               </div>
               <h1 className="display-section">
@@ -1728,10 +1579,10 @@ export default function App() {
                       setCheckedIngredients({});
                       setActiveTimers({});
                     }}
-                    className={`pill-toggle whitespace-nowrap border border-[#000000] flex items-center gap-2 ${
+                    className={`pill-toggle whitespace-nowrap border border-butcher-black flex items-center gap-2 ${
                       isSelected
-                        ? 'bg-[#e10600] text-[#ffffff]'
-                        : 'bg-[#4f0423] text-[#ffc7c6] hover:text-[#ffffff]'
+                        ? 'bg-impossible-red text-bone-white'
+                        : 'bg-burgundy-stage text-blush-highlight hover:text-bone-white'
                     }`}
                   >
                     <span>{dish.name}</span>
@@ -1745,39 +1596,39 @@ export default function App() {
           {selectedDish && (
             <div className="space-y-10 animate-slam">
               {/* Active Dish Hero Banner */}
-              <div className="bg-[#4f0423] border-2 border-[#000000] rounded-[38px] p-6 md:p-10">
+              <div className="bg-burgundy-stage border-2 border-butcher-black rounded-3xl p-6 md:p-10">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                   <div className="lg:col-span-7 space-y-4">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="bg-[#000000] text-[#e10600] px-3 py-1 rounded-[15px] font-ui-meat text-xs font-bold">
+                      <span className="bg-butcher-black text-impossible-red px-3 py-1 rounded-xl-2 font-ui-meat text-xs font-bold">
                         ORIGIN: {selectedDish.spotName} ({selectedDish.city})
                       </span>
-                      <span className="bg-[#260212] text-[#ffc7c6] px-3 py-1 rounded-[15px] font-ui-meat text-xs font-bold border border-[#000000]">
+                      <span className="bg-velvet-wine text-blush-highlight px-3 py-1 rounded-xl-2 font-ui-meat text-xs font-bold border border-butcher-black">
                         PREP TIME: {selectedDish.cookTimeHome}
                       </span>
-                      <span className="bg-[#260212] text-[#ffffff] px-3 py-1 rounded-[15px] font-ui-meat text-xs font-bold border border-[#000000]">
+                      <span className="bg-velvet-wine text-bone-white px-3 py-1 rounded-xl-2 font-ui-meat text-xs font-bold border border-butcher-black">
                         DIFFICULTY: {selectedDish.difficulty}
                       </span>
                     </div>
 
-                    <h2 className="display-section !text-[#ffffff]">
-                      <span className="block text-[#e10600]">{selectedDish.name}</span>
-                      <span className="block text-[0.55em] text-[#ffc7c6] mt-2">
+                    <h2 className="display-section !text-bone-white">
+                      <span className="block text-impossible-red">{selectedDish.name}</span>
+                      <span className="block text-[0.55em] text-blush-highlight mt-2">
                         {selectedDish.parenthetical}
                       </span>
                     </h2>
 
-                    <p className="text-[#ffffff] text-base leading-relaxed">
+                    <p className="text-bone-white text-base leading-relaxed">
                       {selectedDish.story}
                     </p>
 
                     {/* Secret Vendor Trick Callout Box */}
-                    <div className="bg-[#260212] border border-[#000000] rounded-[12px] p-4">
-                      <div className="font-ui-meat text-sm text-[#e10600] font-bold tracking-wider flex items-center gap-1.5 mb-1">
+                    <div className="bg-velvet-wine border border-butcher-black rounded-xl p-4">
+                      <div className="font-ui-meat text-sm text-impossible-red font-bold tracking-wider flex items-center gap-1.5 mb-1">
                         <Flame className="w-4 h-4" />
                         <span>AUTHENTIC STREET VENDOR SECRET TECHNIQUE:</span>
                       </div>
-                      <p className="text-sm text-[#ffc7c6] leading-relaxed">
+                      <p className="text-sm text-blush-highlight leading-relaxed">
                         {selectedDish.secretTrick}
                       </p>
                     </div>
@@ -1789,7 +1640,7 @@ export default function App() {
                       >
                         <Heart
                           className={`w-4 h-4 ${
-                            savedVault[selectedDish.id] ? 'fill-[#ffffff]' : ''
+                            savedVault[selectedDish.id] ? 'fill-bone-white' : ''
                           }`}
                         />
                         <span>
@@ -1817,13 +1668,13 @@ export default function App() {
               {/* Recipe Lab Interactive Studio: Left Ingredients + Scaler, Right Timed Steps */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* LEFT COLUMN: PORTION SCALER & CLICKABLE INGREDIENT CHECKLIST */}
-                <div className="lg:col-span-5 bg-[#4f0423] border border-[#000000] rounded-[12px] p-6 h-fit">
-                  <div className="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-[#000000]">
+                <div className="lg:col-span-5 bg-burgundy-stage border border-butcher-black rounded-xl p-6 h-fit">
+                  <div className="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-butcher-black">
                     <div>
-                      <span className="font-ui-meat text-xs text-[#e10600] font-bold block">
+                      <span className="font-ui-meat text-xs text-impossible-red font-bold block">
                         ◂ COMPONENT MATRIX ▸
                       </span>
-                      <h3 className="font-meat text-3xl text-[#ffffff]">INGREDIENTS</h3>
+                      <h3 className="font-meat text-3xl text-bone-white">INGREDIENTS</h3>
                     </div>
 
                     {/* Interactive Portion Scaler Pills */}
@@ -1836,10 +1687,10 @@ export default function App() {
                         <button
                           key={scale.mult}
                           onClick={() => setPortionMultiplier(scale.mult)}
-                          className={`px-3 py-1.5 rounded-[15px] font-ui-meat text-xs font-bold border border-[#000000] ${
+                          className={`px-3 py-1.5 rounded-xl-2 font-ui-meat text-xs font-bold border border-butcher-black ${
                             portionMultiplier === scale.mult
-                              ? 'bg-[#e10600] text-[#ffffff]'
-                              : 'bg-[#260212] text-[#ffc7c6]'
+                              ? 'bg-impossible-red text-bone-white'
+                              : 'bg-velvet-wine text-blush-highlight'
                           }`}
                         >
                           {scale.label}
@@ -1848,7 +1699,7 @@ export default function App() {
                     </div>
                   </div>
 
-                  <p className="text-xs font-ui-meat text-[#ffc7c6] mt-3 mb-4">
+                  <p className="text-xs font-ui-meat text-blush-highlight mt-3 mb-4">
                     CLICK AN INGREDIENT AS YOU PREP TO STRIKE IT IN IMPOSSIBLE RED:
                   </p>
 
@@ -1868,31 +1719,31 @@ export default function App() {
                               [i]: !prev[i]
                             }))
                           }
-                          className={`w-full text-left p-3 rounded-[12px] border border-[#000000] flex items-center justify-between transition-colors ${
+                          className={`w-full text-left p-3 rounded-xl border border-butcher-black flex items-center justify-between transition-colors ${
                             isChecked
-                              ? 'bg-[#260212] text-[#ffc7c6]'
-                              : 'bg-[#000000] text-[#ffffff] hover:border-[#e10600]'
+                              ? 'bg-velvet-wine text-blush-highlight'
+                              : 'bg-butcher-black text-bone-white hover:border-impossible-red'
                           }`}
                         >
                           <div className="flex items-center gap-3">
                             <span
                               className={`w-5 h-5 rounded-md border flex items-center justify-center ${
                                 isChecked
-                                  ? 'bg-[#e10600] border-[#e10600] text-[#ffffff]'
-                                  : 'border-[#ffc7c6]'
+                                  ? 'bg-impossible-red border-impossible-red text-bone-white'
+                                  : 'border-blush-highlight'
                               }`}
                             >
                               {isChecked && <Check className="w-3.5 h-3.5" />}
                             </span>
                             <span
                               className={`text-sm font-medium ${
-                                isChecked ? 'line-through decoration-[#e10600] decoration-2 opacity-70' : ''
+                                isChecked ? 'line-through decoration-impossible-red decoration-2 opacity-70' : ''
                               }`}
                             >
                               {ing.item}
                             </span>
                           </div>
-                          <span className="font-ui-meat text-base font-bold text-[#e10600]">
+                          <span className="font-ui-meat text-base font-bold text-impossible-red">
                             {scaledAmount} {ing.unit}
                           </span>
                         </button>
@@ -1903,11 +1754,11 @@ export default function App() {
 
                 {/* RIGHT COLUMN: STEP-BY-STEP EXECUTION WITH INTEGRATED TIMERS */}
                 <div className="lg:col-span-7 space-y-4">
-                  <div className="bg-[#4f0423] border border-[#000000] rounded-[12px] p-6">
-                    <span className="font-ui-meat text-xs text-[#e10600] font-bold block">
+                  <div className="bg-burgundy-stage border border-butcher-black rounded-xl p-6">
+                    <span className="font-ui-meat text-xs text-impossible-red font-bold block">
                       ◂ HIGH-HEAT EXECUTION PROTOCOL ▸
                     </span>
-                    <h3 className="font-meat text-3xl text-[#ffffff] mb-6">
+                    <h3 className="font-meat text-3xl text-bone-white mb-6">
                       STEP-BY-STEP COOKING STUDIO
                     </h3>
 
@@ -1922,25 +1773,25 @@ export default function App() {
                         return (
                           <div
                             key={idx}
-                            className="bg-[#260212] border border-[#000000] rounded-[12px] p-5"
+                            className="bg-velvet-wine border border-butcher-black rounded-xl p-5"
                           >
                             <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                               <div className="flex items-center gap-2.5">
-                                <span className="bg-[#e10600] text-[#ffffff] px-3 py-0.5 rounded-[15px] font-meat text-lg">
+                                <span className="bg-impossible-red text-bone-white px-3 py-0.5 rounded-xl-2 font-meat text-lg">
                                   STEP 0{idx + 1}
                                 </span>
-                                <h4 className="font-meat text-2xl text-[#ffc7c6] tracking-wide">
+                                <h4 className="font-meat text-2xl text-blush-highlight tracking-wide">
                                   {step.title}
                                 </h4>
                               </div>
 
                               {/* Integrated Kitchen Step Timer */}
                               {step.timerSeconds && (
-                                <div className="flex items-center gap-1.5 bg-[#000000] border border-[#4f0423] px-3 py-1 rounded-[15px]">
-                                  <Clock className="w-3.5 h-3.5 text-[#e10600]" />
+                                <div className="flex items-center gap-1.5 bg-butcher-black border border-burgundy-stage px-3 py-1 rounded-xl-2">
+                                  <Clock className="w-3.5 h-3.5 text-impossible-red" />
                                   <span
                                     className={`font-ui-meat text-base font-bold ${
-                                      isZero ? 'text-[#e10600]' : 'text-[#ffffff]'
+                                      isZero ? 'text-impossible-red' : 'text-bone-white'
                                     }`}
                                   >
                                     {isZero ? 'DONE!' : formatTime(timerState.remaining)}
@@ -1958,7 +1809,7 @@ export default function App() {
                                         }
                                       }))
                                     }
-                                    className="ml-1 bg-[#e10600] text-[#ffffff] p-1 rounded-full hover:bg-[#ffffff] hover:text-[#000000]"
+                                    className="ml-1 bg-impossible-red text-bone-white p-1 rounded-full hover:bg-bone-white hover:text-butcher-black"
                                     title={timerState.running ? 'Pause Timer' : 'Start Timer'}
                                   >
                                     {timerState.running ? (
@@ -1977,7 +1828,7 @@ export default function App() {
                                         }
                                       }))
                                     }
-                                    className="bg-[#4f0423] text-[#ffc7c6] p-1 rounded-full hover:text-[#ffffff]"
+                                    className="bg-burgundy-stage text-blush-highlight p-1 rounded-full hover:text-bone-white"
                                     title="Reset Timer"
                                   >
                                     <RotateCcw className="w-3 h-3" />
@@ -1986,7 +1837,7 @@ export default function App() {
                               )}
                             </div>
 
-                            <p className="text-[#ffffff] text-base leading-relaxed mt-2">
+                            <p className="text-bone-white text-base leading-relaxed mt-2">
                               {step.instruction}
                             </p>
                           </div>
@@ -2007,7 +1858,7 @@ export default function App() {
       {activePage === 'VAULT' && (
         <main className="max-w-[1280px] mx-auto px-4 md:px-8 py-14 pb-24">
           <div className="text-center mb-10 animate-slam">
-            <div className="font-ui-meat text-[#e10600] text-sm md:text-base font-bold tracking-[0.05em] mb-3">
+            <div className="font-ui-meat text-impossible-red text-sm md:text-base font-bold tracking-[0.05em] mb-3">
               ◂ CLOUD-SYNCED CONTRABAND STASH ▸
             </div>
             <h1 className="display-hero">
@@ -2017,16 +1868,16 @@ export default function App() {
           </div>
 
           {/* Chef Profile Status Bar + Combined Shopping List Export */}
-          <div className="bg-[#4f0423] border border-[#000000] rounded-[12px] p-5 mb-8 flex flex-wrap items-center justify-between gap-4">
+          <div className="bg-burgundy-stage border border-butcher-black rounded-xl p-5 mb-8 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-[#e10600] border border-[#000000] flex items-center justify-center font-meat text-2xl text-[#ffffff]">
+              <div className="w-12 h-12 rounded-full bg-impossible-red border border-butcher-black flex items-center justify-center font-meat text-2xl text-bone-white">
                 {(chefAlias || 'C')[0]}
               </div>
               <div>
-                <div className="font-ui-meat text-xs text-[#ffc7c6]">
+                <div className="font-ui-meat text-xs text-blush-highlight">
                   AUTHENTICATED CHEF VAULT • ID: {user ? user.uid : 'LOCAL-SESSION'}
                 </div>
-                <div className="font-meat text-2xl text-[#ffffff]">
+                <div className="font-meat text-2xl text-bone-white">
                   {chefAlias ? `CHEF ${chefAlias}` : 'REBEL GUEST CHEF'} ({savedCount} SAVED)
                 </div>
               </div>
@@ -2037,7 +1888,7 @@ export default function App() {
                 onClick={() => setShowAuthModal(true)}
                 className="btn-ghost-impossible"
               >
-                <User className="w-4 h-4 text-[#e10600]" />
+                <User className="w-4 h-4 text-impossible-red" />
                 <span>{chefAlias ? 'CHANGE CHEF ALIAS' : 'SET CHEF ALIAS / LOGIN'}</span>
               </button>
 
@@ -2060,10 +1911,10 @@ export default function App() {
               <button
                 key={tag}
                 onClick={() => setActiveVaultTag(tag)}
-                className={`pill-toggle border border-[#000000] ${
+                className={`pill-toggle border border-butcher-black ${
                   activeVaultTag === tag
-                    ? 'bg-[#e10600] text-[#ffffff]'
-                    : 'bg-[#4f0423] text-[#ffc7c6]'
+                    ? 'bg-impossible-red text-bone-white'
+                    : 'bg-burgundy-stage text-blush-highlight'
                 }`}
               >
                 {tag}
@@ -2072,11 +1923,11 @@ export default function App() {
           </div>
 
           {savedCount === 0 ? (
-            <div className="bg-[#4f0423] border border-[#000000] rounded-[38px] p-12 text-center max-w-2xl mx-auto">
-              <h3 className="font-meat text-5xl text-[#e10600] mb-3">
+            <div className="bg-burgundy-stage border border-butcher-black rounded-3xl p-12 text-center max-w-2xl mx-auto">
+              <h3 className="font-meat text-5xl text-impossible-red mb-3">
                 YOUR VAULT IS EMPTY
               </h3>
-              <p className="text-[#ffc7c6] mb-6">
+              <p className="text-blush-highlight mb-6">
                 Hit the SAVE button on any iconic street food across the Manifesto or World Atlas to lock the recipe and build your personal tasting notes here.
               </p>
               <button
@@ -2097,7 +1948,7 @@ export default function App() {
                   return (
                     <div
                       key={dish.id}
-                      className="bg-[#4f0423] border border-[#000000] rounded-[12px] overflow-hidden flex flex-col justify-between"
+                      className="bg-burgundy-stage border border-butcher-black rounded-xl overflow-hidden flex flex-col justify-between"
                     >
                       <div className="p-5">
                         <div className="flex items-start justify-between gap-4">
@@ -2105,16 +1956,16 @@ export default function App() {
                             <img
                               src={dish.image}
                               alt={dish.name}
-                              className="w-20 h-20 object-cover mask-blob-1 border border-[#000000]"
+                              className="w-20 h-20 object-cover mask-blob-1 border border-butcher-black"
                             />
                             <div>
-                              <span className="font-ui-meat text-xs text-[#e10600] font-bold">
+                              <span className="font-ui-meat text-xs text-impossible-red font-bold">
                                 {dish.city} • {dish.spotName}
                               </span>
-                              <h3 className="font-meat text-3xl text-[#ffffff] leading-none mt-0.5">
+                              <h3 className="font-meat text-3xl text-bone-white leading-none mt-0.5">
                                 {dish.name}
                               </h3>
-                              <span className="font-ui-meat text-sm text-[#ffc7c6]">
+                              <span className="font-ui-meat text-sm text-blush-highlight">
                                 {dish.parenthetical}
                               </span>
                             </div>
@@ -2122,7 +1973,7 @@ export default function App() {
 
                           <button
                             onClick={(e) => toggleSaveDish(dish, e)}
-                            className="bg-[#000000] text-[#ffc7c6] hover:text-[#e10600] p-2 rounded-[12px] border border-[#000000]"
+                            className="bg-butcher-black text-blush-highlight hover:text-impossible-red p-2 rounded-xl border border-butcher-black"
                             title="Remove from Vault"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -2131,15 +1982,15 @@ export default function App() {
 
                         {/* Tag Selector Pills */}
                         <div className="mt-4 flex flex-wrap items-center gap-1.5">
-                          <span className="font-ui-meat text-xs text-[#ffc7c6] mr-1">STATUS TAG:</span>
+                          <span className="font-ui-meat text-xs text-blush-highlight mr-1">STATUS TAG:</span>
                           {['COOK SOON', 'MASTERED', 'BUCKET LIST TRIP'].map((t) => (
                             <button
                               key={t}
                               onClick={() => updateVaultItem(dish.id, { tag: t })}
-                              className={`px-2.5 py-1 rounded-[15px] font-ui-meat text-xs font-bold border border-[#000000] ${
+                              className={`px-2.5 py-1 rounded-xl-2 font-ui-meat text-xs font-bold border border-butcher-black ${
                                 vaultItem.tag === t
-                                  ? 'bg-[#e10600] text-[#ffffff]'
-                                  : 'bg-[#260212] text-[#ffc7c6]'
+                                  ? 'bg-impossible-red text-bone-white'
+                                  : 'bg-velvet-wine text-blush-highlight'
                               }`}
                             >
                               {t}
@@ -2149,7 +2000,7 @@ export default function App() {
 
                         {/* Personal Chef Tasting Note Input */}
                         <div className="mt-4">
-                          <label className="block font-ui-meat text-xs text-[#ffc7c6] mb-1">
+                          <label className="block font-ui-meat text-xs text-blush-highlight mb-1">
                             PERSONAL CHEF LAB NOTES (AUTO-SAVED TO CLOUD):
                           </label>
                           <textarea
@@ -2157,13 +2008,13 @@ export default function App() {
                             value={vaultItem.note || ''}
                             onChange={(e) => updateVaultItem(dish.id, { note: e.target.value })}
                             placeholder="Add your spice adjustments, wok temp notes, or trip memories..."
-                            className="w-full bg-[#260212] border border-[#000000] rounded-[12px] p-2.5 text-sm text-[#ffffff] placeholder-[#ffc7c6]/50 focus:outline-none focus:border-[#e10600]"
+                            className="w-full bg-velvet-wine border border-butcher-black rounded-xl p-2.5 text-sm text-bone-white placeholder-blush-highlight/50 focus:outline-none focus:border-impossible-red"
                           />
                         </div>
                       </div>
 
-                      <div className="bg-[#000000] px-5 py-3 flex items-center justify-between">
-                        <span className="font-ui-meat text-xs text-[#ffc7c6]">
+                      <div className="bg-butcher-black px-5 py-3 flex items-center justify-between">
+                        <span className="font-ui-meat text-xs text-blush-highlight">
                           HOME PREP: {dish.cookTimeHome}
                         </span>
                         <button
@@ -2188,7 +2039,7 @@ export default function App() {
       {activePage === 'SUBMIT' && (
         <main className="max-w-[960px] mx-auto px-4 md:px-8 py-14 pb-24">
           <div className="text-center mb-10 animate-slam">
-            <div className="font-ui-meat text-[#e10600] text-sm md:text-base font-bold tracking-[0.05em] mb-3">
+            <div className="font-ui-meat text-impossible-red text-sm md:text-base font-bold tracking-[0.05em] mb-3">
               ◂ EXPAND THE GLOBAL STREET ARCHIVE ▸
             </div>
             <h1 className="display-section">
@@ -2199,11 +2050,11 @@ export default function App() {
 
           <form
             onSubmit={handleDropDishSubmit}
-            className="bg-[#4f0423] border-2 border-[#000000] rounded-[38px] p-6 md:p-10 space-y-6"
+            className="bg-burgundy-stage border-2 border-butcher-black rounded-3xl p-6 md:p-10 space-y-6"
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label className="block font-ui-meat text-sm text-[#ffc7c6] font-bold mb-1.5">
+                <label className="block font-ui-meat text-sm text-blush-highlight font-bold mb-1.5">
                   DISH NAME (SHOUTED HEADLINE) *
                 </label>
                 <input
@@ -2212,12 +2063,12 @@ export default function App() {
                   placeholder="e.g. CURRYWURST MIT POMMES"
                   value={newDishForm.name}
                   onChange={(e) => setNewDishForm({ ...newDishForm, name: e.target.value })}
-                  className="w-full bg-[#260212] border border-[#000000] rounded-[15px] px-4 py-3 text-[#ffffff] font-ui-meat text-lg focus:outline-none focus:border-[#e10600]"
+                  className="w-full bg-velvet-wine border border-butcher-black rounded-xl-2 px-4 py-3 text-bone-white font-ui-meat text-lg focus:outline-none focus:border-impossible-red"
                 />
               </div>
 
               <div>
-                <label className="block font-ui-meat text-sm text-[#ffc7c6] font-bold mb-1.5">
+                <label className="block font-ui-meat text-sm text-blush-highlight font-bold mb-1.5">
                   FAMOUS STALL PARENTHETICAL *
                 </label>
                 <input
@@ -2226,12 +2077,12 @@ export default function App() {
                   placeholder="e.g. KONOPKE'S IMBISS BERLIN"
                   value={newDishForm.parenthetical}
                   onChange={(e) => setNewDishForm({ ...newDishForm, parenthetical: e.target.value })}
-                  className="w-full bg-[#260212] border border-[#000000] rounded-[15px] px-4 py-3 text-[#ffffff] font-ui-meat text-lg focus:outline-none focus:border-[#e10600]"
+                  className="w-full bg-velvet-wine border border-butcher-black rounded-xl-2 px-4 py-3 text-bone-white font-ui-meat text-lg focus:outline-none focus:border-impossible-red"
                 />
               </div>
 
               <div>
-                <label className="block font-ui-meat text-sm text-[#ffc7c6] font-bold mb-1.5">
+                <label className="block font-ui-meat text-sm text-blush-highlight font-bold mb-1.5">
                   CITY *
                 </label>
                 <input
@@ -2240,18 +2091,18 @@ export default function App() {
                   placeholder="e.g. BERLIN"
                   value={newDishForm.city}
                   onChange={(e) => setNewDishForm({ ...newDishForm, city: e.target.value })}
-                  className="w-full bg-[#260212] border border-[#000000] rounded-[15px] px-4 py-3 text-[#ffffff] font-ui-meat text-lg focus:outline-none focus:border-[#e10600]"
+                  className="w-full bg-velvet-wine border border-butcher-black rounded-xl-2 px-4 py-3 text-bone-white font-ui-meat text-lg focus:outline-none focus:border-impossible-red"
                 />
               </div>
 
               <div>
-                <label className="block font-ui-meat text-sm text-[#ffc7c6] font-bold mb-1.5">
+                <label className="block font-ui-meat text-sm text-blush-highlight font-bold mb-1.5">
                   REGION CATEGORY
                 </label>
                 <select
                   value={newDishForm.region}
                   onChange={(e) => setNewDishForm({ ...newDishForm, region: e.target.value })}
-                  className="w-full bg-[#260212] border border-[#000000] rounded-[15px] px-4 py-3 text-[#ffffff] font-ui-meat text-lg focus:outline-none focus:border-[#e10600]"
+                  className="w-full bg-velvet-wine border border-butcher-black rounded-xl-2 px-4 py-3 text-bone-white font-ui-meat text-lg focus:outline-none focus:border-impossible-red"
                 >
                   {REGIONS.map((r) => (
                     <option key={r} value={r}>
@@ -2263,7 +2114,7 @@ export default function App() {
             </div>
 
             <div>
-              <label className="block font-ui-meat text-sm text-[#ffc7c6] font-bold mb-1.5">
+              <label className="block font-ui-meat text-sm text-blush-highlight font-bold mb-1.5">
                 EXACT NEIGHBORHOOD & STREET SPOT LORE
               </label>
               <input
@@ -2271,12 +2122,12 @@ export default function App() {
                 placeholder="Under the U-Bahn tracks at Eberswalder Straße since 1930..."
                 value={newDishForm.story}
                 onChange={(e) => setNewDishForm({ ...newDishForm, story: e.target.value })}
-                className="w-full bg-[#260212] border border-[#000000] rounded-[15px] px-4 py-3 text-[#ffffff] text-sm focus:outline-none focus:border-[#e10600]"
+                className="w-full bg-velvet-wine border border-butcher-black rounded-xl-2 px-4 py-3 text-bone-white text-sm focus:outline-none focus:border-impossible-red"
               />
             </div>
 
             <div>
-              <label className="block font-ui-meat text-sm text-[#e10600] font-bold mb-1.5">
+              <label className="block font-ui-meat text-sm text-impossible-red font-bold mb-1.5">
                 THE VENDOR SECRET TECHNIQUE (HOW TO REPLICATE AT HOME)
               </label>
               <textarea
@@ -2284,19 +2135,19 @@ export default function App() {
                 placeholder="Bloom the curry powder in rendered pork drippings before adding spiced tomato reduction..."
                 value={newDishForm.secretTrick}
                 onChange={(e) => setNewDishForm({ ...newDishForm, secretTrick: e.target.value })}
-                className="w-full bg-[#260212] border border-[#000000] rounded-[15px] px-4 py-3 text-[#ffffff] text-sm focus:outline-none focus:border-[#e10600]"
+                className="w-full bg-velvet-wine border border-butcher-black rounded-xl-2 px-4 py-3 text-bone-white text-sm focus:outline-none focus:border-impossible-red"
               />
             </div>
 
             <div>
-              <label className="block font-ui-meat text-sm text-[#ffc7c6] font-bold mb-1.5">
+              <label className="block font-ui-meat text-sm text-blush-highlight font-bold mb-1.5">
                 INGREDIENTS (ONE PER LINE)
               </label>
               <textarea
                 rows={4}
                 value={newDishForm.ingredientsText}
                 onChange={(e) => setNewDishForm({ ...newDishForm, ingredientsText: e.target.value })}
-                className="w-full bg-[#260212] border border-[#000000] rounded-[15px] px-4 py-3 text-[#ffffff] text-sm focus:outline-none focus:border-[#e10600]"
+                className="w-full bg-velvet-wine border border-butcher-black rounded-xl-2 px-4 py-3 text-bone-white text-sm focus:outline-none focus:border-impossible-red"
               />
             </div>
 
@@ -2321,28 +2172,28 @@ export default function App() {
           CHEF AUTHENTICATION / ALIAS MODAL
           ========================================== */}
       {showAuthModal && (
-        <div className="fixed inset-0 z-[80] bg-[#000000]/85 flex items-center justify-center p-4">
-          <div className="bg-[#4f0423] border-2 border-[#000000] rounded-[38px] max-w-md w-full p-6 md:p-8 relative animate-slam">
+        <div className="fixed inset-0 z-[80] bg-butcher-black/85 flex items-center justify-center p-4">
+          <div className="bg-burgundy-stage border-2 border-butcher-black rounded-3xl max-w-md w-full p-6 md:p-8 relative animate-slam">
             <button
               onClick={() => setShowAuthModal(false)}
-              className="absolute top-5 right-5 bg-[#000000] text-[#ffffff] p-2 rounded-full hover:bg-[#e10600]"
+              className="absolute top-5 right-5 bg-butcher-black text-bone-white p-2 rounded-full hover:bg-impossible-red"
             >
               <X className="w-4 h-4" />
             </button>
 
-            <div className="font-ui-meat text-xs text-[#e10600] font-bold tracking-widest mb-1">
+            <div className="font-ui-meat text-xs text-impossible-red font-bold tracking-widest mb-1">
               ◂ CLOUD VAULT PASSPORT ▸
             </div>
-            <h3 className="font-meat text-4xl text-[#ffffff] leading-none mb-3">
+            <h3 className="font-meat text-4xl text-bone-white leading-none mb-3">
               CHEF IDENTITY
             </h3>
-            <p className="text-sm text-[#ffc7c6] mb-6">
+            <p className="text-sm text-blush-highlight mb-6">
               Your saved street foods and recipe notes are automatically synced to your cloud session. Claim your Chef Alias below:
             </p>
 
             <form onSubmit={handleChefLogin} className="space-y-4">
               <div>
-                <label className="block font-ui-meat text-xs text-[#ffc7c6] font-bold mb-1">
+                <label className="block font-ui-meat text-xs text-blush-highlight font-bold mb-1">
                   CHEF ALIAS / HANDLE
                 </label>
                 <input
@@ -2351,12 +2202,12 @@ export default function App() {
                   placeholder="e.g. WOK MASTER ZERO"
                   value={aliasInput}
                   onChange={(e) => setAliasInput(e.target.value)}
-                  className="w-full bg-[#260212] border border-[#000000] rounded-[15px] px-4 py-3 text-[#ffffff] font-ui-meat text-lg focus:outline-none focus:border-[#e10600]"
+                  className="w-full bg-velvet-wine border border-butcher-black rounded-xl-2 px-4 py-3 text-bone-white font-ui-meat text-lg focus:outline-none focus:border-impossible-red"
                 />
               </div>
 
               <div>
-                <label className="block font-ui-meat text-xs text-[#ffc7c6] font-bold mb-1">
+                <label className="block font-ui-meat text-xs text-blush-highlight font-bold mb-1">
                   EMAIL (OPTIONAL FOR CROSS-DEVICE BADGE)
                 </label>
                 <input
@@ -2364,7 +2215,7 @@ export default function App() {
                   placeholder="chef@culteats.org"
                   value={emailInput}
                   onChange={(e) => setEmailInput(e.target.value)}
-                  className="w-full bg-[#260212] border border-[#000000] rounded-[15px] px-4 py-3 text-[#ffffff] text-sm focus:outline-none focus:border-[#e10600]"
+                  className="w-full bg-velvet-wine border border-butcher-black rounded-xl-2 px-4 py-3 text-bone-white text-sm focus:outline-none focus:border-impossible-red"
                 />
               </div>
 
@@ -2381,19 +2232,19 @@ export default function App() {
           COMBINED SHOPPING LIST MODAL
           ========================================== */}
       {showShoppingModal && (
-        <div className="fixed inset-0 z-[80] bg-[#000000]/85 flex items-center justify-center p-4">
-          <div className="bg-[#4f0423] border-2 border-[#000000] rounded-[38px] max-w-lg w-full p-6 md:p-8 max-h-[85vh] flex flex-col relative animate-slam">
+        <div className="fixed inset-0 z-[80] bg-butcher-black/85 flex items-center justify-center p-4">
+          <div className="bg-burgundy-stage border-2 border-butcher-black rounded-3xl max-w-lg w-full p-6 md:p-8 max-h-[85vh] flex flex-col relative animate-slam">
             <button
               onClick={() => setShowShoppingModal(false)}
-              className="absolute top-5 right-5 bg-[#000000] text-[#ffffff] p-2 rounded-full hover:bg-[#e10600]"
+              className="absolute top-5 right-5 bg-butcher-black text-bone-white p-2 rounded-full hover:bg-impossible-red"
             >
               <X className="w-4 h-4" />
             </button>
 
-            <div className="font-ui-meat text-xs text-[#e10600] font-bold tracking-widest mb-1">
+            <div className="font-ui-meat text-xs text-impossible-red font-bold tracking-widest mb-1">
               ◂ MARKET CONTRABAND MANIFEST ▸
             </div>
-            <h3 className="font-meat text-4xl text-[#ffffff] leading-none mb-4">
+            <h3 className="font-meat text-4xl text-bone-white leading-none mb-4">
               COMBINED SHOPPING LIST
             </h3>
 
@@ -2404,16 +2255,16 @@ export default function App() {
                 return (
                   <div
                     key={dish.id}
-                    className="bg-[#260212] border border-[#000000] rounded-[12px] p-4"
+                    className="bg-velvet-wine border border-butcher-black rounded-xl p-4"
                   >
-                    <div className="font-meat text-xl text-[#e10600] mb-2">
-                      {dish.name} <span className="text-[#ffc7c6] text-sm">{dish.parenthetical}</span>
+                    <div className="font-meat text-xl text-impossible-red mb-2">
+                      {dish.name} <span className="text-blush-highlight text-sm">{dish.parenthetical}</span>
                     </div>
-                    <ul className="space-y-1 text-sm text-[#ffffff]">
+                    <ul className="space-y-1 text-sm text-bone-white">
                       {dish.ingredients.map((ing, i) => (
-                        <li key={i} className="flex justify-between border-b border-[#4f0423] py-1">
+                        <li key={i} className="flex justify-between border-b border-burgundy-stage py-1">
                           <span>{ing.item}</span>
-                          <span className="font-ui-meat font-bold text-[#ffc7c6]">
+                          <span className="font-ui-meat font-bold text-blush-highlight">
                             {ing.amount} {ing.unit}
                           </span>
                         </li>
@@ -2424,7 +2275,7 @@ export default function App() {
               })}
             </div>
 
-            <div className="pt-4 mt-4 border-t border-[#000000] flex justify-end">
+            <div className="pt-4 mt-4 border-t border-butcher-black flex justify-end">
               <button
                 onClick={() => {
                   setShowShoppingModal(false);
@@ -2443,15 +2294,15 @@ export default function App() {
       {/* ==========================================
           FOOTER (BUTCHER BLACK & IMPOSSIBLE RED)
           ========================================== */}
-      <footer className="bg-[#000000] border-t border-[#4f0423] py-16 px-4 md:px-8">
+      <footer className="bg-butcher-black border-t border-burgundy-stage py-16 px-4 md:px-8">
         <div className="max-w-[1280px] mx-auto flex flex-col md:flex-row items-start md:items-end justify-between gap-10">
           <div>
-            <div className="inline-block bg-[#ffffff] text-[#e10600] px-3.5 py-1 rounded-[15px] font-meat text-2xl mb-4">
+            <div className="inline-block bg-bone-white text-impossible-red px-3.5 py-1 rounded-xl-2 font-meat text-2xl mb-4">
               CULT EATS
             </div>
             <div className="display-section !text-5xl md:!text-7xl">
               <span className="block">EAT THE WORLD</span>
-              <span className="block text-[#ffc7c6] text-[0.65em] mt-1">(FROM YOUR STOVE)</span>
+              <span className="block text-blush-highlight text-[0.65em] mt-1">(FROM YOUR STOVE)</span>
             </div>
           </div>
 
