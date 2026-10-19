@@ -1,155 +1,214 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import type { CuisineSummary } from "@/db/queries/cuisines";
 
 const PIN = "(min-width: 1024px) and (min-height: 760px) and (prefers-reduced-motion: no-preference)";
-const START = 0.05; // first card leaves the deck
-const STAGGER = 0.07; // between cards
-const DEAL = 0.22; // each card's flight, as a share of the pinned scroll (the tenth lands at ~90%)
+const SEG = 42; // svh of scroll per card while pinned
+const TAIL = 0.6; // the last card still flips over at the end
 
-const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
 
 /**
- * The cuisines as flash cards. On large screens the grid pins while you scroll and starts as one stacked deck,
- * face down, in the middle of the screen; each card in turn lifts off in an arc, flips face up and lands in its
- * place, all scrubbed by the scroll (like the jar stage). Once landed, a card flips over on hover or keyboard focus
- * to show its back: country, recipe count and a link. Elsewhere the cards swing in as they enter the screen.
- * Reduced motion: a plain grid; the flip is an instant swap.
+ * Where card `i` sits when the deck is at position `s` (0 = first card on top, 1 = second, …). Within one card's
+ * stretch: the photo side holds, the card flips over to its back (0.30–0.55), holds, then flies off to the left
+ * (0.72–1) while the cards beneath move up one place. Deeper cards fan slightly and fade after the third.
+ */
+function place(i: number, s: number, n: number) {
+  const top = Math.min(n - 1, Math.floor(s));
+  const f = s - top;
+  const flip = easeInOut(clamp01((f - 0.3) / 0.25));
+  const fly = i === n - 1 ? 0 : easeInOut(clamp01((f - 0.72) / 0.28));
+  if (i < top) return { card: "translate3d(-120%, -4%, 0) rotate(-16deg)", face: "rotateY(180deg)", opacity: 0, z: 0 };
+  if (i === top) {
+    return {
+      card: `translate3d(${(-fly * 120).toFixed(2)}%, ${(-fly * 4).toFixed(2)}%, 0) rotate(${(-fly * 16).toFixed(2)}deg)`,
+      face: `rotateY(${(flip * 180).toFixed(1)}deg)`,
+      opacity: 1 - fly * fly,
+      z: 100,
+    };
+  }
+  const depth = i - top - fly;
+  const side = i % 2 ? 1 : -1;
+  return {
+    card: `translate3d(0, ${(depth * 5).toFixed(2)}%, 0) rotate(${(depth * 2.4 * side).toFixed(2)}deg) scale(${(1 - depth * 0.06).toFixed(4)})`,
+    face: "rotateY(0deg)",
+    opacity: clamp01(3.4 - depth),
+    z: 100 - (i - top),
+  };
+}
+
+/**
+ * The cuisines as a stack of flash cards. Large screens: the section pins and the scroll works through the stack —
+ * each card shows its photo, flips to its back (country, recipe count, link) and flies off as the next one comes
+ * up — like the jar stage, everything is scrubbed by the scroll. Elsewhere Previous / Next step through the stack
+ * (with a short eased move) and hovering the top card flips it. A side panel names the card on top.
+ * Reduced motion: no pin, the cards just change place.
  */
 export function CuisineDeck({ cuisines }: { cuisines: CuisineSummary[] }) {
+  const n = cuisines.length;
   const track = useRef<HTMLDivElement>(null);
-  const stage = useRef<HTMLUListElement>(null);
+  const cards = useRef<(HTMLLIElement | null)[]>([]);
+  const faces = useRef<(HTMLAnchorElement | null)[]>([]);
+  const pinned = useRef(false);
+  const [index, setIndex] = useState(0); // unpinned position (and the panel's card)
+  const [active, setActive] = useState(0);
 
+  const paint = useCallback(
+    (s: number, scrubbed: boolean) => {
+      cuisines.forEach((_, i) => {
+        const card = cards.current[i];
+        const face = faces.current[i];
+        if (!card || !face) return;
+        const p = place(i, s, n);
+        card.style.transform = p.card;
+        card.style.opacity = String(p.opacity);
+        card.style.zIndex = String(p.z);
+        card.style.visibility = p.opacity <= 0.01 ? "hidden" : "visible";
+        // Scrubbed: the scroll owns the flip. Stepping: leave the flip to :hover.
+        face.style.transform = scrubbed ? p.face : "";
+      });
+    },
+    [cuisines, n],
+  );
+
+  // Pinned mode: the scroll position drives the stack.
   useEffect(() => {
     const el = track.current;
-    const grid = stage.current;
-    if (!el || !grid) return;
+    if (!el) return;
     const mq = window.matchMedia(PIN);
-    const items = Array.from(grid.querySelectorAll<HTMLLIElement>(":scope > li"));
-    const deals = items.map((li) => li.querySelector<HTMLElement>(".flash__deal")!);
-    let offsets: [number, number][] = [];
     let frame = 0;
-    let on = false;
-
-    const measure = () => {
-      deals.forEach((d) => (d.style.transform = ""));
-      const g = grid.getBoundingClientRect();
-      const cx = g.left + g.width / 2;
-      const cy = g.top + g.height / 2;
-      offsets = deals.map((d) => {
-        const r = d.getBoundingClientRect();
-        return [cx - (r.left + r.width / 2), cy - (r.top + r.height / 2)];
-      });
-    };
-
     const render = () => {
       frame = 0;
-      if (!on) return;
+      if (!pinned.current) return;
       const r = el.getBoundingClientRect();
       const span = r.height - window.innerHeight;
-      const p = span > 0 ? clamp01(-r.top / span) : 1;
-      deals.forEach((d, i) => {
-        const e = easeInOutCubic(clamp01((p - START - i * STAGGER) / DEAL));
-        const [dx, dy] = offsets[i] ?? [0, 0];
-        const k = 1 - e;
-        const tilt = (((i * 37) % 13) - 6) * k;
-        const lift = -Math.sin(Math.PI * e) * 80;
-        d.style.transform = `translate3d(${(dx * k).toFixed(1)}px, ${(dy * k + lift - i * 3 * k).toFixed(1)}px, 0) rotate(${tilt.toFixed(2)}deg) rotateY(${(180 * k).toFixed(1)}deg)`;
-        items[i].style.zIndex = String(e >= 1 ? 1 : e > 0 ? 200 : 100 - i);
-        if (e >= 1) d.dataset.landed = "";
-        else delete d.dataset.landed;
-      });
+      const p = span > 0 ? clamp01(-r.top / span) : 0;
+      const s = p * (n - 1 + TAIL);
+      paint(s, true);
+      setActive(Math.min(n - 1, Math.floor(s)));
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(render);
     };
-
     const sync = () => {
-      on = mq.matches;
-      if (on) {
+      pinned.current = mq.matches;
+      if (pinned.current) {
         el.dataset.pinned = "";
-        measure();
         render();
       } else {
         delete el.dataset.pinned;
-        deals.forEach((d) => {
-          d.style.transform = "";
-          delete d.dataset.landed;
-        });
-        items.forEach((li) => (li.style.zIndex = ""));
       }
     };
-    const onResize = () => {
-      if (!on) return;
-      measure();
-      render();
-    };
-
     sync();
     mq.addEventListener("change", sync);
     window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", onResize);
     return () => {
       mq.removeEventListener("change", sync);
       window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", onResize);
       cancelAnimationFrame(frame);
     };
-  }, []);
+  }, [n, paint]);
+
+  // Stepping mode: buttons move the stack.
+  useEffect(() => {
+    if (pinned.current) return;
+    paint(index, false);
+    setActive(index);
+  }, [index, paint]);
+
+  const go = (target: number) => {
+    const t = Math.max(0, Math.min(n - 1, target));
+    const el = track.current;
+    if (pinned.current && el) {
+      const r = el.getBoundingClientRect();
+      const span = r.height - window.innerHeight;
+      window.scrollTo({ top: window.scrollY + r.top + ((t + 0.05) / (n - 1 + TAIL)) * span, behavior: "smooth" });
+    } else {
+      setIndex(t);
+    }
+  };
+
+  const current = cuisines[active];
 
   return (
-    <div ref={track} className="deck-track">
-      <div className="deck-pin">
-        <ul ref={stage} className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5 lg:gap-5">
-          {cuisines.map((c) => (
-            <li key={c.slug} className="flash">
-              <div className="flash__deal">
-                <span aria-hidden className="flash__cover">
-                  <span className="font-display grid size-16 place-items-center rounded-full border-2 border-current text-2xl">WP</span>
-                </span>
+    <div ref={track} className="fc-track" style={{ "--n": n, "--seg": `${SEG}svh` } as CSSProperties}>
+      <div className="fc-pin">
+        <div className="grid items-center gap-10 lg:grid-cols-[1fr_minmax(0,26rem)] lg:gap-20">
+          {/* The panel: which card is on top. */}
+          <div className="order-last lg:order-first">
+            <p className="label-caps text-muted-foreground" aria-live="polite">
+              {String(active + 1).padStart(2, "0")} / {String(n).padStart(2, "0")} · {current?.country}
+            </p>
+            <p className="font-display text-headline mt-3 text-[clamp(3rem,7vw,6rem)] leading-[0.92] uppercase">{current?.name}</p>
+            <p className="text-muted-foreground mt-4 max-w-sm text-[0.9375rem] leading-relaxed">
+              {current?.recipeCount} {current?.recipeCount === 1 ? "recipe" : "recipes"} from {current?.country}. Flip through the deck to see
+              every kitchen.
+            </p>
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              <button type="button" onClick={() => go(active - 1)} disabled={active === 0} aria-label="Previous cuisine" className="fc-btn">
+                <ArrowLeft className="size-4" strokeWidth={1.75} aria-hidden />
+              </button>
+              <button type="button" onClick={() => go(active + 1)} disabled={active === n - 1} aria-label="Next cuisine" className="fc-btn">
+                <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
+              </button>
+              {current && (
+                <Link href={`/cuisine/${current.slug}`} className="text-link ml-2 py-3 text-sm">
+                  Explore {current.name}
+                </Link>
+              )}
+            </div>
+          </div>
+
+          {/* The stack. */}
+          <ul className="fc-stack" aria-label="Cuisines">
+            {cuisines.map((c, i) => (
+              <li
+                key={c.slug}
+                ref={(el) => {
+                  cards.current[i] = el;
+                }}
+                className="fc"
+                style={{ zIndex: n - i }}
+              >
                 <Link
+                  ref={(el) => {
+                    faces.current[i] = el;
+                  }}
                   href={`/cuisine/${c.slug}`}
                   data-cursor="Explore"
                   aria-label={`${c.name} cuisine, ${c.recipeCount} ${c.recipeCount === 1 ? "recipe" : "recipes"}`}
-                  className="flash__card focus-visible:outline-none"
+                  tabIndex={i === active ? 0 : -1}
+                  className="fc__inner"
                 >
-                  <span className="flash__front">
-                    <span className="bg-muted relative block flex-1">
-                      <Image
-                        src={c.image}
-                        alt={c.imageAlt}
-                        fill
-                        sizes="(min-width: 1024px) 240px, (min-width: 640px) 30vw, 45vw"
-                        className="object-cover"
-                      />
-                    </span>
-                    <span className="flex items-end justify-between gap-2 p-4">
-                      <span className="font-display text-headline text-2xl leading-none">{c.name}</span>
-                      <span className="label-caps shrink-0">{c.recipeCount}</span>
+                  <span className="fc__face fc__front">
+                    <Image src={c.image} alt={c.imageAlt} fill sizes="(min-width: 1024px) 416px, 80vw" className="object-cover" />
+                    <span className="bg-card text-card-foreground absolute inset-x-4 bottom-4 flex items-center justify-between gap-3 rounded-full px-4 py-2">
+                      <span className="font-display text-xl leading-none uppercase">{c.name}</span>
+                      <span className="label-caps shrink-0">{String(i + 1).padStart(2, "0")}</span>
                     </span>
                   </span>
-                  <span className="flash__back">
+                  <span className="fc__face fc__back">
                     <span className="label-caps">{c.country}</span>
                     <span>
-                      <span className="font-display block text-3xl leading-[0.95]">{c.name}</span>
-                      <span className="mt-2 block text-sm">
-                        {c.recipeCount} {c.recipeCount === 1 ? "recipe" : "recipes"}
+                      <span className="font-display block text-[clamp(2.5rem,5vw,3.75rem)] leading-[0.92] uppercase">{c.name}</span>
+                      <span className="mt-3 block text-sm">
+                        {c.recipeCount} {c.recipeCount === 1 ? "recipe" : "recipes"} to cook
                       </span>
                     </span>
                     <span className="inline-flex items-center gap-2 text-sm font-medium">
-                      Explore <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
+                      Explore the kitchen <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
                     </span>
                   </span>
                 </Link>
-              </div>
-            </li>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );

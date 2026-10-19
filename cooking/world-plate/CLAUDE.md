@@ -189,9 +189,11 @@ tests/unit, tests/e2e    Vitest and Playwright
 - Scroll-scrubbed sections (2026-10-19, user: "after the about section the animations are plain… something should move
   with scroll, like the pickle jar"): hero exit (.hero-scroll view timeline: .hero-exit sinks/fades the headline block,
   .hero-fan fans the wordmark letters); TrendingDishes pins on large screens (data-pinned, 60svh per dish, scroll picks
-  the tab, frame turns/swells, progress bar; tabs scroll to their dish); cuisines are flash cards (CuisineDeck,
-  components/sections/cuisine-deck.tsx): pinned deck that deals out with the scroll, each card arcs, flips face up and
-  lands, then flips on hover/focus to its back (country, count, link); QuickMeals is the user's card fan carousel
+  the tab, frame turns/swells, progress bar; tabs scroll to their dish); cuisines are a stack of flash cards (CuisineDeck,
+  components/sections/cuisine-deck.tsx, redone 2026-10-19 after the user disliked the face-down deal): face-up stack,
+  pinned, 42svh of scroll per card — the top card shows its photo, flips to its back (country, count, link), then flies
+  off left as the next comes up; a side panel names the top card; Previous/Next everywhere (unpinned: eased steps,
+  hover flips the top card); QuickMeals is the user's card fan carousel
   (components/ui/card-fan-carousel.tsx — GSAP, the one place GSAP is used, because the user supplied it that way;
   entrance waits for the fan to scroll into view, sizes in .fan-layout / .fan-card); CTA .scrub-iris circle;
   footer .foot-rise letters. Pins need (min-width:1024px) and (min-height:760px) and motion; otherwise cards swing in

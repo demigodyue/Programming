@@ -1418,7 +1418,7 @@
    Everything here moves with the scroll position, like the jar stage, instead of playing once:
    - hero: as it scrolls away the headline block sinks back and fades, and the WORLD PLATE letters fan apart
    - trending: the section pins and scrolling steps through the dishes (TrendingDishes sets data-pinned)
-   - cuisines: a pinned deck of flash cards deals out and flips face up (CuisineDeck sets data-pinned)
+   - cuisines: a pinned stack of flash cards — each flips to its back and flies off (CuisineDeck sets data-pinned)
    - quick meals: a card fan carousel (components/ui/card-fan-carousel.tsx, GSAP; sizes below)
    - CTA: the forest panel opens out of a small circle
    - footer: the wordmark letters rise one after another
@@ -1446,12 +1446,6 @@
 @keyframes wp-foot-rise {
   from {
     translate: 0 85%;
-    opacity: 0;
-  }
-}
-@keyframes wp-flash-in {
-  from {
-    transform: translateY(18%) rotateY(-70deg);
     opacity: 0;
   }
 }
@@ -1524,30 +1518,50 @@
     will-change: transform;
   }
 
-  /* Cuisines: a deck of flash cards. */
-  .deck-track[data-pinned] {
-    height: 330svh;
+  /* Cuisines: a stack of flash cards (CuisineDeck). Pinned: SEG svh of scroll per card. */
+  .fc-track[data-pinned] {
+    height: calc(100svh + (var(--n, 10) - 0.4) * var(--seg, 42svh));
   }
-  .deck-track[data-pinned] > .deck-pin {
+  .fc-track[data-pinned] > .fc-pin {
     position: sticky;
     top: 0;
     display: flex;
     height: 100svh;
     flex-direction: column;
     justify-content: center;
+    padding-block: 5rem 2rem;
   }
-  .flash {
+  .fc-stack {
     position: relative;
-    perspective: 1200px;
-  }
-  .flash__deal {
-    position: relative;
+    width: min(100%, 26rem, 52svh);
     aspect-ratio: 3 / 4;
+    margin-inline: auto;
+    /* Room for the cards peeking out underneath (up to three, 5% of a card each). */
+    margin-block-end: 18%;
+    perspective: 1400px;
+  }
+  .fc {
+    position: absolute;
+    inset: 0;
+    transform-origin: 50% 90%;
+    will-change: transform;
+  }
+  /* Stepping mode (buttons): the stack eases between places. Scrubbed mode follows the scroll exactly. */
+  .fc-track:not([data-pinned]) .fc {
+    transition:
+      transform 0.6s var(--ease-out),
+      opacity 0.4s var(--ease-out);
+  }
+  .fc__inner {
+    position: absolute;
+    inset: 0;
+    display: block;
     transform-style: preserve-3d;
   }
-  .flash__cover,
-  .flash__front,
-  .flash__back {
+  .fc-track:not([data-pinned]) .fc__inner {
+    transition: transform 0.7s var(--ease-slush);
+  }
+  .fc__face {
     position: absolute;
     inset: 0;
     overflow: hidden;
@@ -1555,50 +1569,48 @@
     border-radius: var(--radius);
     backface-visibility: hidden;
   }
-  /* The patterned back of a card while it is still in the deck. */
-  .flash__cover {
-    display: grid;
-    place-items: center;
-    background:
-      repeating-linear-gradient(45deg, transparent 0 12px, color-mix(in srgb, var(--dot-foreground) 10%, transparent) 12px 14px),
-      var(--dot);
-    color: var(--dot-foreground);
-    transform: rotateY(180deg);
+  .fc__front {
+    background: var(--muted);
   }
-  .flash__card {
-    position: absolute;
-    inset: 0;
-    display: block;
-    transform-style: preserve-3d;
-    transition: rotate 0.7s var(--ease-slush);
-  }
-  .flash__front {
-    display: flex;
-    flex-direction: column;
-    background: var(--card);
-  }
-  .flash__back {
+  .fc__back {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 1.25rem;
+    padding: 1.75rem;
     background: var(--primary);
     color: var(--primary-foreground);
     transform: rotateY(180deg);
   }
-  /* While a card is mid-deal its info side would face the viewer; only the cover may show. */
-  .deck-track[data-pinned] .flash__deal:not([data-landed]) .flash__back {
-    visibility: hidden;
-  }
   @media (hover: hover) and (pointer: fine) {
-    .deck-track:not([data-pinned]) .flash__card:hover,
-    .deck-track .flash__deal[data-landed] .flash__card:hover {
-      rotate: y 180deg;
+    .fc-track:not([data-pinned]) .fc__inner:hover {
+      transform: rotateY(180deg);
     }
   }
-  .deck-track:not([data-pinned]) .flash__card:focus-visible,
-  .deck-track .flash__deal[data-landed] .flash__card:focus-visible {
-    rotate: y 180deg;
+  .fc-track:not([data-pinned]) .fc__inner:focus-visible {
+    transform: rotateY(180deg);
+  }
+  .fc-btn {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--foreground);
+    border-radius: 9999px;
+    color: var(--foreground);
+    transition:
+      background-color 0.2s var(--ease-color),
+      color 0.2s var(--ease-color),
+      opacity 0.2s;
+  }
+  .fc-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .fc-btn:not(:disabled):hover {
+      background: var(--foreground);
+      color: var(--background);
+    }
   }
 }
 
@@ -1628,15 +1640,11 @@
       animation-timeline: view();
       animation-range: entry calc(var(--li) * 5%) entry calc(45% + var(--li) * 5%);
     }
-    .deck-track:not([data-pinned]) .flash__deal {
-      animation: wp-flash-in linear both;
-      animation-timeline: view();
-      animation-range: entry 0% cover 35%;
-    }
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .flash__card {
+  .fc,
+  .fc__inner {
     transition-duration: 0.01ms;
   }
 }
