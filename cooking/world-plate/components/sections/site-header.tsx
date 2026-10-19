@@ -95,7 +95,7 @@ export function SiteHeader() {
         <Link
           href="/"
           aria-label="World Plate home"
-          className="nav-circle nav-logo bg-card text-foreground pointer-events-auto grid size-11 shrink-0 place-items-center rounded-full border border-foreground"
+          className="nav-circle nav-logo bg-dot text-dot-foreground pointer-events-auto grid size-[50px] shrink-0 place-items-center rounded-full"
         >
           <LogoMark ring={false} className="size-9" />
         </Link>
@@ -128,7 +128,7 @@ export function SiteHeader() {
             ))}
           </ul>
 
-          <ThemeIconToggle className="nav-circle bg-card size-11 border border-foreground" />
+          <ThemeIconToggle className="nav-circle bg-dot text-dot-foreground size-[50px]" />
 
           <button
             type="button"
@@ -138,7 +138,7 @@ export function SiteHeader() {
             data-open={(mobile && open) || undefined}
             onMouseEnter={() => !window.matchMedia(MOBILE).matches && setPillsHidden(false)}
             onClick={onPlus}
-            className="nav-circle nav-menu bg-card text-foreground grid size-11 place-items-center rounded-full border border-foreground"
+            className="nav-circle nav-menu bg-dot text-dot-foreground grid size-[50px] place-items-center rounded-full"
           >
             <span aria-hidden className="relative grid size-4 place-items-center">
               <span className="nav-menu__line nav-menu__h" />

@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils";
 /**
  * Two strips of dish names running in opposite directions, as Slush pairs its marquees: scrolling down,
  * the top strip runs right and the bottom one left; scrolling up flips both. Each strip also drifts
- * 10vw across the screen as you pass it. Styled as Cult Eats' tilted bands: a red band with black type
- * and a burgundy band with blush type, a flame between names.
+ * 10vw across the screen as you pass it. Two tilted bands: tomato with cream type, sand with tomato
+ * type, a flame between names.
  */
 export function DishMarquee({ items }: { items: string[] }) {
   const half = Math.ceil(items.length / 2);
@@ -18,14 +18,14 @@ export function DishMarquee({ items }: { items: string[] }) {
           key={r}
           className={cn(
             "-mx-[5vw] border-y border-border py-3 md:py-4",
-            r === 0 ? "bg-primary -rotate-2 text-scrim" : "bg-card text-muted-foreground rotate-[1.5deg]",
+            r === 0 ? "bg-headline text-background -rotate-2" : "bg-card text-headline rotate-[1.5deg]",
           )}
         >
           <ScrollMarquee direction={r === 0 ? "right" : "left"} speed={20}>
             {row.map((name) => (
               <span key={name} className="font-display flex items-center gap-6 pr-6 text-4xl leading-none tracking-[0.03em] whitespace-nowrap md:text-6xl">
                 {name}
-                <Flame aria-hidden strokeWidth={1.5} className={cn("size-7 shrink-0 md:size-9", r === 0 ? "text-primary-foreground" : "text-primary")} />
+                <Flame aria-hidden strokeWidth={1.5} className={cn("size-7 shrink-0 md:size-9", r === 0 ? "text-background" : "text-headline")} />
               </span>
             ))}
           </ScrollMarquee>

@@ -128,7 +128,7 @@ export function TrendingDishes({ recipes }: { recipes: RecipeCard[] }) {
           role="tablist"
           aria-label="Trending dishes"
           onMouseLeave={() => setPillAt(activeRef.current)}
-          className="bg-card relative isolate flex flex-wrap gap-1 rounded-[19px] border border-foreground p-1"
+          className="bg-card relative isolate flex flex-wrap gap-1 rounded-[14px] border border-foreground p-1"
         >
           <span ref={pill} aria-hidden className="tabs-pill" />
           {rows.map((r, i) => (

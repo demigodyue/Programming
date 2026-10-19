@@ -41,7 +41,10 @@ Decisions made with the user where skills conflicted with the brief:
   sliding photo) — the user chose this over neutral tones. Slush's timings win over "no animation delays content
   >1s" (the home tagline rises at 1.5s; a new page's entrance waits ~1.65s for the swing). The header became Slush's
   pill nav (logo circle, flip pills, plus/minus, dark "Search" pill) because its motion needs discrete pills.
-- Look (2026-10-19, later the same day): the user asked for the Cult Eats app's changes (`../a/cult-eats`, an Impossible
+- Look (2026-10-19, latest): the user asked for the **Agence Foudre** style from Refero (styles.refero.design/style/c1534c74…)
+  on every page, with the **cream canvas** (replacing the orange they had asked to keep) and **all current motion kept**.
+  See "Design rules". Superseded the Cult Eats look below, which superseded "Structured".
+- Look (2026-10-19, earlier): the user asked for the Cult Eats app's changes (`../a/cult-eats`, an Impossible
   Foods poster style) on World Plate. They chose the **full Cult Eats style** (burnt-orange canvas + gold headlines, Anton
   caps, red 15px pills, burgundy cards, blob-cut photos) and to **keep Slush's motion and add Cult Eats' effects** on top
   (floating food icons + photos, mouse depth, scroll progress, tilted marquee bands, image zoom, clip-path reveal).
@@ -137,7 +140,20 @@ tests/unit, tests/e2e    Vitest and Playwright
 - Use Watermelon for components; use design skills for layout, typography, color and accessibility.
 - Adapting installed source is expected; record every adaptation in the README table.
 
-## Design rules ("Cult Eats" / Impossible Foods poster style — adopted 2026-10-19, replaces "Structured")
+## Design rules ("Agence Foudre" magazine style — adopted 2026-10-19, replaces "Cult Eats")
+- Colours (2026-10-19: the user disliked the Foudre pinks, then the near-white canvas, and left both choices to
+  Claude): Butter `#f6e3b4` canvas, Warm White `#fff8ec` cards, toasted hairlines `#d4b46e`, Tomato `#c2321b` display type and the round nav dots, Forest Ink `#00522d` body text, links and buttons, Sand
+  `#f3e6d4` cards/tags/footer wash, Saffron `#f4b942` highlights, warm tan `#dcc6ab` hairlines, Paprika `#e0603f` /
+  Sage `#b7cdb0` only in motion moments and the jar. Black only for line art. Flat. No pink anywhere.
+- Buttons are forest with cream text. `.room` bands are forest with saffron headlines (light site) and flip to cream with
+  tomato headlines (dark site, whose canvas is forest).
+- Type, two families: Anton for display (standing in for Beni 900; uppercase, tracking 0, leading 0.92 because Anton's caps
+  are 0.86em tall — Foudre's 0.70 would collide) and Inter for everything else (standing in for Clash Grotesk), buttons in
+  sentence case, `label-caps` uppercase 13px.
+- Shapes: buttons/badges 10px, cards 20px, elevated 25px, tags and icon buttons fully round. Photos are plain rectangles
+  (no blob masks). Nav: 50px tomato dots (logo, theme, menu) plus Slush's pills.
+
+### Previous: "Cult Eats" / Impossible Foods poster style (2026-10-19, superseded)
 - Light: burnt-orange canvas `#8b3a10` with **gold** headlines `#fdae2d` (red on orange is only ~1.6:1). Dark: velvet wine
   `#260212` with **red** headlines `#e10600` (~3.9:1). Burgundy cards `#4f0423`, blush secondary text `#ffc7c6`, white body
   text, black hairlines and footer. Red `--primary` for every action. **No other hues, no shadows, no gradients.**
@@ -170,6 +186,12 @@ tests/unit, tests/e2e    Vitest and Playwright
   `Cursor` label over `[data-cursor="…"]` (text = attribute value; ≥768px, fine pointers).
 - Nav: pills hide upward on scroll down (desktop), slide in from the right via the plus (≤991px); 10px direction threshold.
 - Tabs (TrendingDishes): Flip pill 0.5s; text/photo swap 0.65s on "slush"; auto-advance to tab 2 at "center 75%".
+- Intro curtain (2026-10-19, recorded from kervangida.com; that site has no route transition, its transition is
+  this first-load preloader): `IntroCurtain` (components/motion/intro-curtain.tsx, `.wp-intro` in globals.css). A
+  full-screen `--dot` panel; the WORLD PLATE wordmark fills left to right over its outline (2s linear, from 0.1s), holds,
+  then the panel slides up 100% (0.75s, easeInOutSine, from 2.4s). Pure CSS, plays on every full load. `data-intro` on
+  <html> moves the Slush load clock to 3.15s / 3.25s until the first client navigation (IntroCurtain drops it; a
+  `data-load` swing clock always wins). Reduced motion: no intro.
 - Hungry Tiger scroll (2026-10-19, recorded from eathungrytiger.com via the user's Refero link): GSAP ScrollTrigger
   word scrub — each `.word` goes 0.2 → 1 opacity (0.2 long, 0.4 apart, power1.out), scrubbed "top 90%" → "top center".
   Ported into ScrollMotion as `[data-scrub="words"]` (`ScrubWords`, components/motion/scrub-words.tsx); it replaces the

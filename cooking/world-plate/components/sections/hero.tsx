@@ -7,12 +7,12 @@ import type { CuisineSummary } from "@/db/queries/cuisines";
 import type { RecipeCard } from "@/db/queries/recipes";
 import { WidgetWall } from "./widget-wall";
 
-// Floating hero photos (Cult Eats): placement, blob mask, resting tilt, mouse depth, scroll drift, float timing.
+// Floating hero photos: placement, resting tilt, mouse depth, scroll drift, float timing. Plain rectangular slabs (Foudre).
 const PHOTOS = [
-  { place: "top-[17%] left-[3%] size-48 xl:size-56", mask: "mask-blob-1", tilt: "-6deg", depth: -0.6, drift: -45, dur: "6.5s", delay: "-1s", label: "left-3 bottom-2" },
-  { place: "top-[15%] right-[3%] size-48 xl:size-56", mask: "mask-blob-2", tilt: "8deg", depth: 0.7, drift: -35, dur: "7.2s", delay: "-3s", label: "right-3 bottom-2" },
-  { place: "top-[47%] left-[8%] size-40 xl:size-48", mask: "mask-blob-3", tilt: "5deg", depth: -0.45, drift: -15, dur: "5.8s", delay: "-2s", label: "left-3 top-1" },
-  { place: "top-[45%] right-[8%] size-40 xl:size-48", mask: "mask-blob-4", tilt: "-7deg", depth: 0.55, drift: -22, dur: "6.8s", delay: "-4s", label: "right-3 top-1" },
+  { place: "top-[17%] left-[3%] size-48 xl:size-56", tilt: "-6deg", depth: -0.6, drift: -45, dur: "6.5s", delay: "-1s", label: "left-3 bottom-2" },
+  { place: "top-[15%] right-[3%] size-48 xl:size-56", tilt: "8deg", depth: 0.7, drift: -35, dur: "7.2s", delay: "-3s", label: "right-3 bottom-2" },
+  { place: "top-[47%] left-[8%] size-40 xl:size-48", tilt: "5deg", depth: -0.45, drift: -15, dur: "5.8s", delay: "-2s", label: "left-3 top-1" },
+  { place: "top-[45%] right-[8%] size-40 xl:size-48", tilt: "-7deg", depth: 0.55, drift: -22, dur: "6.8s", delay: "-4s", label: "right-3 top-1" },
 ] as const;
 
 /**
@@ -21,7 +21,7 @@ const PHOTOS = [
  * the counts and buttons rise 3em, 0.1s apart, from 0.6s; the hexagon pops in like their stickers;
  * the two-line headline (their "Your money. Unstuck.") rises 2em at 1.5s, lines 0.3s apart.
  * Scrolling away, the wordmark drifts down 20% (Slush's hero-background parallax).
- * Cult Eats layer on top: blob-cut dish photos float around the headline all the time, follow the mouse at
+ * Cult Eats layer on top: dish photos (rectangular slabs) float around the headline all the time, follow the mouse at
  * different depths (MouseDepth) and rise as you scroll.
  */
 export function Hero({
@@ -62,7 +62,7 @@ export function Hero({
                   className="animate-float group relative block size-full"
                   style={{ rotate: p.tilt, "--float-dur": p.dur, "--float-delay": p.delay, "--float-y": "12px", "--float-r": "3deg" } as CSSProperties}
                 >
-                  <span className={`relative block size-full ${p.mask}`}>
+                  <span className="relative block size-full">
                     <Image
                       src={r.image}
                       alt={r.imageAlt}
@@ -71,7 +71,7 @@ export function Hero({
                       className="group-hover-fine:scale-105 object-cover saturate-150 transition-[scale] duration-300"
                     />
                   </span>
-                  <span className={`label-caps absolute ${p.label} bg-scrim text-muted-foreground rounded-md border border-primary px-2.5 py-0.5 text-xs whitespace-nowrap`}>
+                  <span className={`label-caps absolute ${p.label} bg-card text-card-foreground rounded-full px-3.5 py-1 text-xs whitespace-nowrap`}>
                     {r.cuisineName} ▸
                   </span>
                 </Link>

@@ -23,8 +23,8 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-anton), "Barlow Condensed", Impact, sans-serif;
-  --font-ui: var(--font-barlow), var(--font-inter), sans-serif;
+  --font-display: var(--font-anton), Impact, "Arial Narrow", sans-serif;
+  --font-ui: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-heading: var(--font-display);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   --color-ring: var(--ring);
@@ -47,14 +47,16 @@
   --color-scrim: var(--scrim);
   --color-chalk: var(--chalk);
   --color-headline: var(--headline);
-  /* Cult Eats shapes: cards 12px, buttons / toggles 15px, the one feature card 38px. */
-  --radius-sm: 5px;
-  --radius-md: 15px;
+  --color-dot: var(--dot);
+  --color-dot-foreground: var(--dot-foreground);
+  /* Foudre shapes: buttons and badges 10px, cards 20px, elevated blocks 25px, tags and icon buttons fully round. */
+  --radius-sm: 10px;
+  --radius-md: 10px;
   --radius-lg: var(--radius);
   --radius-xl: var(--radius);
-  --radius-2xl: 15px;
-  --radius-3xl: 38px;
-  --radius-4xl: 38px;
+  --radius-2xl: var(--radius);
+  --radius-3xl: 25px;
+  --radius-4xl: 25px;
   /* Entirely flat — depth comes from light/dark section cuts, never elevation. */
   --shadow-2xs: 0 0 #0000;
   --shadow-xs: 0 0 #0000;
@@ -65,89 +67,96 @@
   --shadow-2xl: 0 0 #0000;
   --shadow-soft: 0 0 #0000;
   --shadow-lift: 0 0 #0000;
-  /* Section titles in Anton, up to 132px. Anton's caps are 0.86em tall, so leading under ~0.9 collides. */
-  --text-display: clamp(3.5rem, 11.5vw, 8.25rem);
+  /* Section titles in Anton (standing in for Foudre's Beni 900), up to 130px. Foudre sets Beni at 0.70 leading;
+     Anton's caps are 0.86em tall, so 0.92 is the tightest that doesn't collide. Tracking normal. */
+  --text-display: clamp(3.5rem, 11.5vw, 8.125rem);
   --text-display--line-height: 0.92;
-  --text-display--letter-spacing: 0.03em;
+  --text-display--letter-spacing: 0;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 /* Palette — the only place hex colours live. See CLAUDE.md "Design rules".
-   Cult Eats system (Impossible Foods poster style): Velvet Wine #260212, Burgundy #4f0423, Impossible Red
-   #e10600, Blush #ffc7c6, Butcher Black #000000, Bone White #ffffff — plus the burnt-orange canvas #8b3a10
-   and gold #fdae2d the user asked for (sampled from their reference). Flat: no shadows, no gradients.
-   Headlines: gold on orange (red there is only ~1.6:1), red on wine (~3.9:1). */
+   Agence Foudre layout and type (Refero, 2026-10-19) with the pinks replaced at the user's request: Warm Chalk
+   Butter #f6e3b4 canvas (the user asked for a coloured background instead of the near-white), Tomato #c2321b
+   display type and the round nav dots (4.4:1 on butter, display sizes only), Forest Ink #00522d text, links and
+   buttons (7.3:1), Warm White #fff8ec cards and panels, Sand #f3e6d4 footer wash, Saffron #f4b942 highlights, Paprika #e0603f and Sage #b7cdb0
+   only in motion moments and the jar, black only for line art. Flat: no shadows, gradients or glass.
+   Rooms are forest bands with saffron headlines (~5:1). */
 :root {
-  --background: #8b3a10; /* ember canvas */
-  --foreground: #ffffff;
-  --headline: #fdae2d; /* gold display type */
-  --card: #4f0423; /* burgundy stage */
-  --card-foreground: #ffffff;
-  --popover: #4f0423;
-  --popover-foreground: #ffffff;
-  --primary: #e10600; /* the red pill: every action */
-  --primary-foreground: #ffffff;
-  --secondary: #4f0423;
-  --secondary-foreground: #ffffff;
-  --muted: #73300d; /* one step into the canvas, for image wells */
-  --muted-foreground: #ffc7c6; /* blush, 5.2:1 on ember */
-  --accent: #4f0423;
-  --accent-foreground: #ffffff;
-  --accent-ink: #fdae2d;
-  --destructive: #ffc7c6;
-  --border: #000000; /* butcher-black hairlines */
-  --input: #000000;
-  --ring: #fdae2d;
+  --background: #f6e3b4; /* butter */
+  --foreground: #00522d; /* forest ink */
+  --headline: #c2321b; /* tomato */
+  --card: #fff8ec; /* warm white */
+  --card-foreground: #00522d;
+  --popover: #fff8ec;
+  --popover-foreground: #00522d;
+  --primary: #00522d;
+  --primary-foreground: #fff8f6;
+  --secondary: #fff8ec;
+  --secondary-foreground: #00522d;
+  --muted: #efd79c; /* a step deeper into the butter, for image wells */
+  --muted-foreground: #00522d;
+  --accent: #fff8ec;
+  --accent-foreground: #00522d;
+  --accent-ink: #c2321b;
+  --destructive: #00522d;
+  --border: #d4b46e; /* toasted hairline */
+  --input: #00522d;
+  --ring: #c2321b;
   --scrim: #000000;
-  --chalk: #000000; /* footer */
+  --chalk: #f3e6d4; /* footer wash */
+  --dot: #c2321b; /* the round nav buttons */
+  --dot-foreground: #fff8f6;
   --shadow-color: transparent;
   --shadow-color-strong: transparent;
-  --radius: 12px;
-  --room-background: #260212; /* velvet wine */
-  --room-foreground: #ffffff;
-  --room-headline: #e10600;
-  --room-card: #4f0423;
-  --room-muted: #3a0319;
-  --room-muted-foreground: #ffc7c6;
-  --room-primary: #e10600;
-  --room-primary-foreground: #ffffff;
-  --room-border: #000000;
+  --radius: 20px;
+  --room-background: #00522d; /* forest band */
+  --room-foreground: #fff8f6;
+  --room-headline: #f4b942;
+  --room-card: #00522d;
+  --room-muted: #00522d;
+  --room-muted-foreground: #f3e6d4;
+  --room-primary: #f3e6d4;
+  --room-primary-foreground: #00522d;
+  --room-border: #f4b942;
 }
 
 .dark {
-  --background: #260212; /* velvet wine canvas, Cult Eats' original */
-  --foreground: #ffffff;
-  --headline: #e10600;
-  --card: #4f0423;
-  --card-foreground: #ffffff;
-  --popover: #4f0423;
-  --popover-foreground: #ffffff;
-  --primary: #e10600;
-  --primary-foreground: #ffffff;
-  --secondary: #4f0423;
-  --secondary-foreground: #ffffff;
-  --muted: #3a0319;
-  --muted-foreground: #ffc7c6;
-  --accent: #4f0423;
-  --accent-foreground: #ffffff;
-  --accent-ink: #ffc7c6;
-  --destructive: #ffc7c6;
-  --border: #000000;
-  --input: #000000;
-  --ring: #fdae2d;
+  --background: #00522d; /* forest canvas */
+  --foreground: #fff8f6;
+  --headline: #f4b942;
+  --card: #00522d;
+  --card-foreground: #fff8f6;
+  --popover: #00522d;
+  --popover-foreground: #fff8f6;
+  --primary: #f3e6d4;
+  --primary-foreground: #00522d;
+  --secondary: #00522d;
+  --secondary-foreground: #fff8f6;
+  --muted: #00522d;
+  --muted-foreground: #f3e6d4;
+  --accent: #00522d;
+  --accent-foreground: #fff8f6;
+  --accent-ink: #f4b942;
+  --destructive: #f3e6d4;
+  --border: #f4b942;
+  --input: #f4b942;
+  --ring: #f4b942;
   --scrim: #000000;
-  --chalk: #000000;
-  /* In dark mode the alternating "room" flips to the ember canvas. */
-  --room-background: #8b3a10;
-  --room-foreground: #ffffff;
-  --room-headline: #fdae2d;
-  --room-card: #4f0423;
-  --room-muted: #73300d;
-  --room-muted-foreground: #ffc7c6;
-  --room-primary: #e10600;
-  --room-primary-foreground: #ffffff;
-  --room-border: #000000;
+  --chalk: #00522d;
+  --dot: #f4b942;
+  --dot-foreground: #00522d;
+  /* In dark mode the alternating "room" flips to the butter canvas. */
+  --room-background: #f6e3b4;
+  --room-foreground: #00522d;
+  --room-headline: #c2321b;
+  --room-card: #fff8ec;
+  --room-muted: #efd79c;
+  --room-muted-foreground: #00522d;
+  --room-primary: #00522d;
+  --room-primary-foreground: #fff8f6;
+  --room-border: #f4b942;
 }
 
 /* A "room" is the hard-cut contrasting section (ink on the putty site, putty on the dark site).
@@ -191,14 +200,14 @@
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "ss01", "cv11";
   }
-  /* Anton, uppercase, tracking opened a little (0.03em): a shouted poster label, not a polished headline. */
+  /* Anton (for Beni 900), uppercase, normal tracking. */
   h1,
   h2,
   h3,
   h4 {
     @apply font-display text-balance;
     font-weight: 400;
-    letter-spacing: 0.03em;
+    letter-spacing: 0;
   }
   h1,
   h2,
@@ -292,13 +301,13 @@
   --load-start: 0s;
   --load-delay: 0.1s;
   /* Slush's motion-moment colours (page-swing panels, button back faces, the tab frame behind a sliding
-     photo). Slush's timings are kept; the colours are remapped into the Cult Eats palette, names kept. */
-  --slush-blue: #e10600; /* red */
-  --slush-yellow: #fdae2d; /* gold */
-  --slush-lavender: #ffc7c6; /* blush */
-  --slush-mint: #ffffff; /* bone */
-  --slush-orange: #fdae2d; /* gold */
-  --slush-violet: #4f0423; /* burgundy, paper label */
+     photo). Slush's timings are kept; the colours are remapped into the site palette, names kept. */
+  --slush-blue: #c2321b; /* tomato */
+  --slush-yellow: #f4b942; /* saffron */
+  --slush-lavender: #b7cdb0; /* sage */
+  --slush-mint: #f3e6d4; /* sand */
+  --slush-orange: #e0603f; /* paprika */
+  --slush-violet: #00522d; /* forest, paper label */
   --slush-ink: #000000;
   --slush-paper: #ffffff;
 }
@@ -618,11 +627,9 @@
     --flip-accent-ink: var(--slush-ink);
     position: relative;
     display: inline-flex;
-    border-radius: 15px;
+    border-radius: 10px;
     font-family: var(--font-ui);
     font-weight: 500;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
     transition: transform 0.5s var(--ease-slush-bounce);
   }
   .btn-flip:active {
@@ -664,8 +671,8 @@
   }
   .btn-flip__bg {
     grid-area: 1 / 1;
-    border: 1px solid var(--border);
-    border-radius: 15px;
+    border: 1px solid var(--primary);
+    border-radius: 10px;
     background-color: var(--primary);
     transition:
       background-color 0.2s var(--ease-color),
@@ -697,7 +704,7 @@
     width: calc(100% - 1px);
     height: calc(100% - 1px);
     border: 1px solid var(--slush-ink);
-    border-radius: 15px;
+    border-radius: 10px;
     background-color: var(--flip-accent);
     color: var(--flip-accent-ink);
     opacity: 0;
@@ -712,7 +719,7 @@
     translate: 0 0.75em 0;
     transition: translate var(--duration-default) var(--ease-slush-bounce);
   }
-  /* Ghost CTA: a burgundy pill with a bone edge. */
+  /* Ghost button: a sand pill with a forest edge. */
   .btn-flip--outline .btn-flip__bg {
     border-color: var(--foreground);
     background-color: var(--card);
@@ -936,7 +943,7 @@
       justify-content: flex-end;
       padding-left: max(0px, calc(100% - 20rem));
     }
-    /* Slush's 300%, plus half the screen so the narrow Barlow pills never peek in at the edge. */
+    /* Slush's 300%, plus half the screen so narrow pills never peek in at the edge. */
     .nav-pills:not([data-open]) .nav-pill {
       translate: calc(300% + 50vw) 0;
       transition-delay: calc(var(--i, 0) * 30ms);
@@ -954,7 +961,7 @@
     display: none;
     padding: 0.75em 1em;
     border: 1px solid var(--border);
-    border-radius: 15px;
+    border-radius: 9999px;
     background: var(--primary);
     color: var(--primary-foreground);
     font: 500 0.8125rem/1 var(--font-ui);
@@ -982,14 +989,15 @@
      settles back on the active one (0.5s slush). Switching tabs: the old text slides off -15% and fades,
      the old photo drops 10%; the new title's characters slide in from the last one, then the paragraph and
      button from -3em, then the new photo rises 10% — all 0.65s on "slush". */
-  /* A red pill behind the tab labels. */
+  /* A cream pill with a forest edge behind the tab labels. */
   .tabs-pill {
     position: absolute;
     top: 0;
     left: 0;
     z-index: 0;
-    border-radius: 15px;
-    background: var(--primary);
+    border: 1.5px solid var(--foreground);
+    border-radius: 10px;
+    background: var(--background);
     pointer-events: none;
   }
   .tab-frame {
@@ -1118,12 +1126,12 @@
 }
 }
 
-/* Small uppercase UI label (Cult Eats' eyebrow / pill type), in Barlow Condensed. */
+/* Section label (Foudre: Clash Grotesk 400–500, 12–14px, uppercase), in Inter. */
 @utility label-caps {
   font-family: var(--font-ui);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   line-height: 1.25;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -1200,19 +1208,6 @@
   animation: wp-float-spin var(--float-dur, 18s) linear infinite;
 }
 
-/* Rough asymmetric mask-cut food shapes: never circles or rectangles near display type. */
-@utility mask-blob-1 {
-  clip-path: polygon(12% 3%, 84% 0%, 100% 28%, 92% 79%, 66% 100%, 18% 94%, 0% 62%, 4% 22%);
-}
-@utility mask-blob-2 {
-  clip-path: polygon(24% 0%, 91% 9%, 100% 48%, 83% 93%, 39% 100%, 4% 82%, 0% 35%);
-}
-@utility mask-blob-3 {
-  clip-path: polygon(8% 14%, 68% 0%, 97% 19%, 100% 69%, 74% 100%, 19% 92%, 0% 51%);
-}
-@utility mask-blob-4 {
-  clip-path: polygon(19% 0%, 82% 5%, 100% 38%, 89% 88%, 48% 100%, 7% 86%, 0% 41%);
-}
 
 @layer components {
   .scroll-progress {
@@ -1220,7 +1215,7 @@
     inset: 0 0 auto 0;
     z-index: 70;
     height: 4px;
-    background: var(--primary);
+    background: var(--headline);
     transform: scaleX(0);
     transform-origin: left center;
     pointer-events: none;
@@ -1286,7 +1281,7 @@
     /* Matte black cap, ribbed, with the silver glass rim where it meets the jar. */
     background:
       repeating-linear-gradient(to bottom, transparent 0 6px, rgb(255 255 255 / 0.06) 6px 7px),
-      linear-gradient(to bottom, #1c1c1c 0%, #0a0a0a 72%, #d7dce1 80%, #8d949b 100%);
+      linear-gradient(to bottom, #00522d 0%, #003a20 72%, #f3e6d4 80%, #b7cdb0 100%);
     transform: rotateY(var(--a)) translateZ(calc(var(--jr) * 1.04));
   }
   .jar__top {
@@ -1297,7 +1292,7 @@
     display: grid;
     place-items: center;
     border-radius: 9999px;
-    background: radial-gradient(circle at 42% 38%, #2a2a2a 0%, #0b0b0b 70%);
+    background: radial-gradient(circle at 42% 38%, #00663a 0%, #003a20 70%);
     transform: rotateX(90deg);
   }
   .jar__mark {
@@ -1306,9 +1301,9 @@
     width: 38%;
     aspect-ratio: 1;
     border-radius: 9999px;
-    border: 3px solid #4f0423;
-    background: #fdae2d;
-    color: #4f0423;
+    border: 3px solid #f3e6d4;
+    background: #c2321b;
+    color: #fff8f6;
     font: 400 calc(var(--jw) * 0.11) / 1 var(--font-display);
   }
   .jar__bottom {
@@ -1317,7 +1312,7 @@
     width: calc(var(--jr) * 2);
     height: calc(var(--jr) * 2);
     border-radius: 9999px;
-    background: radial-gradient(circle at 50% 50%, #ff8a2a 0%, #e0500f 62%, #b8390a 100%);
+    background: radial-gradient(circle at 50% 50%, #e0603f 0%, #c2321b 62%, #9e2412 100%);
     transform: rotateX(-90deg);
   }
   .jar__shade {
@@ -1327,6 +1322,67 @@
     background: #000000;
     opacity: 0;
     pointer-events: none;
+  }
+}
+
+/* ---------- Intro curtain (kervangida.com's preloader, recorded 2026-10-19) ----------
+   IntroCurtain (components/motion/intro-curtain.tsx). Their timeline: the logo fills left to right in 2s
+   (linear), holds ~0.3s, then the panel slides up 100% in ~0.75s, ease-in-out (easeInOutSine fits their
+   samples). Ours starts at 0.1s, so the panel is gone at 3.15s; the Slush load clock waits for it. */
+@keyframes wp-intro-fill {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes wp-intro-wipe {
+  to {
+    transform: translateY(-100%);
+    visibility: hidden;
+  }
+}
+
+@layer components {
+  .wp-intro {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: grid;
+    place-items: center;
+    background: var(--dot);
+    color: var(--dot-foreground);
+    animation: wp-intro-wipe 0.75s cubic-bezier(0.37, 0, 0.63, 1) 2.4s both;
+  }
+  .wp-intro__mark {
+    position: relative;
+    display: inline-block;
+    font: 400 clamp(2.75rem, 8vw, 6.5rem) / 0.92 var(--font-display);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .wp-intro__outline {
+    color: transparent;
+    -webkit-text-stroke: 1.5px color-mix(in srgb, var(--dot-foreground) 55%, transparent);
+  }
+  .wp-intro__fill {
+    position: absolute;
+    inset: 0;
+    animation: wp-intro-fill 2s linear 0.1s both;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The page-load clock starts when the curtain has gone (3.15s); a client navigation (data-load) wins. */
+  :root[data-intro]:not([data-load]) {
+    --load-start: 3.15s;
+    --load-delay: 3.25s;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wp-intro {
+    display: none;
   }
 }
 

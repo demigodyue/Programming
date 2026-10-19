@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Anton, Barlow_Condensed, Inter } from "next/font/google";
+import { Anton, Inter } from "next/font/google";
 import { preconnect } from "react-dom";
 import { Cursor } from "@/components/motion/cursor";
+import { IntroCurtain } from "@/components/motion/intro-curtain";
 import { LenisProvider } from "@/components/motion/lenis-provider";
 import { MouseDepth } from "@/components/motion/mouse-depth";
 import { MotionProvider } from "@/components/motion/motion-provider";
@@ -13,21 +14,13 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { site } from "@/lib/site";
 import "./globals.css";
 
-// Cult Eats type: Anton (display, stands in for Impossible's "sans-meat"), Barlow Condensed (UI labels and
-// buttons), Inter (body). Anton is preloaded because the hero headline and wordmark are set in it.
+// Foudre type, two families only: Anton for display (standing in for Beni 900) and Inter for everything else
+// (standing in for Clash Grotesk). Anton is preloaded because the hero headline and wordmark are set in it.
 const anton = Anton({
   variable: "--font-anton",
   subsets: ["latin"],
   weight: "400",
   display: "swap",
-});
-
-const barlow = Barlow_Condensed({
-  variable: "--font-barlow",
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  display: "swap",
-  preload: false,
 });
 
 const inter = Inter({
@@ -47,8 +40,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#8b3a10" },
-    { media: "(prefers-color-scheme: dark)", color: "#260212" },
+    { media: "(prefers-color-scheme: light)", color: "#f6e3b4" },
+    { media: "(prefers-color-scheme: dark)", color: "#00522d" },
   ],
 };
 
@@ -56,7 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   // Every page leads with an Unsplash photo — open the connection before the <img> is parsed.
   preconnect("https://images.unsplash.com");
   return (
-    <html lang="en" suppressHydrationWarning className={`${anton.variable} ${barlow.variable} ${inter.variable}`}>
+    <html lang="en" suppressHydrationWarning data-intro="" className={`${anton.variable} ${inter.variable}`}>
       <body className="flex min-h-dvh flex-col">
         <ThemeProvider>
           <MotionProvider>
@@ -66,6 +59,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           >
             Skip to content
           </a>
+          <IntroCurtain />
           <div aria-hidden className="scroll-progress" />
           <LenisProvider />
           <ScrollMotion />

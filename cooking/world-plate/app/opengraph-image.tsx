@@ -7,9 +7,9 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 // ImageResponse can't read CSS variables, so the palette is inlined here (mirrors globals.css).
-const CREAM = "#8b3a10"; // ember canvas
-const INK = "#fdae2d"; // gold headline
-const SAFFRON = "#e10600"; // impossible red
+const CREAM = "#f6e3b4"; // butter canvas
+const INK = "#c2321b"; // tomato headline
+const SAFFRON = "#00522d"; // forest ink
 
 export default function OpengraphImage() {
   return new ImageResponse(
@@ -36,7 +36,7 @@ export default function OpengraphImage() {
         <div style={{ fontSize: 104, lineHeight: 0.95, letterSpacing: 2, maxWidth: 900 }}>
           Cook the dishes the world is proud of.
         </div>
-        <div style={{ fontSize: 30, color: "#ffc7c6", fontFamily: "sans-serif" }}>
+        <div style={{ fontSize: 30, color: "#00522d", fontFamily: "sans-serif" }}>
           Ramen · Momo · Carbonara · Tacos al pastor · Croissants
         </div>
       </div>

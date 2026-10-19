@@ -2,35 +2,35 @@
   <!-- Unwrapped body of the World Plate "House Masala" jar: front label centred at x=500, back label across the seam. -->
   <defs>
     <linearGradient id="sauce" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ff8a2a"/>
-      <stop offset="0.5" stop-color="#f05a12"/>
-      <stop offset="1" stop-color="#c8400c"/>
+      <stop offset="0" stop-color="#e0603f"/>
+      <stop offset="0.5" stop-color="#c2321b"/>
+      <stop offset="1" stop-color="#9e2412"/>
     </linearGradient>
   </defs>
   <rect width="1000" height="334" fill="url(#sauce)"/>
   <!-- glass shoulder -->
-  <rect y="0" width="1000" height="14" fill="#ffd9b0" opacity="0.55"/>
+  <rect y="0" width="1000" height="14" fill="#f3e6d4" opacity="0.55"/>
 
   <!-- front label -->
-  <rect x="300" y="58" width="400" height="236" fill="#4f0423"/>
-  <rect x="312" y="70" width="376" height="212" fill="none" stroke="#fdae2d" stroke-width="3"/>
-  <circle cx="500" cy="118" r="30" fill="#fdae2d"/>
-  <text x="500" y="129" text-anchor="middle" font-family="Impact, 'Arial Narrow', sans-serif" font-size="30" fill="#4f0423">WP</text>
-  <text x="500" y="196" text-anchor="middle" font-family="Impact, 'Arial Narrow', sans-serif" font-size="44" letter-spacing="2" fill="#fdae2d">WORLD PLATE</text>
-  <rect x="380" y="208" width="240" height="2" fill="#fdae2d"/>
-  <text x="500" y="244" text-anchor="middle" font-family="Impact, 'Arial Narrow', sans-serif" font-size="30" letter-spacing="3" fill="#ffffff">HOUSE MASALA</text>
-  <text x="500" y="272" text-anchor="middle" font-family="'Arial Narrow', Arial, sans-serif" font-size="15" letter-spacing="3" fill="#ffc7c6">SLOW-ROASTED · 340 G</text>
+  <rect x="300" y="58" width="400" height="236" fill="#00522d"/>
+  <rect x="312" y="70" width="376" height="212" fill="none" stroke="#f4b942" stroke-width="3"/>
+  <circle cx="500" cy="118" r="30" fill="#c2321b"/>
+  <text x="500" y="129" text-anchor="middle" font-family="Impact, 'Arial Narrow', sans-serif" font-size="30" fill="#fff8f6">WP</text>
+  <text x="500" y="196" text-anchor="middle" font-family="Impact, 'Arial Narrow', sans-serif" font-size="44" letter-spacing="2" fill="#f4b942">WORLD PLATE</text>
+  <rect x="380" y="208" width="240" height="2" fill="#f4b942"/>
+  <text x="500" y="244" text-anchor="middle" font-family="Impact, 'Arial Narrow', sans-serif" font-size="30" letter-spacing="3" fill="#fff8f6">HOUSE MASALA</text>
+  <text x="500" y="272" text-anchor="middle" font-family="'Arial Narrow', Arial, sans-serif" font-size="15" letter-spacing="3" fill="#f3e6d4">SLOW-ROASTED · 340 G</text>
 
   <!-- back label (wraps the seam) -->
-  <g fill="#fff7ee">
+  <g fill="#fff8f6">
     <rect x="860" y="70" width="140" height="212"/>
     <rect x="0" y="70" width="140" height="212"/>
   </g>
-  <g fill="#4f0423">
+  <g fill="#00522d">
     <rect x="872" y="86" width="120" height="10"/>
     <rect x="8" y="86" width="110" height="10"/>
   </g>
-  <g fill="#9a8f87">
+  <g fill="#e0603f">
     <rect x="872" y="110" width="128" height="4"/><rect x="0" y="110" width="118" height="4"/>
     <rect x="872" y="126" width="128" height="4"/><rect x="0" y="126" width="98" height="4"/>
     <rect x="872" y="142" width="128" height="4"/><rect x="0" y="142" width="112" height="4"/>
@@ -38,7 +38,7 @@
     <rect x="872" y="174" width="128" height="4"/><rect x="0" y="174" width="118" height="4"/>
     <rect x="872" y="190" width="128" height="4"/><rect x="0" y="190" width="104" height="4"/>
   </g>
-  <g fill="#1d1d1b">
+  <g fill="#000000">
     <rect x="890" y="222" width="3" height="40"/><rect x="897" y="222" width="6" height="40"/><rect x="907" y="222" width="2" height="40"/>
     <rect x="913" y="222" width="5" height="40"/><rect x="922" y="222" width="3" height="40"/><rect x="929" y="222" width="7" height="40"/>
     <rect x="940" y="222" width="2" height="40"/><rect x="946" y="222" width="4" height="40"/><rect x="954" y="222" width="3" height="40"/>
