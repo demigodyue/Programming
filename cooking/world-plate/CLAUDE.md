@@ -191,7 +191,9 @@ tests/unit, tests/e2e    Vitest and Playwright
   .hero-fan fans the wordmark letters); TrendingDishes pins on large screens (data-pinned, 60svh per dish, scroll picks
   the tab, frame turns/swells, progress bar; tabs scroll to their dish); cuisines are flash cards (CuisineDeck,
   components/sections/cuisine-deck.tsx): pinned deck that deals out with the scroll, each card arcs, flips face up and
-  lands, then flips on hover/focus to its back (country, count, link); QuickMeals .scrub-fan; CTA .scrub-iris circle;
+  lands, then flips on hover/focus to its back (country, count, link); QuickMeals is the user's card fan carousel
+  (components/ui/card-fan-carousel.tsx — GSAP, the one place GSAP is used, because the user supplied it that way;
+  entrance waits for the fan to scroll into view, sizes in .fan-layout / .fan-card); CTA .scrub-iris circle;
   footer .foot-rise letters. Pins need (min-width:1024px) and (min-height:760px) and motion; otherwise cards swing in
   per view timeline. All CSS ones are in the "Scroll-scrubbed sections" block of globals.css.
 - Intro curtain (2026-10-19, recorded from kervangida.com; that site has no route transition, its transition is

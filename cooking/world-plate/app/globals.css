@@ -1419,7 +1419,7 @@
    - hero: as it scrolls away the headline block sinks back and fades, and the WORLD PLATE letters fan apart
    - trending: the section pins and scrolling steps through the dishes (TrendingDishes sets data-pinned)
    - cuisines: a pinned deck of flash cards deals out and flips face up (CuisineDeck sets data-pinned)
-   - quick meals: the cards straighten out of a fan
+   - quick meals: a card fan carousel (components/ui/card-fan-carousel.tsx, GSAP; sizes below)
    - CTA: the forest panel opens out of a small circle
    - footer: the wordmark letters rise one after another
    The CSS ones use scroll-driven animations (off the main thread); browsers without them show the end state. */
@@ -1433,12 +1433,6 @@
   to {
     translate: 0 calc((var(--li) - 4.5) * -2.6vh);
     rotate: calc((var(--li) - 4.5) * 5deg);
-  }
-}
-@keyframes wp-fan-in {
-  from {
-    translate: var(--fx, 0) var(--fy, 20vh);
-    rotate: var(--fr, 0deg);
   }
 }
 @keyframes wp-iris {
@@ -1484,6 +1478,50 @@
     background: var(--headline);
     transform: scaleX(0);
     transform-origin: left center;
+  }
+
+  /* Card fan carousel: heights match getHeightMultiplier's ideal layout heights; cards are 4:7. GSAP moves them. */
+  .fan-layout {
+    --fw: 9rem;
+    height: 22rem;
+  }
+  @media (width >= 480px) {
+    .fan-layout {
+      --fw: 11rem;
+      height: 26rem;
+    }
+  }
+  @media (width >= 640px) {
+    .fan-layout {
+      --fw: 12rem;
+      height: 28rem;
+    }
+  }
+  @media (width >= 768px) {
+    .fan-layout {
+      --fw: 15rem;
+      height: 34rem;
+    }
+  }
+  @media (width >= 1024px) {
+    .fan-layout {
+      --fw: 18rem;
+      height: 38rem;
+    }
+  }
+  .fan-card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--fw);
+    aspect-ratio: 4 / 7;
+    margin-top: calc(var(--fw) * -0.875);
+    margin-left: calc(var(--fw) / -2);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--muted);
+    will-change: transform;
   }
 
   /* Cuisines: a deck of flash cards. */
@@ -1578,11 +1616,6 @@
       animation: wp-hero-fan linear both;
       animation-timeline: --hero;
       animation-range: exit 0% exit 90%;
-    }
-    .scrub-fan > li {
-      animation: wp-fan-in linear both;
-      animation-timeline: view();
-      animation-range: entry 0% cover 42%;
     }
     .scrub-iris {
       animation: wp-iris linear both;
