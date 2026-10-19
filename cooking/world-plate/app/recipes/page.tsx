@@ -25,8 +25,8 @@ export default async function RecipesPage() {
 
   return (
     <div className="container-page pt-32 pb-24 md:pt-36">
-      <header className="hero-content mb-14 flex flex-col items-center border-b pb-12 text-center">
-        <SlantText as="h1" mode="load" text="All recipes" className="block text-[clamp(3.5rem,11vw,5.875rem)] leading-[0.84]" />
+      <header className="hero-content relative isolate mb-14 flex flex-col items-center border-b pb-12 text-center">
+        <SlantText as="h1" mode="load" text="All recipes" className="block text-[clamp(3.5rem,11vw,5.875rem)] leading-[0.92]" />
         <p className="load-stagger text-muted-foreground mt-6 max-w-md text-base" style={{ "--i": 0 } as CSSProperties}>
           Every dish on World Plate. Search by name or ingredient, or narrow it down by cuisine, effort and time.
         </p>

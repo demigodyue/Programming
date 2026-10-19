@@ -92,13 +92,20 @@ All motion is modelled on [slush.app](https://slush.app) (the "Slush" style on R
 - **Scroll:** display titles slide in by character, smaller headings tip in line by line in 3D, card rows fly in from the right in 3D, the home showcase rises and grows, marquees reverse with your scroll direction, and the wordmark and CTA hexagon drift (parallax). All play once, when the top crosses 80% of the viewport.
 - **Hover:** pill buttons flip in 3D to a coloured back face, circle buttons spin, tiles sink to 0.92, links draw their underline, and a "View recipe" label follows the pointer over dishes.
 - **Nav:** pills fly up while you scroll down and return when you scroll up; on mobile the plus slides them in from the right and turns into a minus.
-- **Trending dishes:** Slush's tab system — a difference-blended pill follows the hovered tab; switching slides the old text off and the new title in by character.
+- **Trending dishes:** Slush's tab system — a red pill follows the hovered tab; switching slides the old text off and the new title in by character. The photo frame opens from a smaller rounded window as it scrolls in.
+- **Hungry Tiger scroll:** section titles and the about paragraph fill word by word as you scroll (20% → full, scrubbed from "top 90%" to "top center", as on eathungrytiger.com). On the home page a World Plate "House Masala" jar (built in CSS 3D) stays pinned in the middle of the screen and tumbles as you scroll — lid, back label, base, upright again — while three headlines pass behind it; it rises, tilts and finally shrinks away on the curve recorded from their jar.
+- **Cult Eats layer:** blob-cut dish photos float around the hero all the time, follow the mouse at different depths and rise at different speeds as you scroll. A red progress bar tracks the page, card photos settle inside their frames while scrolling, and the dish marquee runs as two tilted bands.
 - **Reduced motion:** no 3D, no travel, no parallax or marquee drift — opacity fades only; the page transition becomes a crossfade. Lenis isn't loaded.
-- **Performance:** Motion is loaded via `LazyMotion` and `m.*` components, with its features fetched asynchronously. Lenis and Cook Mode are loaded on demand, and the display font isn't preloaded so it doesn't compete with the hero photo.
+- **Performance:** Motion is loaded via `LazyMotion` and `m.*` components, with its features fetched asynchronously. Lenis and Cook Mode are loaded on demand. Anton (one weight) is preloaded because the home page's largest element is the Anton wordmark; Barlow Condensed is not. The floats and scroll-linked effects are CSS animations, off the main thread.
+
+## Look
+
+The "Cult Eats" poster style (from the Impossible Foods reference, ported from `../a/cult-eats`): a burnt-orange canvas with gold Anton headlines in light mode, velvet wine with red headlines in dark mode, burgundy cards, red 15px pill buttons, Barlow Condensed labels and Inter body text. See CLAUDE.md "Design rules".
 
 ## Status (last verified)
 
-- Lint, typecheck, 36 unit tests and the E2E test (desktop + mobile) pass; the production build succeeds.
+- Lint, typecheck, 41 unit tests and the 6 E2E tests (desktop + mobile) pass; the production build succeeds (2026-10-19, after the Cult Eats restyle).
+- Lighthouse scores below were measured before the restyle and haven't been re-run since.
 - Lighthouse, mobile preset, against a local production server: **Accessibility 100, Best Practices 100, SEO 100** on every page. **Performance** is 91 on home, 92 on recipes, 93–94 on cuisine pages and 93 on favorites. Recipe detail pages score **88–90**, just under the 90 target. That number is Lighthouse's simulated slow-4G estimate for the large hero photo; the real unthrottled LCP is about 0.1 s.
 - `npm audit --omit=dev`: 0 vulnerabilities. The full audit lists 13 issues, all in dev tooling (shadcn CLI, eslint-config-next, drizzle-kit). The high-severity `braces` advisory has no patched release yet.
 - Security review: no exploitable issues found. See CLAUDE.md for the security rules.

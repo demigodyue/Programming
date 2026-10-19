@@ -1,8 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Instrument_Sans } from "next/font/google";
+import { Anton, Barlow_Condensed, Inter } from "next/font/google";
 import { preconnect } from "react-dom";
 import { Cursor } from "@/components/motion/cursor";
 import { LenisProvider } from "@/components/motion/lenis-provider";
+import { MouseDepth } from "@/components/motion/mouse-depth";
 import { MotionProvider } from "@/components/motion/motion-provider";
 import { PageSwing } from "@/components/motion/page-swing";
 import { ScrollMotion } from "@/components/motion/scroll-motion";
@@ -12,19 +13,25 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { site } from "@/lib/site";
 import "./globals.css";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+// Cult Eats type: Anton (display, stands in for Impossible's "sans-meat"), Barlow Condensed (UI labels and
+// buttons), Inter (body). Anton is preloaded because the hero headline and wordmark are set in it.
+const anton = Anton({
+  variable: "--font-anton",
   subsets: ["latin"],
-  // opsz only: the SOFT axis doubled the file size. Not preloaded so it never competes with the
-  // LCP photo; next/font's metric-matched fallback keeps the swap shift-free.
-  axes: ["opsz"],
-  style: ["normal", "italic"],
+  weight: "400",
+  display: "swap",
+});
+
+const barlow = Barlow_Condensed({
+  variable: "--font-barlow",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
   display: "swap",
   preload: false,
 });
 
-const instrument = Instrument_Sans({
-  variable: "--font-instrument",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
 });
@@ -40,8 +47,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#c4c3b6" },
-    { media: "(prefers-color-scheme: dark)", color: "#0b0b0a" },
+    { media: "(prefers-color-scheme: light)", color: "#8b3a10" },
+    { media: "(prefers-color-scheme: dark)", color: "#260212" },
   ],
 };
 
@@ -49,7 +56,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   // Every page leads with an Unsplash photo — open the connection before the <img> is parsed.
   preconnect("https://images.unsplash.com");
   return (
-    <html lang="en" suppressHydrationWarning className={`${fraunces.variable} ${instrument.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${anton.variable} ${barlow.variable} ${inter.variable}`}>
       <body className="flex min-h-dvh flex-col">
         <ThemeProvider>
           <MotionProvider>
@@ -59,8 +66,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           >
             Skip to content
           </a>
+          <div aria-hidden className="scroll-progress" />
           <LenisProvider />
           <ScrollMotion />
+          <MouseDepth />
           <PageSwing />
           <Cursor />
           <SiteHeader />

@@ -1,30 +1,35 @@
+import { Flame } from "lucide-react";
 import { ScrollMarquee } from "@/components/motion/scroll-marquee";
 import { cn } from "@/lib/utils";
 
 /**
  * Two strips of dish names running in opposite directions, as Slush pairs its marquees: scrolling down,
  * the top strip runs right and the bottom one left; scrolling up flips both. Each strip also drifts
- * 10vw across the screen as you pass it.
+ * 10vw across the screen as you pass it. Styled as Cult Eats' tilted bands: a red band with black type
+ * and a burgundy band with blush type, a flame between names.
  */
 export function DishMarquee({ items }: { items: string[] }) {
   const half = Math.ceil(items.length / 2);
   const rows = [items.slice(0, half), items.slice(half)];
   return (
-    <div className="room space-y-3 py-6">
+    <div className="space-y-3 overflow-x-clip py-12 md:py-16">
       {rows.map((row, r) => (
-        <ScrollMarquee key={r} direction={r === 0 ? "right" : "left"} speed={20}>
-          {row.map((name, i) => (
-            <span
-              key={name}
-              className={cn(
-                "bg-card font-display mr-3 grid h-24 min-w-56 place-items-center px-8 text-2xl whitespace-nowrap sm:h-28 sm:text-[1.75rem]",
-                (i + r) % 3 === 1 ? "rounded-full" : "rounded-lg",
-              )}
-            >
-              {name}
-            </span>
-          ))}
-        </ScrollMarquee>
+        <div
+          key={r}
+          className={cn(
+            "-mx-[5vw] border-y border-border py-3 md:py-4",
+            r === 0 ? "bg-primary -rotate-2 text-scrim" : "bg-card text-muted-foreground rotate-[1.5deg]",
+          )}
+        >
+          <ScrollMarquee direction={r === 0 ? "right" : "left"} speed={20}>
+            {row.map((name) => (
+              <span key={name} className="font-display flex items-center gap-6 pr-6 text-4xl leading-none tracking-[0.03em] whitespace-nowrap md:text-6xl">
+                {name}
+                <Flame aria-hidden strokeWidth={1.5} className={cn("size-7 shrink-0 md:size-9", r === 0 ? "text-primary-foreground" : "text-primary")} />
+              </span>
+            ))}
+          </ScrollMarquee>
+        </div>
       ))}
     </div>
   );

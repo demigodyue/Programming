@@ -17,7 +17,7 @@ function DishWidget({ recipe, className }: { recipe: RecipeCard; className?: str
     <Widget className={cn("tile-press", className)}>
       <Link href={`/recipes/${recipe.slug}`} data-cursor="View recipe" className="flex h-full flex-col overflow-hidden rounded-lg">
         <span className="bg-muted relative block min-h-32 flex-1 overflow-hidden">
-          <Image src={recipe.image} alt={recipe.imageAlt} fill sizes="(min-width: 768px) 25vw, 50vw" className="object-cover" />
+          <Image src={recipe.image} alt={recipe.imageAlt} fill sizes="(min-width: 768px) 25vw, 50vw" className="scroll-zoom object-cover" />
         </span>
         <span className="flex items-end justify-between gap-3 p-4">
           <span className="font-display text-lg leading-tight">{recipe.title}</span>

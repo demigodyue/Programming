@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { FlipFace, flipClass, TextLinkLine } from "@/components/motion/flip-face";
@@ -6,12 +7,22 @@ import type { CuisineSummary } from "@/db/queries/cuisines";
 import type { RecipeCard } from "@/db/queries/recipes";
 import { WidgetWall } from "./widget-wall";
 
+// Floating hero photos (Cult Eats): placement, blob mask, resting tilt, mouse depth, scroll drift, float timing.
+const PHOTOS = [
+  { place: "top-[17%] left-[3%] size-48 xl:size-56", mask: "mask-blob-1", tilt: "-6deg", depth: -0.6, drift: -45, dur: "6.5s", delay: "-1s", label: "left-3 bottom-2" },
+  { place: "top-[15%] right-[3%] size-48 xl:size-56", mask: "mask-blob-2", tilt: "8deg", depth: 0.7, drift: -35, dur: "7.2s", delay: "-3s", label: "right-3 bottom-2" },
+  { place: "top-[47%] left-[8%] size-40 xl:size-48", mask: "mask-blob-3", tilt: "5deg", depth: -0.45, drift: -15, dur: "5.8s", delay: "-2s", label: "left-3 top-1" },
+  { place: "top-[45%] right-[8%] size-40 xl:size-48", mask: "mask-blob-4", tilt: "-7deg", depth: 0.55, drift: -22, dur: "6.8s", delay: "-4s", label: "right-3 top-1" },
+] as const;
+
 /**
  * Gallery-wall hero with Slush's home load (runPageLoad + runHomeLoad), all pure CSS:
  * the content appears at 0.1s; the oversized wordmark rolls up letter by letter (as Slush's logo);
  * the counts and buttons rise 3em, 0.1s apart, from 0.6s; the hexagon pops in like their stickers;
  * the two-line headline (their "Your money. Unstuck.") rises 2em at 1.5s, lines 0.3s apart.
  * Scrolling away, the wordmark drifts down 20% (Slush's hero-background parallax).
+ * Cult Eats layer on top: blob-cut dish photos float around the headline all the time, follow the mouse at
+ * different depths (MouseDepth) and rise as you scroll.
  */
 export function Hero({
   recipeCount,
@@ -28,8 +39,48 @@ export function Hero({
 }) {
   return (
     <>
-      <section aria-labelledby="hero-title" className="relative flex min-h-[100svh] flex-col overflow-hidden">
-        <div className="hero-content flex flex-1 flex-col">
+      <section aria-labelledby="hero-title" className="relative isolate flex min-h-[100svh] flex-col overflow-hidden">
+        {/* Layers: scroll drift + mouse depth › sticker pop › always-on float. Large screens only. */}
+        {recipes.slice(0, PHOTOS.length).map((r, i) => {
+          const p = PHOTOS[i];
+          return (
+            <div
+              key={r.slug}
+              data-depth={p.depth}
+              data-parallax
+              data-parallax-trigger="section"
+              data-parallax-start="0"
+              data-parallax-end={p.drift}
+              data-parallax-scroll-start="top top"
+              data-parallax-scroll-end="bottom top"
+              className={`absolute z-30 hidden lg:block ${p.place}`}
+            >
+              <div className="load-pop size-full" style={{ "--r": i } as CSSProperties}>
+                <Link
+                  href={`/recipes/${r.slug}`}
+                  data-cursor="View recipe"
+                  className="animate-float group relative block size-full"
+                  style={{ rotate: p.tilt, "--float-dur": p.dur, "--float-delay": p.delay, "--float-y": "12px", "--float-r": "3deg" } as CSSProperties}
+                >
+                  <span className={`relative block size-full ${p.mask}`}>
+                    <Image
+                      src={r.image}
+                      alt={r.imageAlt}
+                      fill
+                      sizes="224px"
+                      className="group-hover-fine:scale-105 object-cover saturate-150 transition-[scale] duration-300"
+                    />
+                  </span>
+                  <span className={`label-caps absolute ${p.label} bg-scrim text-muted-foreground rounded-md border border-primary px-2.5 py-0.5 text-xs whitespace-nowrap`}>
+                    {r.cuisineName} ▸
+                  </span>
+                </Link>
+              </div>
+            </div>
+          );
+        })}
+
+        <div className="hero-content relative z-20 flex flex-1 flex-col">
           <div className="container-page label-caps text-muted-foreground flex justify-between pt-28">
             <span className="load-fade">A kitchen atlas</span>
             <span className="load-fade">Recipes and their stories</span>
@@ -75,7 +126,7 @@ export function Hero({
             data-parallax-end="20"
             data-parallax-scroll-start="top top"
             data-parallax-scroll-end="bottom top-=20%"
-            className="font-display -mb-[0.16em] text-center text-[19.5vw] leading-[0.84] font-medium tracking-[-0.03em] whitespace-nowrap select-none"
+            className="font-display text-headline -mb-[0.1em] text-center text-[19vw] leading-[0.9] tracking-[0.01em] whitespace-nowrap select-none"
           >
             <LetterRoll text="World Plate" />
           </p>

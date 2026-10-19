@@ -5,7 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";
 import { CardReveal } from "@/components/motion/card-reveal";
-import { HeadingReveal } from "@/components/motion/heading-reveal";
+import { ScrubWords } from "@/components/motion/scrub-words";
 import { SlantText } from "@/components/motion/slant-text";
 import { RecipeActions } from "@/components/recipe/recipe-actions";
 import { RecipeCard } from "@/components/recipe/recipe-card";
@@ -134,7 +134,7 @@ export default async function RecipePage({ params }: PageProps<"/recipes/[slug]"
 
         <section aria-labelledby="story-title" className="room">
           <div className="container-page grid gap-6 py-20 md:grid-cols-[1fr_2fr] md:gap-16 md:py-28">
-            <HeadingReveal id="story-title" text="The story of this dish" className="text-[clamp(2.5rem,6vw,3.25rem)] leading-none" />
+            <ScrubWords id="story-title" text="The story of this dish" className="text-[clamp(2.5rem,6vw,3.25rem)] leading-none" />
             <p className="font-display max-w-[60ch] text-[1.375rem] leading-[1.5] text-pretty sm:text-[1.625rem]">{recipe.story}</p>
           </div>
         </section>

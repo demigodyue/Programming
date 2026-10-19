@@ -31,7 +31,8 @@ Skills used on this project:
 | `engineering:code-review` | Self-review before calling work done |
 
 Decisions made with the user where skills conflicted with the brief:
-- Body font: skill wins → **Instrument Sans** instead of Inter (Fraunces stays for display, standing in for the "Davinci" serif of the Structured reference).
+- Body font: ~~skill wins → Instrument Sans instead of Inter (Fraunces for display)~~ — superseded 2026-10-19 by the
+  Cult Eats restyle (below): Anton display, Barlow Condensed UI labels/buttons, Inter body.
 - Motion density: brief wins → every section reveals on scroll, every card lifts on hover.
 - Navbar: ~~minimal flat bar (monogram + text links)~~ — superseded 2026-10-19 by Slush's pill nav (below).
 - Icons: Lucide (shadcn default), 1.5 stroke.
@@ -40,6 +41,11 @@ Decisions made with the user where skills conflicted with the brief:
   sliding photo) — the user chose this over neutral tones. Slush's timings win over "no animation delays content
   >1s" (the home tagline rises at 1.5s; a new page's entrance waits ~1.65s for the swing). The header became Slush's
   pill nav (logo circle, flip pills, plus/minus, dark "Search" pill) because its motion needs discrete pills.
+- Look (2026-10-19, later the same day): the user asked for the Cult Eats app's changes (`../a/cult-eats`, an Impossible
+  Foods poster style) on World Plate. They chose the **full Cult Eats style** (burnt-orange canvas + gold headlines, Anton
+  caps, red 15px pills, burgundy cards, blob-cut photos) and to **keep Slush's motion and add Cult Eats' effects** on top
+  (floating food icons + photos, mouse depth, scroll progress, tilted marquee bands, image zoom, clip-path reveal).
+  Slush's candy colours are remapped into the palette (names kept); Slush's timings are unchanged.
 
 Note on the senior-* skills (senior-security, senior-backend, senior-frontend): their scripts and reference
 docs are unfilled templates. The final security review used the built-in `security-review` skill instead.
@@ -67,8 +73,8 @@ docs are unfilled templates. The final security review used the built-in `securi
 - **Images**: the custom loader (`lib/image-loader.ts`) lets Unsplash's CDN resize. Above-the-fold heroes use
   `loading="eager"` + `fetchPriority="high"` (Next 16 deprecated `priority`); allowed qualities are listed in
   `images.qualities`.
-- **Fonts**: Fraunces with the `opsz` axis only (SOFT doubled the file size) and `preload: false`; Instrument
-  Sans is preloaded.
+- **Fonts**: Anton (single weight 400, preloaded — the home LCP is the Anton wordmark/headline), Barlow Condensed
+  500/600/700 (`preload: false`), Inter (variable, preloaded). Anton has no italic: `<em>` in display type is a colour switch.
 - **Hex colours** live only in `app/globals.css`. Two unavoidable exceptions: `viewport.themeColor` in
   `app/layout.tsx` and `app/opengraph-image.tsx` (neither can read CSS variables).
 - Registry gotcha: a Watermelon item rewrote `cn` imports to `from "cn"` and installed an unrelated npm package
@@ -115,7 +121,7 @@ app/                     routes (Server Components by default)
 components/ui/           shadcn primitives
 components/watermelon/   Watermelon registry components (adapted, see README)
 components/sections/     page sections (hero, carousel, grids, footer…)
-components/motion/       Slush motion (PageSwing, ScrollMotion, SlantText, HeadingReveal, CardReveal, LetterRoll, FlipFace, ScrollMarquee, Cursor) + Lenis/Motion providers
+components/motion/       Slush motion (PageSwing, ScrollMotion, SlantText, HeadingReveal, CardReveal, LetterRoll, FlipFace, ScrollMarquee, Cursor), Cult Eats MouseDepth + Lenis/Motion providers
 components/recipe/       recipe-detail client widgets
 db/                      schema.ts, client.ts, migrations/, queries/, seed.ts
 data/                    recipes.seed.ts (source of truth for seed content), cuisines
@@ -131,14 +137,21 @@ tests/unit, tests/e2e    Vitest and Playwright
 - Use Watermelon for components; use design skills for layout, typography, color and accessibility.
 - Adapting installed source is expected; record every adaptation in the README table.
 
-## Design rules ("Structured" gallery style — adopted 2026-10-15, replaces the cream/saffron look)
-- Putty gallery wall (`#c4c3b6`) + black ink, bone cards (`#e7e5e4`), chalk footer. **No saturated colour, no shadows, no gradients.**
-- Sections hard-cut between putty and a contrasting **`.room`** (ink on the light site, putty on the dark site). `.room` re-points the theme tokens, so content inside just uses `bg-background`/`text-foreground`/`bg-primary`.
+## Design rules ("Cult Eats" / Impossible Foods poster style — adopted 2026-10-19, replaces "Structured")
+- Light: burnt-orange canvas `#8b3a10` with **gold** headlines `#fdae2d` (red on orange is only ~1.6:1). Dark: velvet wine
+  `#260212` with **red** headlines `#e10600` (~3.9:1). Burgundy cards `#4f0423`, blush secondary text `#ffc7c6`, white body
+  text, black hairlines and footer. Red `--primary` for every action. **No other hues, no shadows, no gradients.**
+- `.room` sections flip canvas: wine (red headlines) on the light site, ember (gold headlines) on the dark site. It re-points
+  the tokens including `--headline`, so content just uses `bg-background` / `text-foreground` / `text-headline` / `bg-primary`.
 - Theme tokens only. **No hex colors in components** — hex lives only in `app/globals.css` (+ the two exceptions above).
-- Type: Fraunces = display serif (weights 400/500, tight negative tracking, `text-display` 94px titles, leading 0.84); Instrument Sans = utility grotesk. Only weights 400 and 500.
-- Small uppercase museum labels via the `label-caps` utility (corner labels, metadata). Sentence case for headings and buttons.
-- Shapes: cards/images 9px (`rounded-lg`), links/chips 2px, buttons are compact pills (`rounded-full px-[17px] py-[9px] text-sm`, black fill). Circular crops for feature imagery; `.hex` / `.hex-outline` for indicators and separators; `.notched` for the floating dish card.
-- Header: Slush-style floating pill nav (see Motion decision above). The oversized "World Plate" wordmark is cropped at the viewport edge in the hero and footer.
+- Type: Anton for h1–h4 and `.font-display` — uppercase, 0.03em tracking, h1/h2 in `--headline`; `text-display` up to 132px
+  with leading 0.92 (Anton's caps are 0.86em tall, so tighter leading collides). Barlow Condensed for `label-caps`, buttons and
+  the cursor label (uppercase). Inter for body copy.
+- Shapes: cards 12px (`rounded-lg`), buttons / toggles / chips 15px (`rounded-md`), feature card 38px (`rounded-3xl`).
+  Feature and decorative photos are blob-cut (`mask-blob-1…4`), never circles; rectangles only inside cards.
+  `.hex` / `.hex-outline` stay as indicators.
+- Header: Slush-style floating pill nav (burgundy ghost pills, red "Search"). The oversized "World Plate" wordmark (gold/red)
+  sits at the foot of the hero and footer.
 
 ## Animation rules (modelled on slush.app — recorded from its GSAP scripts and CSS, 2026-10-19)
 - Two eases only, copied exactly: `--ease-slush` = cubic-bezier(.65,.05,0,1) (GSAP default, tab swaps, hovers, links)
@@ -157,7 +170,23 @@ tests/unit, tests/e2e    Vitest and Playwright
   `Cursor` label over `[data-cursor="…"]` (text = attribute value; ≥768px, fine pointers).
 - Nav: pills hide upward on scroll down (desktop), slide in from the right via the plus (≤991px); 10px direction threshold.
 - Tabs (TrendingDishes): Flip pill 0.5s; text/photo swap 0.65s on "slush"; auto-advance to tab 2 at "center 75%".
-- Reduced motion: opacity fades only — no 3D, travel, parallax, marquee, letter roll. Hover flips become colour swaps.
+- Hungry Tiger scroll (2026-10-19, recorded from eathungrytiger.com via the user's Refero link): GSAP ScrollTrigger
+  word scrub — each `.word` goes 0.2 → 1 opacity (0.2 long, 0.4 apart, power1.out), scrubbed "top 90%" → "top center".
+  Ported into ScrollMotion as `[data-scrub="words"]` (`ScrubWords`, components/motion/scrub-words.tsx); it replaces the
+  scroll-time SlantText / HeadingReveal on section titles, the manifesto, the trending title, the CTA, "Keep exploring" and
+  "The story of this dish" (page-load SlantText titles are unchanged). Their pinned product stage (a jar Lottie that tumbles
+  with scroll inside a container that rises, eases to 0.91×, tilts -10°, then shrinks away turning ~25°) is `DishStage`
+  (components/sections/dish-stage.tsx) on the home page: an original World Plate "House Masala" jar built in CSS 3D
+  (`.jar` in globals.css, label art in public/jar-label.svg) tumbles through poses read off their frames and moves on
+  the same container curve, passing in front of three ScrubWords headlines. Faces are shaded per frame from their turned
+  normals (overlay opacity). Their jar, Lottie, branding and copy are not used.
+- Cult Eats layer (2026-10-19): blob-cut hero photos float (`animate-float`, `.load-pop`, `data-parallax`). Floating
+  food icons and, later, 3D food copied from a reference video were both tried and removed at the user's request. `MouseDepth` (components/motion/mouse-depth.tsx) moves every
+  `[data-depth]` with the pointer (writes `transform`; ScrollMotion writes `translate`, so they compose). Scroll-driven CSS:
+  `.scroll-progress` bar, `.scroll-zoom` card photos, `.clip-reveal` (trending photo frame) — unsupported browsers just skip them.
+  The dish marquee is two tilted bands (red / burgundy). The tab highlight is a solid red pill behind the labels.
+- Reduced motion: opacity fades only — no 3D, travel, parallax, marquee, letter roll, floating, mouse depth or scroll-linked
+  zoom/clip/progress. Hover flips become colour swaps.
 - Hover motion gated behind `(hover: hover)`. Never `transition: all`. Animate transform/opacity (+ clip-path for the swing).
 
 ## Database rules

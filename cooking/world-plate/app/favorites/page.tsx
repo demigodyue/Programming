@@ -16,8 +16,8 @@ export default async function FavoritesPage() {
 
   return (
     <div className="container-page pt-32 pb-24 md:pt-36">
-      <header className="hero-content mb-14 flex flex-col items-center border-b pb-12 text-center">
-        <SlantText as="h1" mode="load" text="Your favorites" className="block text-[clamp(3.5rem,11vw,5.875rem)] leading-[0.84]" />
+      <header className="hero-content relative isolate mb-14 flex flex-col items-center border-b pb-12 text-center">
+        <SlantText as="h1" mode="load" text="Your favorites" className="block text-[clamp(3.5rem,11vw,5.875rem)] leading-[0.92]" />
         <p className="load-stagger text-muted-foreground mt-6 max-w-md text-base" style={{ "--i": 0 } as CSSProperties}>
           Saved on this browser. No account needed.
         </p>

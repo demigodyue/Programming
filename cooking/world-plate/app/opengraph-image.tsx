@@ -7,9 +7,9 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 // ImageResponse can't read CSS variables, so the palette is inlined here (mirrors globals.css).
-const CREAM = "#c4c3b6"; // putty
-const INK = "#000000";
-const SAFFRON = "#000000"; // no accent colour in the Structured system
+const CREAM = "#8b3a10"; // ember canvas
+const INK = "#fdae2d"; // gold headline
+const SAFFRON = "#e10600"; // impossible red
 
 export default function OpengraphImage() {
   return new ImageResponse(
@@ -24,17 +24,19 @@ export default function OpengraphImage() {
           background: CREAM,
           color: INK,
           padding: 72,
-          fontFamily: "serif",
+          fontFamily: "sans-serif",
+          textTransform: "uppercase",
+          fontWeight: 700,
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 18, fontSize: 40 }}>
           <div style={{ width: 56, height: 56, borderRadius: 999, background: SAFFRON, border: `4px solid ${INK}` }} />
           World Plate
         </div>
-        <div style={{ fontSize: 104, lineHeight: 1, letterSpacing: -3, maxWidth: 900 }}>
+        <div style={{ fontSize: 104, lineHeight: 0.95, letterSpacing: 2, maxWidth: 900 }}>
           Cook the dishes the world is proud of.
         </div>
-        <div style={{ fontSize: 30, opacity: 0.7, fontFamily: "sans-serif" }}>
+        <div style={{ fontSize: 30, color: "#ffc7c6", fontFamily: "sans-serif" }}>
           Ramen · Momo · Carbonara · Tacos al pastor · Croissants
         </div>
       </div>

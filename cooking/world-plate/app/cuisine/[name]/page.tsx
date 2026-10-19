@@ -6,6 +6,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CardReveal } from "@/components/motion/card-reveal";
 import { FlipFace, flipClass, type FlipAccent } from "@/components/motion/flip-face";
+import { ScrubWords } from "@/components/motion/scrub-words";
 import { SlantText } from "@/components/motion/slant-text";
 import { RecipeCard } from "@/components/recipe/recipe-card";
 import { db } from "@/db/db";
@@ -54,7 +55,7 @@ export default async function CuisinePage({ params }: PageProps<"/cuisine/[name]
           </Link>
           <span>{cuisine.country}</span>
         </div>
-        <div className="rule-draw flex flex-col items-center pt-12 pb-14 text-center md:pt-16 md:pb-20">
+        <div data-icon-scope className="rule-draw relative isolate flex flex-col items-center pt-12 pb-14 text-center md:pt-16 md:pb-20">
           <SlantText
             as="h1"
             mode="load"
@@ -87,7 +88,7 @@ export default async function CuisinePage({ params }: PageProps<"/cuisine/[name]
 
       <nav aria-labelledby="other-cuisines" className="room">
         <div className="container-page py-20 md:py-24">
-        <SlantText as="h2" id="other-cuisines" text="Keep exploring" className="mb-10 block text-center text-[clamp(2.5rem,6vw,3.25rem)] leading-none" />
+        <ScrubWords id="other-cuisines" text="Keep exploring" className="mb-10 block text-center text-[clamp(2.5rem,6vw,3.25rem)] leading-none" />
         <ul className="flex flex-wrap justify-center gap-2">
           {others.map((c, i) => (
             <li key={c.slug}>

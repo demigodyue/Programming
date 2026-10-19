@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { TextLinkLine } from "@/components/motion/flip-face";
-import { SlantText } from "@/components/motion/slant-text";
+import { ScrubWords } from "@/components/motion/scrub-words";
 
 /**
- * Exhibition-wall section title: small uppercase labels in opposite corners, then a centred display
- * serif title whose characters slide in from the last one (Slush's data-anim-slant), a short grotesk
- * description and one text link with Slush's sweeping underline.
+ * Section title: small uppercase labels in opposite corners, then a centred display title that fills
+ * word by word as you scroll (Hungry Tiger's scrub, ScrubWords), a short description and one text link
+ * with Slush's sweeping underline.
  */
 export function SectionHeading({
   id,
@@ -32,7 +32,7 @@ export function SectionHeading({
           <span>{label}</span>
         </div>
       )}
-      <SlantText as="h2" id={id} text={title} className="text-display mx-auto block max-w-[14ch] text-center text-balance" />
+      <ScrubWords id={id} text={title} className="text-display mx-auto block max-w-[14ch] text-center text-balance" />
       {(description || action) && (
         <div className="mt-6 flex flex-col items-center gap-3 text-center">
           {description && <p className="text-muted-foreground max-w-md text-[0.9375rem] leading-relaxed">{description}</p>}

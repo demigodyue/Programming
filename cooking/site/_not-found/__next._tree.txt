@@ -1,5 +1,5 @@
-:HL["/Programming/cooking/site/_next/static/chunks/2m7wgiaft-bme.css","style"]
+:HL["/Programming/cooking/site/_next/static/chunks/1fki3melf66y2.css","style"]
 :HC"https://images.unsplash.com"
 2:[["children",{"s":"__PAGE__","h":160}]]
 1:[["children",{"s":"/_not-found","h":64,"c":"$Q2"}]]
-0:{"b":"GSkt_DqykwKY3xQlCEm6z","t":{"t":{"s":"","h":16,"c":"$Q1"}}}
+0:{"b":"Yac1HVkmRDRYsgRRcskxA","t":{"t":{"s":"","h":16,"c":"$Q1"}}}

@@ -10,7 +10,7 @@ export default function NotFound() {
         <span aria-hidden className="hex-outline text-foreground" />
         404
       </p>
-      <SlantText as="h1" mode="load" text="This plate is empty." className="mt-6 block max-w-[12ch] text-[clamp(3.5rem,11vw,5.875rem)] leading-[0.84]" />
+      <SlantText as="h1" mode="load" text="This plate is empty." className="mt-6 block max-w-[12ch] text-[clamp(3.5rem,11vw,5.875rem)] leading-[0.92]" />
       <p className="load-stagger text-muted-foreground mt-6 max-w-md text-base" style={{ "--i": 1 } as CSSProperties}>
         The page you were looking for doesn&apos;t exist or has moved. The recipes are all still here.
       </p>

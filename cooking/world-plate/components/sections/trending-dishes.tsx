@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
 import { FlipFace, flipClass, TextLinkLine, type FlipAccent } from "@/components/motion/flip-face";
-import { HeadingReveal } from "@/components/motion/heading-reveal";
+import { ScrubWords } from "@/components/motion/scrub-words";
 import { SlantText } from "@/components/motion/slant-text";
 import type { RecipeCard } from "@/db/queries/recipes";
 
@@ -120,7 +120,7 @@ export function TrendingDishes({ recipes }: { recipes: RecipeCard[] }) {
 
       <div className="flex flex-col items-start gap-8">
         <div>
-          <HeadingReveal id="trending-title" text="Trending dishes" className="text-display max-w-[10ch]" />
+          <ScrubWords id="trending-title" text="Trending dishes" className="text-display max-w-[10ch]" />
           <p className="text-muted-foreground mt-5 max-w-sm text-[0.9375rem] leading-relaxed">What people are cooking from World Plate this week.</p>
         </div>
         <div
@@ -128,7 +128,7 @@ export function TrendingDishes({ recipes }: { recipes: RecipeCard[] }) {
           role="tablist"
           aria-label="Trending dishes"
           onMouseLeave={() => setPillAt(activeRef.current)}
-          className="bg-card relative isolate flex flex-wrap gap-1 rounded-[1.75rem] border border-foreground p-1"
+          className="bg-card relative isolate flex flex-wrap gap-1 rounded-[19px] border border-foreground p-1"
         >
           <span ref={pill} aria-hidden className="tabs-pill" />
           {rows.map((r, i) => (
@@ -146,7 +146,7 @@ export function TrendingDishes({ recipes }: { recipes: RecipeCard[] }) {
               onClick={() => select(i)}
               onMouseEnter={() => setPillAt(i)}
               onKeyDown={(e) => onKey(e, i)}
-              className="label-caps relative min-h-11 rounded-full px-4 text-foreground"
+              className="label-caps relative min-h-11 rounded-md px-4 text-foreground"
             >
               {r.title}
             </button>
@@ -156,7 +156,7 @@ export function TrendingDishes({ recipes }: { recipes: RecipeCard[] }) {
 
       <div ref={content} className="mt-12 grid items-start gap-10 md:grid-cols-2 md:gap-16">
         <div
-          className="tab-frame bg-muted relative order-last aspect-square overflow-hidden rounded-lg border md:order-0"
+          className="tab-frame clip-reveal bg-muted relative order-last aspect-square overflow-hidden rounded-lg border md:order-0"
           style={{ backgroundColor: `var(${FRAMES[active % FRAMES.length]})` }}
         >
           {rows.map((r, i) => (
@@ -185,7 +185,7 @@ export function TrendingDishes({ recipes }: { recipes: RecipeCard[] }) {
               className="tab-text flex flex-col items-start gap-6"
             >
               <p className="tab-text__p label-caps text-muted-foreground">{r.cuisineName}</p>
-              <SlantText as="h3" mode="static" text={r.title} className="text-[clamp(2.75rem,6vw,4.5rem)] leading-[0.9]" />
+              <SlantText as="h3" mode="static" text={r.title} className="text-headline text-[clamp(2.75rem,6vw,4.5rem)] leading-[0.92]" />
               <p className="tab-text__p text-muted-foreground max-w-md text-[0.9375rem] leading-relaxed">{r.description}</p>
               <div className="tab-text__cta flex flex-wrap items-center gap-5">
                 <Link href={`/recipes/${r.slug}`} data-accent={ACCENTS[i % ACCENTS.length]} className={flipClass()}>

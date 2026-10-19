@@ -5,7 +5,7 @@ import { SectionHeading } from "./section-heading";
 
 export function QuickMeals({ recipes }: { recipes: RecipeCardData[] }) {
   return (
-    <section aria-labelledby="quick-title" className="bg-card py-24 md:py-32">
+    <section aria-labelledby="quick-title" className="py-24 md:py-32">
       <div className="container-page">
         <SectionHeading
           id="quick-title"

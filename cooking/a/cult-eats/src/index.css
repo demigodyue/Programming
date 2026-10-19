@@ -5,6 +5,10 @@
 @theme {
   /* Colors — the whole palette; don't add hues */
   --color-velvet-wine: #260212;
+  /* Page canvas: burnt orange + gold type, sampled from the user's reference screenshot.
+     Red on this orange is only ~1.6:1, so type sitting directly on the canvas uses gold (~4.2:1). */
+  --color-ember: #8b3a10;
+  --color-gold: #fdae2d;
   --color-burgundy-stage: #4f0423;
   --color-impossible-red: #e10600;
   --color-blush-highlight: #ffc7c6;
@@ -60,7 +64,7 @@
     height: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: var(--color-velvet-wine);
+    background: var(--color-ember);
   }
   ::-webkit-scrollbar-thumb {
     background: var(--color-impossible-red);
@@ -87,7 +91,7 @@
   font-size: clamp(68px, 13.5vw, 195px);
   line-height: 0.9;
   letter-spacing: 0.06em;
-  color: var(--color-impossible-red);
+  color: var(--color-gold);
   text-transform: uppercase;
 }
 
@@ -96,7 +100,7 @@
   font-size: clamp(54px, 9.5vw, 132px);
   line-height: 0.92;
   letter-spacing: 0.03em;
-  color: var(--color-impossible-red);
+  color: var(--color-gold);
   text-transform: uppercase;
 }
 
@@ -130,6 +134,39 @@
 
   @media (prefers-reduced-motion: reduce) {
     animation-name: none;
+  }
+}
+
+/* Ambient float for hero food icons and photos — always on, a sine-like bob reads as "floating".
+   Per-element timing comes from --float-dur / --float-delay / --float-y / --float-r on the element itself. */
+@keyframes float-bob {
+  from {
+    transform: translate3d(0, calc(var(--float-y, 14px) * -1), 0) rotate(calc(var(--float-r, 4deg) * -1));
+  }
+  to {
+    transform: translate3d(0, var(--float-y, 14px), 0) rotate(var(--float-r, 4deg));
+  }
+}
+
+@keyframes float-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@utility animate-float {
+  animation: float-bob var(--float-dur, 6s) ease-in-out var(--float-delay, 0s) infinite alternate;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@utility animate-spin-slow {
+  animation: float-spin var(--float-dur, 18s) linear infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
   }
 }
 

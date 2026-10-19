@@ -1,9 +1,8 @@
-import { HeadingReveal } from "@/components/motion/heading-reveal";
+import { ScrubWords } from "@/components/motion/scrub-words";
 
 /**
- * The about paragraph, set large in the serif. It enters like Slush's sub-headings
- * (data-heading-reveal): line by line, each tipping in from rotateY(-45°), 0.15s apart.
- * Keywords are set in the serif italic.
+ * The about paragraph, set large in Anton. It fills word by word as you scroll (Hungry Tiger's scrub,
+ * ScrubWords). Keywords switch to the headline colour.
  */
 export function Manifesto({ recipeCount, cuisineCount }: { recipeCount: number; cuisineCount: number }) {
   const copy =
@@ -16,10 +15,10 @@ export function Manifesto({ recipeCount, cuisineCount }: { recipeCount: number; 
         <span id="manifesto-label">[ About ]</span>
         <span>World Plate</span>
       </div>
-      <HeadingReveal
+      <ScrubWords
         as="p"
         text={copy}
-        italic={["ramen", "momo", "carbonara", "story"]}
+        em={["ramen", "momo", "carbonara", "story"]}
         className="mx-auto max-w-[30ch] text-center font-display text-[clamp(1.75rem,4.2vw,3.25rem)] leading-[1.15]"
       />
     </section>

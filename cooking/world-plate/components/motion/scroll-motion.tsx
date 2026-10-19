@@ -14,6 +14,10 @@ import { useEffect } from "react";
  *   `data-parallax-trigger` names an ancestor (closest selector) to measure instead of the element itself.
  *   Skipped for reduced motion.
  *
+ * - `[data-scrub="words"]` (ScrubWords) fill word by word as you scroll — Hungry Tiger's text scrub: each `.word`
+ *   goes 0.2 → 1 opacity, 0.2 long, 0.4 apart, power1.out, scrubbed from "top 90%" to "top center"
+ *   (`data-scrub-start` / `-end` override). Skipped for reduced motion.
+ *
  * Content added later (client navigations, filtered lists) is picked up by a MutationObserver.
  */
 export function ScrollMotion() {
@@ -57,6 +61,9 @@ export function ScrollMotion() {
       const h = rect.height;
       const vh = window.innerHeight;
       const edgeY = edge === "center" ? top + h / 2 : edge === "bottom" ? top + h : top;
+      // ScrollTrigger also takes a viewport percentage, e.g. "top 90%".
+      const pct = /^(\d+(?:\.\d+)?)%$/.exec(view);
+      if (pct) return edgeY - (Number(pct[1]) / 100) * vh;
       const m = /^(top|center|bottom)(?:([+-])=(\d+(?:\.\d+)?)%)?$/.exec(view);
       const base = m?.[1] === "center" ? vh / 2 : m?.[1] === "top" ? 0 : vh;
       const offset = m?.[3] ? (Number(m[3]) / 100) * vh * (m[2] === "-" ? -1 : 1) : 0;
@@ -74,10 +81,42 @@ export function ScrollMotion() {
       }
     };
 
+    // ---- Word scrub (Hungry Tiger) ----
+    type Scrub = { el: HTMLElement; words: HTMLElement[]; s0: number; s1: number };
+    const scrubs: Scrub[] = [];
+    const addScrub = (el: HTMLElement) => {
+      if (reduce.matches || scrubs.some((s) => s.el === el)) return;
+      scrubs.push({ el, words: Array.from(el.querySelectorAll<HTMLElement>(".word")), s0: 0, s1: 0 });
+    };
+    const measureScrubs = () => {
+      for (const s of scrubs) {
+        s.s0 = position(s.el.dataset.scrubStart ?? "top 90%", s.el);
+        s.s1 = position(s.el.dataset.scrubEnd ?? "top center", s.el);
+      }
+    };
+    const renderScrubs = (y: number) => {
+      for (let i = scrubs.length - 1; i >= 0; i--) {
+        const s = scrubs[i];
+        if (!s.el.isConnected) {
+          scrubs.splice(i, 1);
+          continue;
+        }
+        const span = s.s1 - s.s0;
+        const p = span > 0 ? Math.min(1, Math.max(0, (y - s.s0) / span)) : y >= s.s1 ? 1 : 0;
+        const t = p * ((s.words.length - 1) * 0.4 + 0.2);
+        s.words.forEach((w, k) => {
+          const local = Math.min(1, Math.max(0, (t - k * 0.4) / 0.2));
+          const eased = 1 - (1 - local) * (1 - local); // power1.out
+          w.style.opacity = (0.2 + 0.8 * eased).toFixed(3);
+        });
+      }
+    };
+
     let frame = 0;
     const render = () => {
       frame = 0;
       const y = window.scrollY;
+      renderScrubs(y);
       for (let i = items.length - 1; i >= 0; i--) {
         const item = items[i];
         if (!item.el.isConnected) {
@@ -113,9 +152,11 @@ export function ScrollMotion() {
     const scan = (node: ParentNode) => {
       node.querySelectorAll("[data-reveal]").forEach(observe);
       node.querySelectorAll<HTMLElement>("[data-parallax]").forEach(addParallax);
+      node.querySelectorAll<HTMLElement>('[data-scrub="words"]').forEach(addScrub);
     };
     const refresh = () => {
       measure();
+      measureScrubs();
       render();
     };
 
@@ -129,6 +170,7 @@ export function ScrollMotion() {
           if (!(node instanceof HTMLElement)) return;
           if (node.matches("[data-reveal]")) observe(node);
           if (node.matches("[data-parallax]")) addParallax(node);
+          if (node.matches('[data-scrub="words"]')) addScrub(node);
           scan(node);
           added = true;
         });
@@ -143,12 +185,16 @@ export function ScrollMotion() {
       if (!reduce.matches) return;
       items.forEach((item) => (item.el.style.translate = ""));
       items.length = 0;
+      scrubs.forEach((s) => s.words.forEach((w) => (w.style.opacity = "")));
+      scrubs.length = 0;
     };
 
     window.addEventListener("scroll", schedule, { passive: true });
     reduce.addEventListener("change", onReduce);
     return () => {
       observers.forEach((io) => io.disconnect());
+      // Let a re-run (React Strict Mode in dev runs effects twice) observe these elements again.
+      document.querySelectorAll("[data-observed]:not([data-in])").forEach((el) => el.removeAttribute("data-observed"));
       mo.disconnect();
       ro.disconnect();
       window.removeEventListener("scroll", schedule);

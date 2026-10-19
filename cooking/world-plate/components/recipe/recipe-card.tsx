@@ -17,7 +17,8 @@ type Props = {
 };
 
 /**
- * Flat bone card with a hairline edge — a wall label under a framed plate. No shadows.
+ * Flat burgundy card with a black hairline edge. No shadows. The photo settles inside its frame as the
+ * card crosses the viewport (Cult Eats' image zoom, .scroll-zoom).
  * Hover (fine pointers only): the card lifts on Slush's elastic curve and the title underlines.
  */
 export function RecipeCard({ recipe, sizes, className, eager, headingLevel = 3 }: Props) {
@@ -33,7 +34,7 @@ export function RecipeCard({ recipe, sizes, className, eager, headingLevel = 3 }
             fill
             loading={eager ? "eager" : undefined}
             sizes={sizes ?? "(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"}
-            className="object-cover"
+            className="scroll-zoom object-cover"
           />
         </div>
         <div className="flex flex-1 flex-col gap-2 p-6">

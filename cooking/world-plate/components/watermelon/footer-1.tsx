@@ -69,7 +69,7 @@ export function Footer1({ logo, description, aside, linkGroups, copyright }: Foo
       </div>
       <p
         aria-hidden
-        className="font-display -mb-[0.2em] text-center text-[19.5vw] leading-[0.84] font-medium tracking-[-0.03em] whitespace-nowrap select-none"
+        className="font-display text-headline -mb-[0.1em] text-center text-[19vw] leading-[0.9] tracking-[0.01em] whitespace-nowrap select-none"
       >
         World Plate
       </p>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
 import { initializeApp } from 'firebase/app';
 import { 
   getAuth, 
@@ -42,6 +42,9 @@ import {
   Award,
   Zap
 } from "lucide-react"
+import { startSmoothScroll, setupPageMotion, scrollToTop, animateSwap } from './motion/motion.js';
+import FoodIconField from './motion/FoodIconField.jsx';
+import Marquee from './motion/Marquee.jsx';
 
 // ==========================================
 // FIREBASE INITIALIZATION (STRICT RULE 1-3)
@@ -531,6 +534,18 @@ const CITIES = ['ALL CITIES', 'BANGKOK', 'NEW YORK', 'PARIS', 'TOKYO', 'NAPLES',
 const REGIONS = ['ASIA', 'AMERICAS', 'EUROPE', 'MIDDLE EAST'];
 const VAULT_TAGS = ['ALL SAVED', 'COOK SOON', 'MASTERED', 'BUCKET LIST TRIP'];
 
+// Hero photos: dish index, placement, mask, resting tilt, mouse depth, scroll speed, float timing, label
+const HERO_PHOTOS = [
+  { dish: 0, place: 'hidden md:block top-10 left-4 lg:left-8 w-44 h-44 lg:w-56 lg:h-56', mask: 'mask-blob-1', rotate: '-6deg', depth: -0.6, speed: -0.3, dur: '6.5s', delay: '-1s', label: 'BANGKOK • CRAB OMELETTE ▸', labelPos: 'bottom-2 left-4' },
+  { dish: 1, place: 'hidden md:block top-12 right-4 lg:right-10 w-44 h-44 lg:w-56 lg:h-56', mask: 'mask-blob-2', rotate: '8deg', depth: 0.7, speed: -0.22, dur: '7.2s', delay: '-3s', label: 'NYC • ADOBADA TACO ▸', labelPos: 'bottom-2 right-4' },
+  { dish: 4, place: 'hidden lg:block bottom-10 left-12 w-48 h-48', mask: 'mask-blob-3', rotate: '5deg', depth: -0.45, speed: -0.1, dur: '5.8s', delay: '-2s', label: 'NAPLES • DA MICHELE ▸', labelPos: 'top-2 left-4' },
+  { dish: 7, place: 'hidden lg:block bottom-8 right-14 w-48 h-48', mask: 'mask-blob-4', rotate: '-7deg', depth: 0.55, speed: -0.14, dur: '6.8s', delay: '-4s', label: 'MUMBAI • VADA PAV ▸', labelPos: 'top-2 right-4' }
+];
+
+const MARQUEE_TOP = INITIAL_DISHES.map((d) => d.name);
+const MARQUEE_BOTTOM = ['ZERO GATEKEEPING', 'NO 4-HOUR LINES', 'EXACT STREET RATIOS', 'COOK IT TONIGHT'];
+const MARQUEE_FOOTER = ['EAT THE WORLD', 'FROM YOUR STOVE', 'STEAL THE RECIPES', 'DROP A LEGEND'];
+
 export default function App() {
   // Navigation & Transition State
   const [activePage, setActivePage] = useState('HOME');
@@ -580,9 +595,11 @@ export default function App() {
     step1Text: 'Blast in a smoking cast iron pan until charred on the edges.'
   });
 
-  // Mouse Parallax State for Hero Floating Mask-Cut Food Photography
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [scrollY, setScrollY] = useState(0);
+  // Motion: root for scoped GSAP selectors, region grid for tab swaps
+  const motionRootRef = useRef(null);
+  const regionGridRef = useRef(null);
+  const prevPageRef = useRef(null);
+  const firstRegionRef = useRef(true);
 
   // Combine initial dishes with live Firestore community dishes
   const allDishes = useMemo(() => {
@@ -666,24 +683,24 @@ export default function App() {
   }, [user]);
 
   // ==========================================
-  // PARALLAX & SCROLL TRACKING
+  // SMOOTH SCROLL + SCROLL / HERO / PARALLAX MOTION (src/motion/motion.js)
   // ==========================================
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 2;
-      const y = (e.clientY / window.innerHeight - 0.5) * 2;
-      setMousePos({ x, y });
-    };
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+  useEffect(() => startSmoothScroll(), []);
+
+  // Rebuilt per page. After a curtain swap, wait for the curtain to lift (750ms total, page swaps at 340ms).
+  useLayoutEffect(() => {
+    const delay = prevPageRef.current && prevPageRef.current !== activePage ? 0.42 : 0;
+    prevPageRef.current = activePage;
+    return setupPageMotion(motionRootRef.current, { delay });
+  }, [activePage]);
+
+  useLayoutEffect(() => {
+    if (firstRegionRef.current) {
+      firstRegionRef.current = false;
+      return;
+    }
+    animateSwap(regionGridRef.current);
+  }, [activeRegionTab]);
 
   // ==========================================
   // KITCHEN STEP TIMERS ENGINE
@@ -725,7 +742,7 @@ export default function App() {
         setActiveTimers({});
       }
       setActivePage(targetPage);
-      window.scrollTo({ top: 0, behavior: 'instant' });
+      scrollToTop();
     }, 340);
 
     setTimeout(() => {
@@ -895,7 +912,9 @@ export default function App() {
   const savedCount = Object.keys(savedVault).length;
 
   return (
-    <div className="min-h-screen bg-velvet-wine text-bone-white selection:bg-impossible-red selection:text-bone-white overflow-x-hidden relative font-body">
+    <div ref={motionRootRef} className="min-h-screen bg-ember text-bone-white selection:bg-impossible-red selection:text-bone-white overflow-x-clip relative font-body">
+      {/* Scroll progress */}
+      <div data-progress aria-hidden="true" className="fixed top-0 left-0 right-0 z-[60] h-1 bg-impossible-red origin-left motion-reduce:hidden" style={{ transform: 'scaleX(0)' }} />
       {/* ==========================================
           FULL-SCREEN BUTCHER CURTAIN PAGE TRANSITION
           ========================================== */}
@@ -1024,97 +1043,54 @@ export default function App() {
           ========================================================= */}
       {activePage === 'HOME' && (
         <main className="pb-24">
-          {/* HERO DISPLAY BLOCK WITH FLOATING MASK-CUT FOOD PHOTOGRAPHY */}
-          <section className="relative min-h-[86vh] flex flex-col items-center justify-center px-4 py-16 md:py-24 overflow-hidden max-w-[1280px] mx-auto">
-            {/* Floating Irregular Mask-Cut Food Photo 1 (Top Left) */}
-            <div
-              onClick={() => navigateWithCurtain('RECIPE_LAB', INITIAL_DISHES[0].name, INITIAL_DISHES[0])}
-              style={{
-                transform: `translate3d(${mousePos.x * -24}px, ${mousePos.y * -18 + scrollY * -0.08}px, 0) rotate(-6deg)`
-              }}
-              className="hidden md:block absolute top-10 left-4 lg:left-8 w-44 h-44 lg:w-56 lg:h-56 cursor-pointer z-10 transition-transform duration-150 ease-out group"
-            >
-              <img
-                src={INITIAL_DISHES[0].image}
-                alt={INITIAL_DISHES[0].name}
-                className="w-full h-full object-cover mask-blob-1 saturate-150 contrast-125 group-hover:scale-105 transition-transform"
-              />
-              <span className="absolute bottom-2 left-4 bg-butcher-black text-blush-highlight font-ui-meat text-xs px-2.5 py-0.5 rounded-xl-2 border border-impossible-red">
-                BANGKOK • CRAB OMELETTE ▸
-              </span>
-            </div>
+          {/* HERO DISPLAY BLOCK: FLOATING FOOD ICONS + MASK-CUT FOOD PHOTOGRAPHY */}
+          <section data-hero className="relative isolate min-h-[86vh] flex flex-col items-center justify-center px-4 py-16 md:py-24 overflow-hidden max-w-[1280px] mx-auto">
+            <FoodIconField />
 
-            {/* Floating Irregular Mask-Cut Food Photo 2 (Top Right) */}
-            <div
-              onClick={() => navigateWithCurtain('RECIPE_LAB', INITIAL_DISHES[1].name, INITIAL_DISHES[1])}
-              style={{
-                transform: `translate3d(${mousePos.x * 28}px, ${mousePos.y * -22 + scrollY * -0.05}px, 0) rotate(8deg)`
-              }}
-              className="hidden md:block absolute top-12 right-4 lg:right-10 w-44 h-44 lg:w-56 lg:h-56 cursor-pointer z-10 transition-transform duration-150 ease-out group"
-            >
-              <img
-                src={INITIAL_DISHES[1].image}
-                alt={INITIAL_DISHES[1].name}
-                className="w-full h-full object-cover mask-blob-2 saturate-150 contrast-125 group-hover:scale-105 transition-transform"
-              />
-              <span className="absolute bottom-2 right-4 bg-butcher-black text-blush-highlight font-ui-meat text-xs px-2.5 py-0.5 rounded-xl-2 border border-impossible-red">
-                NYC • ADOBADA TACO ▸
-              </span>
-            </div>
-
-            {/* Floating Irregular Mask-Cut Food Photo 3 (Bottom Left) */}
-            <div
-              onClick={() => navigateWithCurtain('RECIPE_LAB', INITIAL_DISHES[4].name, INITIAL_DISHES[4])}
-              style={{
-                transform: `translate3d(${mousePos.x * -18}px, ${mousePos.y * 24 + scrollY * 0.06}px, 0) rotate(5deg)`
-              }}
-              className="hidden lg:block absolute bottom-10 left-12 w-48 h-48 cursor-pointer z-10 transition-transform duration-150 ease-out group"
-            >
-              <img
-                src={INITIAL_DISHES[4].image}
-                alt={INITIAL_DISHES[4].name}
-                className="w-full h-full object-cover mask-blob-3 saturate-150 contrast-125 group-hover:scale-105 transition-transform"
-              />
-              <span className="absolute top-2 left-4 bg-butcher-black text-blush-highlight font-ui-meat text-xs px-2.5 py-0.5 rounded-xl-2 border border-impossible-red">
-                NAPLES • DA MICHELE ▸
-              </span>
-            </div>
-
-            {/* Floating Irregular Mask-Cut Food Photo 4 (Bottom Right) */}
-            <div
-              onClick={() => navigateWithCurtain('RECIPE_LAB', INITIAL_DISHES[7].name, INITIAL_DISHES[7])}
-              style={{
-                transform: `translate3d(${mousePos.x * 22}px, ${mousePos.y * 20 + scrollY * 0.05}px, 0) rotate(-7deg)`
-              }}
-              className="hidden lg:block absolute bottom-8 right-14 w-48 h-48 cursor-pointer z-10 transition-transform duration-150 ease-out group"
-            >
-              <img
-                src={INITIAL_DISHES[7].image}
-                alt={INITIAL_DISHES[7].name}
-                className="w-full h-full object-cover mask-blob-4 saturate-150 contrast-125 group-hover:scale-105 transition-transform"
-              />
-              <span className="absolute top-2 right-4 bg-butcher-black text-blush-highlight font-ui-meat text-xs px-2.5 py-0.5 rounded-xl-2 border border-impossible-red">
-                MUMBAI • VADA PAV ▸
-              </span>
-            </div>
+            {/* Floating photos — layers: scroll parallax › mouse depth + intro pop › always-on CSS float */}
+            {HERO_PHOTOS.map((p) => {
+              const dish = INITIAL_DISHES[p.dish];
+              return (
+                <div key={dish.id} data-parallax={p.speed} className={`absolute z-10 ${p.place}`}>
+                  <div data-depth={p.depth} data-hero-photo className="w-full h-full">
+                    <button
+                      type="button"
+                      onClick={() => navigateWithCurtain('RECIPE_LAB', dish.name, dish)}
+                      aria-label={`Open the ${dish.name} recipe`}
+                      className="relative block w-full h-full cursor-pointer group animate-float"
+                      style={{ rotate: p.rotate, '--float-dur': p.dur, '--float-delay': p.delay, '--float-y': '12px', '--float-r': '3deg' }}
+                    >
+                      <img
+                        src={dish.image}
+                        alt=""
+                        className={`w-full h-full object-cover ${p.mask} saturate-150 contrast-125 group-hover:scale-105 transition-[scale] duration-300`}
+                      />
+                      <span className={`absolute ${p.labelPos} bg-butcher-black text-blush-highlight font-ui-meat text-xs px-2.5 py-0.5 rounded-xl-2 border border-impossible-red whitespace-nowrap`}>
+                        {p.label}
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
 
             {/* CENTERED HERO DISPLAY STACK */}
-            <div className="relative z-20 flex flex-col items-center text-center max-w-5xl mx-auto animate-slam">
-              <div className="font-ui-meat text-impossible-red text-sm md:text-lg font-bold tracking-[0.06em] mb-4">
+            <div data-hero-stack className="relative z-20 flex flex-col items-center text-center max-w-5xl mx-auto">
+              <div data-eyebrow className="font-ui-meat text-gold text-sm md:text-lg font-bold tracking-[0.06em] mb-4">
                 ◂ WORLD FAMOUS STREET CONTRABAND ▸
               </div>
 
-              <h1 className="display-hero select-none">
+              <h1 data-hero-title className="display-hero select-none">
                 <span className="block">CULT FOODS</span>
                 <span className="block text-[0.72em] mt-2">(FROM FAMOUS PLACES)</span>
               </h1>
 
-              <p className="mt-6 max-w-xl text-blush-highlight text-base md:text-lg font-medium leading-snug">
+              <p data-hero-copy className="mt-6 max-w-xl text-blush-highlight text-base md:text-lg font-medium leading-snug">
                 Skip the 4-hour cobblestone queue. We reverse-engineered the exact recipes, wok temperatures, and secret ratios from the planet’s most guarded street stalls.
               </p>
 
               {/* Two-Step Signature CTAs */}
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <div data-hero-copy className="mt-8 flex flex-wrap items-center justify-center gap-3">
                 <button
                   onClick={() => navigateWithCurtain('RECIPE_LAB', 'THE RECIPE LAB')}
                   className="btn-primary-impossible text-base px-6 py-3"
@@ -1126,36 +1102,44 @@ export default function App() {
                   onClick={() => navigateWithCurtain('ATLAS', 'WORLD TOUR ATLAS')}
                   className="btn-ghost-impossible text-base px-6 py-3"
                 >
-                  <MapPin className="w-4 h-4 text-impossible-red" />
+                  <MapPin className="w-4 h-4 text-gold" />
                   <span>EXPLORE FAMOUS PLACES</span>
                 </button>
               </div>
 
-              {/* Mobile Masked Food Strip */}
+              {/* Mobile Masked Food Strip — floats like the desktop photos */}
               <div className="grid grid-cols-4 gap-3 mt-10 md:hidden w-full max-w-md">
                 {INITIAL_DISHES.slice(0, 4).map((d, i) => (
                   <button
                     key={d.id}
+                    data-hero-photo
                     onClick={() => navigateWithCurtain('RECIPE_LAB', d.name, d)}
-                    className="aspect-square overflow-hidden"
+                    aria-label={`Open the ${d.name} recipe`}
+                    className="aspect-square"
                   >
-                    <img
-                      src={d.image}
-                      alt={d.name}
-                      className={`w-full h-full object-cover ${d.maskShape} saturate-150`}
-                    />
+                    <span
+                      className="block w-full h-full animate-float"
+                      style={{ '--float-dur': `${5.5 + i * 0.7}s`, '--float-delay': `${-i * 1.3}s`, '--float-y': '8px' }}
+                    >
+                      <img src={d.image} alt="" className={`w-full h-full object-cover ${d.maskShape} saturate-150`} />
+                    </span>
                   </button>
                 ))}
               </div>
             </div>
           </section>
 
+          <div className="py-10 md:py-14 space-y-3 overflow-x-clip">
+            <Marquee items={MARQUEE_TOP} tone="red" tilt={-2} />
+            <Marquee items={MARQUEE_BOTTOM} tone="wine" tilt={1.5} reverse speed={34} />
+          </div>
+
           {/* =========================================================
               CATEGORY TAB WITH NUMBER BADGE + PRODUCT CAROUSEL
               ========================================================= */}
           <section className="max-w-[1280px] mx-auto px-4 md:px-8 py-12">
             <div className="text-center mb-8">
-              <p className="font-ui-meat text-impossible-red text-sm md:text-base font-bold tracking-widest mb-2">
+              <p data-eyebrow className="font-ui-meat text-gold text-sm md:text-base font-bold tracking-widest mb-2">
                 ◂ PICK YOUR CONTINENT OF ORIGIN ▸
               </p>
               <h2 className="display-section">
@@ -1165,7 +1149,7 @@ export default function App() {
             </div>
 
             {/* Category Tabs with Circular Number Badges */}
-            <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10 mb-10">
+            <div data-reveal className="flex flex-wrap items-center justify-center gap-6 md:gap-10 mb-10">
               {REGIONS.map((region) => {
                 const count = allDishes.filter((d) => d.region === region).length;
                 const isActive = activeRegionTab === region;
@@ -1198,7 +1182,7 @@ export default function App() {
 
             {/* Overflowing Horizontal Product Carousel */}
             <div className="relative">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div ref={regionGridRef} data-stagger className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {regionCarouselDishes.map((dish, idx) => {
                   const isSaved = Boolean(savedVault[dish.id]);
                   return (
@@ -1212,7 +1196,8 @@ export default function App() {
                         <img
                           src={dish.image}
                           alt={dish.name}
-                          className="w-full h-full object-cover saturate-125 group-hover:scale-105 transition-transform duration-300"
+                          data-zoom
+                          className="w-full h-full object-cover saturate-125 group-hover:scale-105 transition-[scale] duration-300"
                         />
                         <div className="absolute top-3 left-3 bg-butcher-black text-bone-white px-3 py-1 rounded-xl-2 font-ui-meat text-xs font-bold tracking-wider flex items-center gap-1.5">
                           <MapPin className="w-3 h-3 text-impossible-red" />
@@ -1298,11 +1283,11 @@ export default function App() {
               PROMINENT 38PX-RADIUS FEATURE SPOTLIGHT CARD
               ========================================================= */}
           <section className="max-w-[1280px] mx-auto px-4 md:px-8 py-12">
-            <div className="bg-burgundy-stage border-2 border-butcher-black rounded-3xl p-6 md:p-12 overflow-hidden relative">
+            <div data-clip className="bg-burgundy-stage border-2 border-butcher-black rounded-3xl p-6 md:p-12 overflow-hidden relative">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                 <div className="lg:col-span-7 space-y-5">
                   <div className="inline-flex items-center gap-2 bg-butcher-black text-impossible-red px-4 py-1.5 rounded-xl-2 font-ui-meat text-sm font-bold">
-                    <span>◂ LEGEND OF THE WEEK SPOTLIGHT ▸</span>
+                    <span data-eyebrow>◂ LEGEND OF THE WEEK SPOTLIGHT ▸</span>
                   </div>
 
                   <h2 className="display-section !text-bone-white">
@@ -1311,11 +1296,11 @@ export default function App() {
                     <span className="block text-[0.55em] text-blush-highlight mt-2">(MICHELIN STREET STALL • BANGKOK)</span>
                   </h2>
 
-                  <p className="text-bone-white text-base md:text-lg leading-relaxed max-w-2xl">
+                  <p data-reveal className="text-bone-white text-base md:text-lg leading-relaxed max-w-2xl">
                     People fly across the globe and wait 4.5 hours on Maha Chai Road just to taste Supinya Junsuta’s charcoal-fired crab omelette. We broke down the exact rice-flour slurry and 400°F oil pour height so you can pull it off in 18 minutes tonight.
                   </p>
 
-                  <div className="flex flex-wrap items-center gap-3 pt-2">
+                  <div data-reveal className="flex flex-wrap items-center gap-3 pt-2">
                     <button
                       onClick={() => navigateWithCurtain('RECIPE_LAB', INITIAL_DISHES[0].name, INITIAL_DISHES[0])}
                       className="btn-primary-impossible text-base px-6 py-3"
@@ -1341,11 +1326,12 @@ export default function App() {
 
                 {/* Organic Masked Feature Image */}
                 <div className="lg:col-span-5 flex flex-col items-center">
-                  <div className="relative w-72 h-72 sm:w-88 sm:h-88">
+                  <div data-parallax="-0.12" className="relative w-72 h-72 sm:w-88 sm:h-88">
                     <img
                       src={INITIAL_DISHES[0].image}
                       alt="Jay Fai Crab Omelette"
-                      className="w-full h-full object-cover mask-blob-1 saturate-150"
+                      className="w-full h-full object-cover mask-blob-1 saturate-150 animate-float"
+                      style={{ '--float-dur': '7s', '--float-y': '10px', '--float-r': '2deg' }}
                     />
                     <div className="absolute -bottom-3 right-2 bg-butcher-black text-bone-white border border-impossible-red rounded-xl-2 px-4 py-2 font-ui-meat text-sm">
                       <span className="text-impossible-red font-bold">SECRET RATIO:</span> 250G LUMP CRAB / 4 DUCK EGGS
@@ -1361,7 +1347,7 @@ export default function App() {
               ========================================================= */}
           <section className="max-w-[1280px] mx-auto px-4 md:px-8 py-14">
             <div className="text-center mb-12">
-              <div className="font-ui-meat text-impossible-red text-sm md:text-base font-bold tracking-[0.05em] mb-3">
+              <div data-eyebrow className="font-ui-meat text-gold text-sm md:text-base font-bold tracking-[0.05em] mb-3">
                 ◂ FLEX ON EVERYONE AT ▸
               </div>
               <h2 className="display-section">
@@ -1371,7 +1357,7 @@ export default function App() {
             </div>
 
             {/* 4-Column Product/Recipe Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div data-stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {allDishes.slice(0, 8).map((dish) => {
                 const isSaved = Boolean(savedVault[dish.id]);
                 return (
@@ -1385,7 +1371,8 @@ export default function App() {
                         <img
                           src={dish.image}
                           alt={dish.name}
-                          className="w-full h-full object-cover saturate-125 group-hover:scale-105 transition-transform"
+                          data-zoom
+                          className="w-full h-full object-cover saturate-125 group-hover:scale-105 transition-[scale] duration-300"
                         />
                         <span className="absolute top-2 left-2 bg-butcher-black text-blush-highlight px-2.5 py-0.5 rounded-xl-2 font-ui-meat text-xs font-bold">
                           {dish.city}
@@ -1433,8 +1420,9 @@ export default function App() {
       {activePage === 'ATLAS' && (
         <main className="max-w-[1280px] mx-auto px-4 md:px-8 py-14 pb-24">
           {/* Hero Header */}
-          <div className="text-center mb-12 animate-slam">
-            <div className="font-ui-meat text-impossible-red text-sm md:text-base font-bold tracking-[0.05em] mb-3">
+          <div className="relative isolate text-center mb-12 py-6">
+            <FoodIconField variant="compact" />
+            <div data-eyebrow className="font-ui-meat text-gold text-sm md:text-base font-bold tracking-[0.05em] mb-3">
               ◂ EXACT COORDINATES & STREET LORE ▸
             </div>
             <h1 className="display-hero">
@@ -1464,7 +1452,7 @@ export default function App() {
           </div>
 
           {/* Atlas Cultural Landmark Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div data-stagger className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {allDishes
               .filter((d) => selectedCityFilter === 'ALL CITIES' || d.city === selectedCityFilter)
               .map((dish) => {
@@ -1558,8 +1546,9 @@ export default function App() {
         <main className="max-w-[1280px] mx-auto px-4 md:px-8 py-12 pb-24">
           {/* Top Recipe Selector Bar */}
           <div className="mb-10">
-            <div className="text-center mb-6">
-              <div className="font-ui-meat text-impossible-red text-sm font-bold tracking-widest mb-2">
+            <div className="relative isolate text-center mb-6 py-6">
+              <FoodIconField variant="compact" />
+              <div data-eyebrow className="font-ui-meat text-gold text-sm font-bold tracking-widest mb-2">
                 ◂ REVERSE-ENGINEERED STREET FORMULAS ▸
               </div>
               <h1 className="display-section">
@@ -1611,7 +1600,7 @@ export default function App() {
                       </span>
                     </div>
 
-                    <h2 className="display-section !text-bone-white">
+                    <h2 data-no-split className="display-section !text-bone-white">
                       <span className="block text-impossible-red">{selectedDish.name}</span>
                       <span className="block text-[0.55em] text-blush-highlight mt-2">
                         {selectedDish.parenthetical}
@@ -1671,7 +1660,7 @@ export default function App() {
                 <div className="lg:col-span-5 bg-burgundy-stage border border-butcher-black rounded-xl p-6 h-fit">
                   <div className="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-butcher-black">
                     <div>
-                      <span className="font-ui-meat text-xs text-impossible-red font-bold block">
+                      <span data-eyebrow className="font-ui-meat text-xs text-impossible-red font-bold block">
                         ◂ COMPONENT MATRIX ▸
                       </span>
                       <h3 className="font-meat text-3xl text-bone-white">INGREDIENTS</h3>
@@ -1755,7 +1744,7 @@ export default function App() {
                 {/* RIGHT COLUMN: STEP-BY-STEP EXECUTION WITH INTEGRATED TIMERS */}
                 <div className="lg:col-span-7 space-y-4">
                   <div className="bg-burgundy-stage border border-butcher-black rounded-xl p-6">
-                    <span className="font-ui-meat text-xs text-impossible-red font-bold block">
+                    <span data-eyebrow className="font-ui-meat text-xs text-impossible-red font-bold block">
                       ◂ HIGH-HEAT EXECUTION PROTOCOL ▸
                     </span>
                     <h3 className="font-meat text-3xl text-bone-white mb-6">
@@ -1857,8 +1846,9 @@ export default function App() {
           ========================================================= */}
       {activePage === 'VAULT' && (
         <main className="max-w-[1280px] mx-auto px-4 md:px-8 py-14 pb-24">
-          <div className="text-center mb-10 animate-slam">
-            <div className="font-ui-meat text-impossible-red text-sm md:text-base font-bold tracking-[0.05em] mb-3">
+          <div className="relative isolate text-center mb-10 py-6">
+            <FoodIconField variant="compact" />
+            <div data-eyebrow className="font-ui-meat text-gold text-sm md:text-base font-bold tracking-[0.05em] mb-3">
               ◂ CLOUD-SYNCED CONTRABAND STASH ▸
             </div>
             <h1 className="display-hero">
@@ -1939,7 +1929,7 @@ export default function App() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div data-stagger className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {Object.values(savedVault)
                 .filter((item) => activeVaultTag === 'ALL SAVED' || item.tag === activeVaultTag)
                 .map((vaultItem) => {
@@ -2038,8 +2028,9 @@ export default function App() {
           ========================================================= */}
       {activePage === 'SUBMIT' && (
         <main className="max-w-[960px] mx-auto px-4 md:px-8 py-14 pb-24">
-          <div className="text-center mb-10 animate-slam">
-            <div className="font-ui-meat text-impossible-red text-sm md:text-base font-bold tracking-[0.05em] mb-3">
+          <div className="relative isolate text-center mb-10 py-6">
+            <FoodIconField variant="compact" />
+            <div data-eyebrow className="font-ui-meat text-gold text-sm md:text-base font-bold tracking-[0.05em] mb-3">
               ◂ EXPAND THE GLOBAL STREET ARCHIVE ▸
             </div>
             <h1 className="display-section">
@@ -2294,6 +2285,9 @@ export default function App() {
       {/* ==========================================
           FOOTER (BUTCHER BLACK & IMPOSSIBLE RED)
           ========================================== */}
+      <div aria-hidden="true" className="pt-6 pb-12 overflow-x-clip">
+        <Marquee items={MARQUEE_FOOTER} tone="red" tilt={1.5} speed={24} />
+      </div>
       <footer className="bg-butcher-black border-t border-burgundy-stage py-16 px-4 md:px-8">
         <div className="max-w-[1280px] mx-auto flex flex-col md:flex-row items-start md:items-end justify-between gap-10">
           <div>
@@ -2306,7 +2300,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div data-reveal className="flex flex-col sm:flex-row gap-4">
             <button
               onClick={() => navigateWithCurtain('RECIPE_LAB', 'THE RECIPE LAB')}
               className="btn-primary-impossible"

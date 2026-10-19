@@ -22,8 +22,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-anton), "Barlow Condensed", Impact, sans-serif;
+  --font-ui: var(--font-barlow), var(--font-inter), sans-serif;
   --font-heading: var(--font-display);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   --color-ring: var(--ring);
@@ -45,14 +46,15 @@
   --color-card: var(--card);
   --color-scrim: var(--scrim);
   --color-chalk: var(--chalk);
-  /* Structured system: links/chips 2px, every card and image 9px, buttons are pills (rounded-full). */
-  --radius-sm: 2px;
-  --radius-md: 2px;
+  --color-headline: var(--headline);
+  /* Cult Eats shapes: cards 12px, buttons / toggles 15px, the one feature card 38px. */
+  --radius-sm: 5px;
+  --radius-md: 15px;
   --radius-lg: var(--radius);
   --radius-xl: var(--radius);
-  --radius-2xl: var(--radius);
-  --radius-3xl: var(--radius);
-  --radius-4xl: var(--radius);
+  --radius-2xl: 15px;
+  --radius-3xl: 38px;
+  --radius-4xl: 38px;
   /* Entirely flat — depth comes from light/dark section cuts, never elevation. */
   --shadow-2xs: 0 0 #0000;
   --shadow-xs: 0 0 #0000;
@@ -63,81 +65,89 @@
   --shadow-2xl: 0 0 #0000;
   --shadow-soft: 0 0 #0000;
   --shadow-lift: 0 0 #0000;
-  --text-display: clamp(3.25rem, 11vw, 5.875rem); /* 94px section titles */
-  --text-display--line-height: 0.84;
-  --text-display--letter-spacing: -0.009em;
+  /* Section titles in Anton, up to 132px. Anton's caps are 0.86em tall, so leading under ~0.9 collides. */
+  --text-display: clamp(3.5rem, 11.5vw, 8.25rem);
+  --text-display--line-height: 0.92;
+  --text-display--letter-spacing: 0.03em;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 /* Palette — the only place hex colours live. See CLAUDE.md "Design rules".
-   Structured: putty gallery wall, black ink, bone cards, no saturated colour, no shadows. */
+   Cult Eats system (Impossible Foods poster style): Velvet Wine #260212, Burgundy #4f0423, Impossible Red
+   #e10600, Blush #ffc7c6, Butcher Black #000000, Bone White #ffffff — plus the burnt-orange canvas #8b3a10
+   and gold #fdae2d the user asked for (sampled from their reference). Flat: no shadows, no gradients.
+   Headlines: gold on orange (red there is only ~1.6:1), red on wine (~3.9:1). */
 :root {
-  --background: #c4c3b6; /* putty canvas */
-  --foreground: #000000; /* ink */
-  --card: #e7e5e4; /* bone */
-  --card-foreground: #000000;
-  --popover: #e7e5e4;
-  --popover-foreground: #000000;
-  --primary: #000000; /* the pill button: ink fill, paper text */
+  --background: #8b3a10; /* ember canvas */
+  --foreground: #ffffff;
+  --headline: #fdae2d; /* gold display type */
+  --card: #4f0423; /* burgundy stage */
+  --card-foreground: #ffffff;
+  --popover: #4f0423;
+  --popover-foreground: #ffffff;
+  --primary: #e10600; /* the red pill: every action */
   --primary-foreground: #ffffff;
-  --secondary: #e7e5e4;
-  --secondary-foreground: #000000;
-  --muted: #b8b7aa; /* one step into the putty, for image wells */
-  --muted-foreground: #45443f; /* graphite, darkened to 5.5:1 on putty */
-  --accent: #dfdcd5; /* vellum */
-  --accent-foreground: #000000;
-  --accent-ink: #000000;
-  --destructive: #8a1c12;
-  --border: #9f9e92; /* hairline that reads on putty and bone */
-  --input: #9f9e92;
-  --ring: #000000;
+  --secondary: #4f0423;
+  --secondary-foreground: #ffffff;
+  --muted: #73300d; /* one step into the canvas, for image wells */
+  --muted-foreground: #ffc7c6; /* blush, 5.2:1 on ember */
+  --accent: #4f0423;
+  --accent-foreground: #ffffff;
+  --accent-ink: #fdae2d;
+  --destructive: #ffc7c6;
+  --border: #000000; /* butcher-black hairlines */
+  --input: #000000;
+  --ring: #fdae2d;
   --scrim: #000000;
-  --chalk: #ebebeb;
+  --chalk: #000000; /* footer */
   --shadow-color: transparent;
   --shadow-color-strong: transparent;
-  --radius: 9px;
-  --room-background: #000000;
+  --radius: 12px;
+  --room-background: #260212; /* velvet wine */
   --room-foreground: #ffffff;
-  --room-card: #141413;
-  --room-muted: #1d1d1b;
-  --room-muted-foreground: #b4b3a8;
-  --room-primary: #ffffff;
-  --room-primary-foreground: #000000;
-  --room-border: #3a3936;
+  --room-headline: #e10600;
+  --room-card: #4f0423;
+  --room-muted: #3a0319;
+  --room-muted-foreground: #ffc7c6;
+  --room-primary: #e10600;
+  --room-primary-foreground: #ffffff;
+  --room-border: #000000;
 }
 
 .dark {
-  --background: #0b0b0a; /* ink room */
+  --background: #260212; /* velvet wine canvas, Cult Eats' original */
   --foreground: #ffffff;
-  --card: #161614;
+  --headline: #e10600;
+  --card: #4f0423;
   --card-foreground: #ffffff;
-  --popover: #161614;
+  --popover: #4f0423;
   --popover-foreground: #ffffff;
-  --primary: #c4c3b6; /* putty pill on ink */
-  --primary-foreground: #000000;
-  --secondary: #1d1d1b;
+  --primary: #e10600;
+  --primary-foreground: #ffffff;
+  --secondary: #4f0423;
   --secondary-foreground: #ffffff;
-  --muted: #1d1d1b;
-  --muted-foreground: #b4b3a8;
-  --accent: #262623;
+  --muted: #3a0319;
+  --muted-foreground: #ffc7c6;
+  --accent: #4f0423;
   --accent-foreground: #ffffff;
-  --accent-ink: #ffffff;
-  --destructive: #e58a80;
-  --border: #3a3936;
-  --input: #3a3936;
-  --ring: #ffffff;
+  --accent-ink: #ffc7c6;
+  --destructive: #ffc7c6;
+  --border: #000000;
+  --input: #000000;
+  --ring: #fdae2d;
   --scrim: #000000;
-  --chalk: #121211;
-  /* In dark mode the alternating "room" flips to the putty gallery wall. */
-  --room-background: #c4c3b6;
-  --room-foreground: #000000;
-  --room-card: #e7e5e4;
-  --room-muted: #b8b7aa;
-  --room-muted-foreground: #45443f;
-  --room-primary: #000000;
+  --chalk: #000000;
+  /* In dark mode the alternating "room" flips to the ember canvas. */
+  --room-background: #8b3a10;
+  --room-foreground: #ffffff;
+  --room-headline: #fdae2d;
+  --room-card: #4f0423;
+  --room-muted: #73300d;
+  --room-muted-foreground: #ffc7c6;
+  --room-primary: #e10600;
   --room-primary-foreground: #ffffff;
-  --room-border: #9f9e92;
+  --room-border: #000000;
 }
 
 /* A "room" is the hard-cut contrasting section (ink on the putty site, putty on the dark site).
@@ -156,6 +166,7 @@
   --primary: var(--room-primary);
   --primary-foreground: var(--room-primary-foreground);
   --accent-ink: var(--room-foreground);
+  --headline: var(--room-headline);
   --border: var(--room-border);
   --input: var(--room-border);
   --ring: var(--room-foreground);
@@ -180,14 +191,34 @@
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "ss01", "cv11";
   }
+  /* Anton, uppercase, tracking opened a little (0.03em): a shouted poster label, not a polished headline. */
   h1,
   h2,
   h3,
   h4 {
     @apply font-display text-balance;
-    font-optical-sizing: auto;
-    font-weight: 500;
-    letter-spacing: -0.009em;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-display {
+    text-transform: uppercase;
+  }
+  h1,
+  h2 {
+    color: var(--headline);
+  }
+  /* Anton has no italic: emphasis is a colour switch instead. */
+  :is(h1, h2, h3, h4) em {
+    font-style: normal;
+    color: var(--foreground);
+  }
+  .font-display:not(h1, h2, h3, h4) em {
+    font-style: normal;
+    color: var(--headline);
   }
   p {
     text-wrap: pretty;
@@ -260,14 +291,14 @@
      both past the 3D page swing — PageSwing sets data-load on <html>. */
   --load-start: 0s;
   --load-delay: 0.1s;
-  /* Slush's candy colours. Used only for moments of motion: the page-swing panels, the back face of a
-     flipping button and the tab frame behind a sliding photo. The site itself stays putty and ink. */
-  --slush-blue: #4da2ff;
-  --slush-yellow: #ffd731;
-  --slush-lavender: #e9ccff;
-  --slush-mint: #55db9c;
-  --slush-orange: #fb4903;
-  --slush-violet: #5c4ade;
+  /* Slush's motion-moment colours (page-swing panels, button back faces, the tab frame behind a sliding
+     photo). Slush's timings are kept; the colours are remapped into the Cult Eats palette, names kept. */
+  --slush-blue: #e10600; /* red */
+  --slush-yellow: #fdae2d; /* gold */
+  --slush-lavender: #ffc7c6; /* blush */
+  --slush-mint: #ffffff; /* bone */
+  --slush-orange: #fdae2d; /* gold */
+  --slush-violet: #4f0423; /* burgundy, paper label */
   --slush-ink: #000000;
   --slush-paper: #ffffff;
 }
@@ -565,6 +596,12 @@
   [data-reveal="intro"] {
     animation: wp-intro-in 1.2s var(--ease-slush-bounce) both;
   }
+  /* Hungry Tiger word scrub: words wait at 20% until ScrollMotion takes over (only with JS and motion). */
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    [data-scrub="words"] .word {
+      opacity: 0.2;
+    }
+  }
   @media (scripting: enabled) {
     [data-reveal]:not([data-in]) :is(.char, .reveal-card, .word),
     [data-reveal="intro"]:not([data-in]) {
@@ -581,7 +618,11 @@
     --flip-accent-ink: var(--slush-ink);
     position: relative;
     display: inline-flex;
-    border-radius: 9999px;
+    border-radius: 15px;
+    font-family: var(--font-ui);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
     transition: transform 0.5s var(--ease-slush-bounce);
   }
   .btn-flip:active {
@@ -623,8 +664,8 @@
   }
   .btn-flip__bg {
     grid-area: 1 / 1;
-    border: 1px solid var(--primary);
-    border-radius: 9999px;
+    border: 1px solid var(--border);
+    border-radius: 15px;
     background-color: var(--primary);
     transition:
       background-color 0.2s var(--ease-color),
@@ -656,7 +697,7 @@
     width: calc(100% - 1px);
     height: calc(100% - 1px);
     border: 1px solid var(--slush-ink);
-    border-radius: 9999px;
+    border-radius: 15px;
     background-color: var(--flip-accent);
     color: var(--flip-accent-ink);
     opacity: 0;
@@ -671,7 +712,7 @@
     translate: 0 0.75em 0;
     transition: translate var(--duration-default) var(--ease-slush-bounce);
   }
-  /* data-button-theme="light": a paper pill with an ink edge. */
+  /* Ghost CTA: a burgundy pill with a bone edge. */
   .btn-flip--outline .btn-flip__bg {
     border-color: var(--foreground);
     background-color: var(--card);
@@ -895,8 +936,9 @@
       justify-content: flex-end;
       padding-left: max(0px, calc(100% - 20rem));
     }
+    /* Slush's 300%, plus half the screen so the narrow Barlow pills never peek in at the edge. */
     .nav-pills:not([data-open]) .nav-pill {
-      translate: 300% 0;
+      translate: calc(300% + 50vw) 0;
       transition-delay: calc(var(--i, 0) * 30ms);
     }
   }
@@ -911,12 +953,12 @@
     z-index: 60;
     display: none;
     padding: 0.75em 1em;
-    border: 1px solid var(--foreground);
-    border-radius: 9999px;
-    background: var(--card);
-    color: var(--foreground);
-    font: 500 0.75rem/1 var(--font-sans);
-    letter-spacing: 0.06em;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font: 500 0.8125rem/1 var(--font-ui);
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     white-space: nowrap;
     pointer-events: none;
@@ -940,15 +982,14 @@
      settles back on the active one (0.5s slush). Switching tabs: the old text slides off -15% and fades,
      the old photo drops 10%; the new title's characters slide in from the last one, then the paragraph and
      button from -3em, then the new photo rises 10% — all 0.65s on "slush". */
-  /* Drawn above the tab labels so the difference blend inverts them too. */
+  /* A red pill behind the tab labels. */
   .tabs-pill {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 1;
-    border-radius: 9999px;
-    background: var(--slush-paper);
-    mix-blend-mode: difference;
+    z-index: 0;
+    border-radius: 15px;
+    background: var(--primary);
     pointer-events: none;
   }
   .tab-frame {
@@ -1077,13 +1118,13 @@
 }
 }
 
-/* Small uppercase museum-label type. */
+/* Small uppercase UI label (Cult Eats' eyebrow / pill type), in Barlow Condensed. */
 @utility label-caps {
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
   line-height: 1.25;
-  font-weight: 500;
-  letter-spacing: 0.06em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
@@ -1105,6 +1146,188 @@
 }
 [data-checked="true"] .strike::after {
   transform: scaleX(1);
+}
+
+/* ---------- Cult Eats additions (layered on top of the Slush motion) ----------
+   Ported from the Cult Eats app: always-on floating food icons and photos in the hero, blob-cut photo
+   masks, a scroll progress bar, card photos settling inside their frames and a clip-path reveal. The
+   scroll-linked ones use CSS scroll-driven animations, so they run off the main thread and simply don't
+   play where unsupported. Mouse depth for [data-depth] lives in components/motion/mouse-depth.tsx. */
+@keyframes wp-float-bob {
+  from {
+    transform: translate3d(0, calc(var(--float-y, 14px) * -1), 0) rotate(calc(var(--float-r, 4deg) * -1));
+  }
+  to {
+    transform: translate3d(0, var(--float-y, 14px), 0) rotate(var(--float-r, 4deg));
+  }
+}
+@keyframes wp-float-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes wp-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes wp-scroll-zoom {
+  from {
+    transform: scale(1.22) translateY(-5%);
+  }
+  to {
+    transform: scale(1) translateY(5%);
+  }
+}
+@keyframes wp-clip-open {
+  from {
+    clip-path: inset(12% 9% 12% 9% round 38px);
+  }
+  to {
+    clip-path: inset(0 0 0 0 round var(--radius));
+  }
+}
+
+/* Sine-like bob: per-element timing from --float-dur / --float-delay / --float-y / --float-r on itself. */
+@utility animate-float {
+  animation: wp-float-bob var(--float-dur, 6s) ease-in-out var(--float-delay, 0s) infinite alternate;
+}
+/* Constant motion is linear. */
+@utility animate-spin-slow {
+  animation: wp-float-spin var(--float-dur, 18s) linear infinite;
+}
+
+/* Rough asymmetric mask-cut food shapes: never circles or rectangles near display type. */
+@utility mask-blob-1 {
+  clip-path: polygon(12% 3%, 84% 0%, 100% 28%, 92% 79%, 66% 100%, 18% 94%, 0% 62%, 4% 22%);
+}
+@utility mask-blob-2 {
+  clip-path: polygon(24% 0%, 91% 9%, 100% 48%, 83% 93%, 39% 100%, 4% 82%, 0% 35%);
+}
+@utility mask-blob-3 {
+  clip-path: polygon(8% 14%, 68% 0%, 97% 19%, 100% 69%, 74% 100%, 19% 92%, 0% 51%);
+}
+@utility mask-blob-4 {
+  clip-path: polygon(19% 0%, 82% 5%, 100% 38%, 89% 88%, 48% 100%, 7% 86%, 0% 41%);
+}
+
+@layer components {
+  .scroll-progress {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 70;
+    height: 4px;
+    background: var(--primary);
+    transform: scaleX(0);
+    transform-origin: left center;
+    pointer-events: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    .scroll-progress {
+      animation: wp-progress linear both;
+      animation-timeline: scroll(root);
+    }
+    /* Card photos settle inside their frame while they cross the viewport. */
+    .scroll-zoom {
+      animation: wp-scroll-zoom linear both;
+      animation-timeline: view();
+    }
+    /* A framed block opens from a smaller rounded window as it scrolls in. */
+    .clip-reveal {
+      animation: wp-clip-open linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+  }
+}
+
+/* ---------- The World Plate jar (DishStage) ----------
+   A CSS 3D cylinder: --jw is the jar's width; 24 label strips (the unwrapped label in /jar-label.svg, sliced by
+   background-position) and 24 lid strips stand around the axis, with a lid top and a sauce base. DishStage turns
+   the whole jar and sets each .jar__shade opacity from the face's lit angle. */
+@layer components {
+  .jar {
+    --jw: min(34vw, 250px);
+    --jr: calc(var(--jw) / 2);
+    --jsw: calc(3.1416 * var(--jw) / 24 + 1px);
+    --jbh: calc(var(--jw) * 1.05);
+    --jlh: calc(var(--jw) * 0.26);
+    position: relative;
+    width: var(--jw);
+    height: calc(var(--jbh) + var(--jlh));
+    transform: rotateX(-8deg);
+    transform-style: preserve-3d;
+  }
+  .jar > span {
+    position: absolute;
+    overflow: hidden;
+  }
+  .jar__body {
+    top: var(--jlh);
+    left: calc(50% - var(--jsw) / 2);
+    width: var(--jsw);
+    height: var(--jbh);
+    background-image: var(--jar-label);
+    background-size: calc(var(--jsw) * 24) 100%;
+    background-position: calc(var(--jsw) * var(--o)) 0;
+    transform: rotateY(var(--a)) translateZ(var(--jr));
+  }
+  .jar__lid {
+    top: 0;
+    left: calc(50% - var(--jsw) * 0.53);
+    width: calc(var(--jsw) * 1.06);
+    height: var(--jlh);
+    /* Matte black cap, ribbed, with the silver glass rim where it meets the jar. */
+    background:
+      repeating-linear-gradient(to bottom, transparent 0 6px, rgb(255 255 255 / 0.06) 6px 7px),
+      linear-gradient(to bottom, #1c1c1c 0%, #0a0a0a 72%, #d7dce1 80%, #8d949b 100%);
+    transform: rotateY(var(--a)) translateZ(calc(var(--jr) * 1.04));
+  }
+  .jar__top {
+    top: calc(var(--jr) * -1.04);
+    left: calc(50% - var(--jr) * 1.04);
+    width: calc(var(--jr) * 2.08);
+    height: calc(var(--jr) * 2.08);
+    display: grid;
+    place-items: center;
+    border-radius: 9999px;
+    background: radial-gradient(circle at 42% 38%, #2a2a2a 0%, #0b0b0b 70%);
+    transform: rotateX(90deg);
+  }
+  .jar__mark {
+    display: grid;
+    place-items: center;
+    width: 38%;
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    border: 3px solid #4f0423;
+    background: #fdae2d;
+    color: #4f0423;
+    font: 400 calc(var(--jw) * 0.11) / 1 var(--font-display);
+  }
+  .jar__bottom {
+    top: calc(var(--jlh) + var(--jbh) - var(--jr));
+    left: calc(50% - var(--jr));
+    width: calc(var(--jr) * 2);
+    height: calc(var(--jr) * 2);
+    border-radius: 9999px;
+    background: radial-gradient(circle at 50% 50%, #ff8a2a 0%, #e0500f 62%, #b8390a 100%);
+    transform: rotateX(-90deg);
+  }
+  .jar__shade {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: #000000;
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
 /* Reduced motion: no 3D, no travel, no rolling or marquee drift — content fades in where it would have moved. */
@@ -1131,7 +1354,9 @@
     animation-duration: 200ms;
   }
   .roll__copy,
-  .roll__el--next {
+  .roll__el--next,
+  .animate-float,
+  .animate-spin-slow {
     animation: none;
   }
   .nav-bar,
