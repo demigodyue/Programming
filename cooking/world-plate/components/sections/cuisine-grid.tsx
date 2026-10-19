@@ -1,13 +1,10 @@
-import Image from "next/image";
-import Link from "next/link";
-import { CardReveal } from "@/components/motion/card-reveal";
 import type { CuisineSummary } from "@/db/queries/cuisines";
+import { CuisineDeck } from "./cuisine-deck";
 import { SectionHeading } from "./section-heading";
 
 /**
- * The forest room: a display title, then vignettes — caption above, a square slab of the dish (no rounded
- * corners, as Foudre sets photos), a hexagon marker and the count below. The row flies in like Slush's cards; hovering a
- * vignette sinks the photo to 0.92 on the elastic curve (Slush's footer tiles).
+ * The forest room: a display title, then the cuisines as a deck of flash cards that deals out with the scroll
+ * (CuisineDeck).
  */
 export function CuisineGrid({ cuisines }: { cuisines: CuisineSummary[] }) {
   return (
@@ -20,31 +17,7 @@ export function CuisineGrid({ cuisines }: { cuisines: CuisineSummary[] }) {
           title="Explore by cuisine"
           description="Ten kitchens, from Kathmandu street stalls to Parisian bakeries."
         />
-        <CardReveal className="grid grid-cols-2 gap-x-7 gap-y-14 sm:grid-cols-3 lg:grid-cols-5">
-          {cuisines.map((c) => (
-            <li key={c.slug}>
-              <Link href={`/cuisine/${c.slug}`} className="group flex flex-col items-center gap-4 text-center focus-visible:outline-offset-8">
-                <h3 className="link-group text-[1.625rem] leading-tight font-normal">{c.name}</h3>
-                <span
-                  data-cursor="Explore"
-                  className="tile-press-group bg-muted relative block aspect-square w-full max-w-[200px] overflow-hidden"
-                >
-                  <Image
-                    src={c.image}
-                    alt={c.imageAlt}
-                    fill
-                    sizes="(min-width: 1024px) 200px, (min-width: 640px) 30vw, 45vw"
-                    className="object-cover"
-                  />
-                </span>
-                <span className="label-caps text-muted-foreground flex items-center gap-2">
-                  <span aria-hidden className="hex-outline text-foreground" />
-                  {c.recipeCount} {c.recipeCount === 1 ? "recipe" : "recipes"}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </CardReveal>
+        <CuisineDeck cuisines={cuisines} />
       </div>
     </section>
   );

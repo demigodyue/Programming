@@ -3,7 +3,7 @@
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
 import { FlipFace, flipClass, TextLinkLine, type FlipAccent } from "@/components/motion/flip-face";
 import { ScrubWords } from "@/components/motion/scrub-words";
 import { SlantText } from "@/components/motion/slant-text";
@@ -22,7 +22,11 @@ const PILL_EASE = "cubic-bezier(0.65, 0.05, 0, 1)";
  *   characters slide in from -0.35em starting with the last; the paragraph and button follow from -3em;
  *   the new photo rises 10% into a frame that has turned the tab's colour. 0.65s, "slush" throughout.
  * - Like Slush, it moves on to the second dish by itself when the panel reaches 75% of the viewport.
+ * - On large screens the tabs and photo pin while you scroll and the scroll itself steps through the dishes
+ *   (one per 60svh); the photo frame turns and swells with the scroll and a bar tracks progress. Tabs then
+ *   scroll to their dish instead of switching directly.
  */
+const PIN = "(min-width: 1024px) and (min-height: 760px) and (prefers-reduced-motion: no-preference)";
 export function TrendingDishes({ recipes }: { recipes: RecipeCard[] }) {
   const rows = recipes.slice(0, 5);
   const [active, setActive] = useState(0);
@@ -34,6 +38,12 @@ export function TrendingDishes({ recipes }: { recipes: RecipeCard[] }) {
   const pill = useRef<HTMLSpanElement>(null);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   const content = useRef<HTMLDivElement>(null);
+  const track = useRef<HTMLDivElement>(null);
+  const frameEl = useRef<HTMLDivElement>(null);
+  const bar = useRef<HTMLDivElement>(null);
+  const pinned = useRef(false);
+  const want = useRef<number | null>(null);
+  const [freed, setFreed] = useState(0); // bumped each time the swap lock is released
 
   const select = useCallback((i: number) => {
     if (busy.current || i === activeRef.current) return;
@@ -42,8 +52,70 @@ export function TrendingDishes({ recipes }: { recipes: RecipeCard[] }) {
     activeRef.current = i;
     setActive(i);
     setPillAt(i);
-    window.setTimeout(() => (busy.current = false), SWAP_MS);
+    window.setTimeout(() => {
+      busy.current = false;
+      setFreed((n) => n + 1);
+    }, SWAP_MS);
   }, []);
+
+  // When a swap finishes, catch up with wherever the scroll has moved to meanwhile.
+  useEffect(() => {
+    const w = want.current;
+    if (pinned.current && w !== null && w !== activeRef.current) select(w);
+  }, [freed, select]);
+
+  // Pinned: scrolling picks the dish; tabs scroll to their dish.
+  const go = useCallback(
+    (i: number) => {
+      const el = track.current;
+      if (!pinned.current || !el) return select(i);
+      const r = el.getBoundingClientRect();
+      const span = r.height - window.innerHeight;
+      window.scrollTo({ top: window.scrollY + r.top + ((i + 0.5) / rows.length) * span, behavior: "smooth" });
+    },
+    [rows.length, select],
+  );
+
+  useEffect(() => {
+    const el = track.current;
+    if (!el || rows.length < 2) return;
+    const mq = window.matchMedia(PIN);
+    let frame = 0;
+    const render = () => {
+      frame = 0;
+      if (!pinned.current) return;
+      const r = el.getBoundingClientRect();
+      const span = r.height - window.innerHeight;
+      const p = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0;
+      const i = Math.min(rows.length - 1, Math.floor(p * rows.length));
+      want.current = i;
+      if (i !== activeRef.current) select(i);
+      if (frameEl.current) {
+        frameEl.current.style.transform = `rotate(${((p - 0.5) * 10).toFixed(2)}deg) scale(${(0.92 + 0.08 * Math.sin(Math.PI * p)).toFixed(4)})`;
+      }
+      if (bar.current) bar.current.style.transform = `scaleX(${p.toFixed(4)})`;
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(render);
+    };
+    const sync = () => {
+      pinned.current = mq.matches;
+      if (pinned.current) el.dataset.pinned = "";
+      else {
+        delete el.dataset.pinned;
+        if (frameEl.current) frameEl.current.style.transform = "";
+      }
+      render();
+    };
+    sync();
+    mq.addEventListener("change", sync);
+    window.addEventListener("scroll", schedule, { passive: true });
+    return () => {
+      mq.removeEventListener("change", sync);
+      window.removeEventListener("scroll", schedule);
+      cancelAnimationFrame(frame);
+    };
+  }, [rows.length, select]);
 
   // Move the pill: Flip from wherever it is now (mid-flight included) to the target tab.
   const placePill = useCallback((i: number, animate: boolean) => {
@@ -90,6 +162,7 @@ export function TrendingDishes({ recipes }: { recipes: RecipeCard[] }) {
     const el = content.current;
     if (!el || rows.length < 2) return;
     const check = () => {
+      if (pinned.current) return;
       const r = el.getBoundingClientRect();
       if (r.top + r.height / 2 > window.innerHeight * 0.75) return;
       window.removeEventListener("scroll", check);
@@ -106,7 +179,7 @@ export function TrendingDishes({ recipes }: { recipes: RecipeCard[] }) {
     e.preventDefault();
     const next = (i + step + rows.length) % rows.length;
     tabs.current[next]?.focus();
-    select(next);
+    go(next);
   };
 
   const state = (i: number) => (i === active ? "enter" : i === leaving ? "leave" : "idle");
@@ -118,11 +191,14 @@ export function TrendingDishes({ recipes }: { recipes: RecipeCard[] }) {
         <span>This week</span>
       </div>
 
-      <div className="flex flex-col items-start gap-8">
-        <div>
-          <ScrubWords id="trending-title" text="Trending dishes" className="text-display max-w-[10ch]" />
-          <p className="text-muted-foreground mt-5 max-w-sm text-[0.9375rem] leading-relaxed">What people are cooking from World Plate this week.</p>
-        </div>
+      <div>
+        <ScrubWords id="trending-title" text="Trending dishes" className="text-display max-w-[10ch]" />
+        <p className="text-muted-foreground mt-5 max-w-sm text-[0.9375rem] leading-relaxed">What people are cooking from World Plate this week.</p>
+      </div>
+
+      <div ref={track} className="trend-track mt-8" style={{ "--n": rows.length } as CSSProperties}>
+        <div className="trend-pin">
+        <div className="flex flex-col items-start gap-3">
         <div
           ref={list}
           role="tablist"
@@ -143,7 +219,7 @@ export function TrendingDishes({ recipes }: { recipes: RecipeCard[] }) {
               aria-selected={active === i}
               aria-controls={`trend-panel-${i}`}
               tabIndex={active === i ? 0 : -1}
-              onClick={() => select(i)}
+              onClick={() => go(i)}
               onMouseEnter={() => setPillAt(i)}
               onKeyDown={(e) => onKey(e, i)}
               className="label-caps relative min-h-11 rounded-md px-4 text-foreground"
@@ -152,10 +228,12 @@ export function TrendingDishes({ recipes }: { recipes: RecipeCard[] }) {
             </button>
           ))}
         </div>
-      </div>
+        <div aria-hidden className="trend-progress w-full max-w-xl" ref={bar} />
+        </div>
 
-      <div ref={content} className="mt-12 grid items-start gap-10 md:grid-cols-2 md:gap-16">
+      <div ref={content} className="mt-10 grid items-start gap-10 md:grid-cols-2 md:gap-16">
         <div
+          ref={frameEl}
           className="tab-frame clip-reveal bg-muted relative order-last aspect-square overflow-hidden rounded-lg border md:order-0"
           style={{ backgroundColor: `var(${FRAMES[active % FRAMES.length]})` }}
         >
@@ -201,6 +279,8 @@ export function TrendingDishes({ recipes }: { recipes: RecipeCard[] }) {
               </div>
             </div>
           ))}
+        </div>
+      </div>
         </div>
       </div>
     </section>

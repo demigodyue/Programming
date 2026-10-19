@@ -22,7 +22,8 @@ const PHOTOS = [
  * the two-line headline (their "Your money. Unstuck.") rises 2em at 1.5s, lines 0.3s apart.
  * Scrolling away, the wordmark drifts down 20% (Slush's hero-background parallax).
  * Cult Eats layer on top: dish photos (rectangular slabs) float around the headline all the time, follow the mouse at
- * different depths (MouseDepth) and rise as you scroll.
+ * different depths (MouseDepth) and rise as you scroll. Scrolling away is scrubbed too: the headline block sinks
+ * back and fades, and the wordmark's letters fan apart (.hero-exit / .hero-fan, a view timeline).
  */
 export function Hero({
   recipeCount,
@@ -39,7 +40,7 @@ export function Hero({
 }) {
   return (
     <>
-      <section aria-labelledby="hero-title" className="relative isolate flex min-h-[100svh] flex-col overflow-hidden">
+      <section aria-labelledby="hero-title" className="hero-scroll relative isolate flex min-h-[100svh] flex-col overflow-hidden">
         {/* Layers: scroll drift + mouse depth › sticker pop › always-on float. Large screens only. */}
         {recipes.slice(0, PHOTOS.length).map((r, i) => {
           const p = PHOTOS[i];
@@ -86,7 +87,7 @@ export function Hero({
             <span className="load-fade">Recipes and their stories</span>
           </div>
 
-          <div className="container-page flex flex-1 flex-col items-center justify-center py-14 text-center">
+          <div className="hero-exit container-page flex flex-1 flex-col items-center justify-center py-14 text-center">
             <h1 id="hero-title" className="max-w-[16ch] text-[clamp(2.4rem,6vw,3.25rem)] leading-none">
               <span className="home-sub" style={{ "--i": 0 } as CSSProperties}>
                 Cook the dishes
@@ -126,7 +127,7 @@ export function Hero({
             data-parallax-end="20"
             data-parallax-scroll-start="top top"
             data-parallax-scroll-end="bottom top-=20%"
-            className="font-display text-headline -mb-[0.1em] text-center text-[19vw] leading-[0.9] tracking-[0.01em] whitespace-nowrap select-none"
+            className="hero-fan font-display text-headline -mb-[0.1em] text-center text-[19vw] leading-[0.9] tracking-[0.01em] whitespace-nowrap select-none"
           >
             <LetterRoll text="World Plate" />
           </p>

@@ -1328,7 +1328,8 @@
 /* ---------- Intro curtain (kervangida.com's preloader, recorded 2026-10-19) ----------
    IntroCurtain (components/motion/intro-curtain.tsx). Their timeline: the logo fills left to right in 2s
    (linear), holds ~0.3s, then the panel slides up 100% in ~0.75s, ease-in-out (easeInOutSine fits their
-   samples). Ours starts at 0.1s, so the panel is gone at 3.15s; the Slush load clock waits for it. */
+   samples). Here the panel is five slats that peel up from the centre, 70ms apart, from 2.4s, while the
+   wordmark lifts away; the last slat is gone at 3.29s and the Slush load clock waits for it. */
 @keyframes wp-intro-fill {
   from {
     clip-path: inset(0 100% 0 0);
@@ -1343,6 +1344,19 @@
     visibility: hidden;
   }
 }
+@keyframes wp-intro-lift {
+  to {
+    transform: translateY(-28vh) scale(0.9);
+    opacity: 0;
+  }
+}
+/* Held only after the delay (fill: forwards): a lone "to" keyframe left Chrome reporting the panel visible. */
+@keyframes wp-intro-done {
+  0%,
+  100% {
+    visibility: hidden;
+  }
+}
 
 @layer components {
   .wp-intro {
@@ -1351,12 +1365,26 @@
     z-index: 80;
     display: grid;
     place-items: center;
-    background: var(--dot);
+    overflow: hidden;
     color: var(--dot-foreground);
-    animation: wp-intro-wipe 0.75s cubic-bezier(0.37, 0, 0.63, 1) 2.4s both;
+    /* Never catches clicks: once the slats have gone nothing may sit invisibly over the page. */
+    pointer-events: none;
+    animation: wp-intro-done 0.01s linear 3.3s forwards;
+  }
+  .wp-intro__slat {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--s) * 20%);
+    width: 20.4%;
+    background: var(--dot);
+    animation: wp-intro-wipe 0.75s cubic-bezier(0.37, 0, 0.63, 1) both;
+    animation-delay: calc(2.4s + var(--d) * 70ms);
   }
   .wp-intro__mark {
     position: relative;
+    z-index: 1;
+    animation: wp-intro-lift 0.6s cubic-bezier(0.37, 0, 0.63, 1) 2.4s both;
     display: inline-block;
     font: 400 clamp(2.75rem, 8vw, 6.5rem) / 0.92 var(--font-display);
     text-transform: uppercase;
@@ -1374,15 +1402,209 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  /* The page-load clock starts when the curtain has gone (3.15s); a client navigation (data-load) wins. */
+  /* The page-load clock starts as the last slat leaves (3.3s); a client navigation (data-load) wins. */
   :root[data-intro]:not([data-load]) {
-    --load-start: 3.15s;
-    --load-delay: 3.25s;
+    --load-start: 3.3s;
+    --load-delay: 3.4s;
   }
 }
 @media (prefers-reduced-motion: reduce) {
   .wp-intro {
     display: none;
+  }
+}
+
+/* ---------- Scroll-scrubbed sections (2026-10-19) ----------
+   Everything here moves with the scroll position, like the jar stage, instead of playing once:
+   - hero: as it scrolls away the headline block sinks back and fades, and the WORLD PLATE letters fan apart
+   - trending: the section pins and scrolling steps through the dishes (TrendingDishes sets data-pinned)
+   - cuisines: a pinned deck of flash cards deals out and flips face up (CuisineDeck sets data-pinned)
+   - quick meals: the cards straighten out of a fan
+   - CTA: the forest panel opens out of a small circle
+   - footer: the wordmark letters rise one after another
+   The CSS ones use scroll-driven animations (off the main thread); browsers without them show the end state. */
+@keyframes wp-hero-exit {
+  to {
+    transform: translateY(-14vh) scale(0.84);
+    opacity: 0;
+  }
+}
+@keyframes wp-hero-fan {
+  to {
+    translate: 0 calc((var(--li) - 4.5) * -2.6vh);
+    rotate: calc((var(--li) - 4.5) * 5deg);
+  }
+}
+@keyframes wp-fan-in {
+  from {
+    translate: var(--fx, 0) var(--fy, 20vh);
+    rotate: var(--fr, 0deg);
+  }
+}
+@keyframes wp-iris {
+  from {
+    clip-path: circle(9% at 50% 55%);
+  }
+  to {
+    clip-path: circle(120% at 50% 50%);
+  }
+}
+@keyframes wp-foot-rise {
+  from {
+    translate: 0 85%;
+    opacity: 0;
+  }
+}
+@keyframes wp-flash-in {
+  from {
+    transform: translateY(18%) rotateY(-70deg);
+    opacity: 0;
+  }
+}
+
+@layer components {
+  /* Trending: pinned track, one dish per 60svh of scroll. */
+  .trend-track[data-pinned] {
+    height: calc(100svh + var(--n, 5) * 60svh);
+  }
+  .trend-track[data-pinned] > .trend-pin {
+    position: sticky;
+    top: 0;
+    display: flex;
+    min-height: 100svh;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: 6rem 2rem;
+  }
+  .trend-track[data-pinned] .tab-frame {
+    width: min(100%, 58svh);
+  }
+  .trend-progress {
+    height: 2px;
+    background: var(--headline);
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+
+  /* Cuisines: a deck of flash cards. */
+  .deck-track[data-pinned] {
+    height: 330svh;
+  }
+  .deck-track[data-pinned] > .deck-pin {
+    position: sticky;
+    top: 0;
+    display: flex;
+    height: 100svh;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .flash {
+    position: relative;
+    perspective: 1200px;
+  }
+  .flash__deal {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    transform-style: preserve-3d;
+  }
+  .flash__cover,
+  .flash__front,
+  .flash__back {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    backface-visibility: hidden;
+  }
+  /* The patterned back of a card while it is still in the deck. */
+  .flash__cover {
+    display: grid;
+    place-items: center;
+    background:
+      repeating-linear-gradient(45deg, transparent 0 12px, color-mix(in srgb, var(--dot-foreground) 10%, transparent) 12px 14px),
+      var(--dot);
+    color: var(--dot-foreground);
+    transform: rotateY(180deg);
+  }
+  .flash__card {
+    position: absolute;
+    inset: 0;
+    display: block;
+    transform-style: preserve-3d;
+    transition: rotate 0.7s var(--ease-slush);
+  }
+  .flash__front {
+    display: flex;
+    flex-direction: column;
+    background: var(--card);
+  }
+  .flash__back {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.25rem;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    transform: rotateY(180deg);
+  }
+  /* While a card is mid-deal its info side would face the viewer; only the cover may show. */
+  .deck-track[data-pinned] .flash__deal:not([data-landed]) .flash__back {
+    visibility: hidden;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .deck-track:not([data-pinned]) .flash__card:hover,
+    .deck-track .flash__deal[data-landed] .flash__card:hover {
+      rotate: y 180deg;
+    }
+  }
+  .deck-track:not([data-pinned]) .flash__card:focus-visible,
+  .deck-track .flash__deal[data-landed] .flash__card:focus-visible {
+    rotate: y 180deg;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .hero-scroll {
+      view-timeline: --hero block;
+    }
+    .hero-exit {
+      animation: wp-hero-exit linear both;
+      animation-timeline: --hero;
+      animation-range: exit 0% exit 75%;
+    }
+    .hero-fan .roll {
+      animation: wp-hero-fan linear both;
+      animation-timeline: --hero;
+      animation-range: exit 0% exit 90%;
+    }
+    .scrub-fan > li {
+      animation: wp-fan-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 42%;
+    }
+    .scrub-iris {
+      animation: wp-iris linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+    .foot-rise > span {
+      display: inline-block;
+      animation: wp-foot-rise linear both;
+      animation-timeline: view();
+      animation-range: entry calc(var(--li) * 5%) entry calc(45% + var(--li) * 5%);
+    }
+    .deck-track:not([data-pinned]) .flash__deal {
+      animation: wp-flash-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 35%;
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flash__card {
+    transition-duration: 0.01ms;
   }
 }
 

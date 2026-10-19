@@ -186,11 +186,20 @@ tests/unit, tests/e2e    Vitest and Playwright
   `Cursor` label over `[data-cursor="…"]` (text = attribute value; ≥768px, fine pointers).
 - Nav: pills hide upward on scroll down (desktop), slide in from the right via the plus (≤991px); 10px direction threshold.
 - Tabs (TrendingDishes): Flip pill 0.5s; text/photo swap 0.65s on "slush"; auto-advance to tab 2 at "center 75%".
+- Scroll-scrubbed sections (2026-10-19, user: "after the about section the animations are plain… something should move
+  with scroll, like the pickle jar"): hero exit (.hero-scroll view timeline: .hero-exit sinks/fades the headline block,
+  .hero-fan fans the wordmark letters); TrendingDishes pins on large screens (data-pinned, 60svh per dish, scroll picks
+  the tab, frame turns/swells, progress bar; tabs scroll to their dish); cuisines are flash cards (CuisineDeck,
+  components/sections/cuisine-deck.tsx): pinned deck that deals out with the scroll, each card arcs, flips face up and
+  lands, then flips on hover/focus to its back (country, count, link); QuickMeals .scrub-fan; CTA .scrub-iris circle;
+  footer .foot-rise letters. Pins need (min-width:1024px) and (min-height:760px) and motion; otherwise cards swing in
+  per view timeline. All CSS ones are in the "Scroll-scrubbed sections" block of globals.css.
 - Intro curtain (2026-10-19, recorded from kervangida.com; that site has no route transition, its transition is
   this first-load preloader): `IntroCurtain` (components/motion/intro-curtain.tsx, `.wp-intro` in globals.css). A
   full-screen `--dot` panel; the WORLD PLATE wordmark fills left to right over its outline (2s linear, from 0.1s), holds,
-  then the panel slides up 100% (0.75s, easeInOutSine, from 2.4s). Pure CSS, plays on every full load. `data-intro` on
-  <html> moves the Slush load clock to 3.15s / 3.25s until the first client navigation (IntroCurtain drops it; a
+  then the panel — cut into five slats — peels up from the centre outward (0.75s each, easeInOutSine, 70ms apart, from
+  2.4s) while the wordmark lifts away; done at 3.3s. The container never takes pointer events. Pure CSS, plays on every full load. `data-intro` on
+  <html> moves the Slush load clock to 3.3s / 3.4s until the first client navigation (IntroCurtain drops it; a
   `data-load` swing clock always wins). Reduced motion: no intro.
 - Hungry Tiger scroll (2026-10-19, recorded from eathungrytiger.com via the user's Refero link): GSAP ScrollTrigger
   word scrub — each `.word` goes 0.2 → 1 opacity (0.2 long, 0.4 apart, power1.out), scrubbed "top 90%" → "top center".

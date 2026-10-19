@@ -4,7 +4,7 @@
 // - Structured restyle: full-bleed chalk band, uppercase group labels, cropped serif wordmark at the foot
 // - Slush motion: the link columns fly in as a card row; links use Slush's .link underline
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { CardReveal } from "@/components/motion/card-reveal";
 
 export interface FooterLink {
@@ -69,9 +69,14 @@ export function Footer1({ logo, description, aside, linkGroups, copyright }: Foo
       </div>
       <p
         aria-hidden
-        className="font-display text-headline -mb-[0.1em] text-center text-[19vw] leading-[0.9] tracking-[0.01em] whitespace-nowrap select-none"
+        className="foot-rise font-display text-headline -mb-[0.1em] text-center text-[19vw] leading-[0.9] tracking-[0.01em] whitespace-nowrap select-none"
       >
-        World Plate
+        {/* Each letter rises out of the footer's bottom edge as you reach it (scrubbed, .foot-rise). */}
+        {Array.from("World Plate").map((ch, i) => (
+          <span key={i} style={{ "--li": i } as CSSProperties}>
+            {ch === " " ? "\u00a0" : ch}
+          </span>
+        ))}
       </p>
     </footer>
   );

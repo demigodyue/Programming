@@ -35,7 +35,7 @@ export default async function HomePage() {
       <TrendingDishes recipes={trending} />
       <CuisineGrid cuisines={cuisines} />
       <QuickMeals recipes={quick} />
-      <section aria-labelledby="cta-title" className="room py-24 md:py-36">
+      <section aria-labelledby="cta-title" className="room scrub-iris py-24 md:py-36">
         <div className="container-page flex flex-col items-center text-center">
           {/* Drifts against the scroll like Slush's floating stickers (yPercent 0 → -30). */}
           <span aria-hidden data-parallax data-parallax-start="0" data-parallax-end="-30" className="hex-outline mb-8 size-6" />
