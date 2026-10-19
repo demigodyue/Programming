@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { MaskReveal } from "@/components/motion/mask-reveal";
-import { Scramble } from "@/components/motion/scramble";
-import { Reveal, RevealItem } from "@/components/motion/reveal";
+import { TextLinkLine } from "@/components/motion/flip-face";
+import { SlantText } from "@/components/motion/slant-text";
 
 /**
- * Exhibition-wall section title: small uppercase labels in opposite corners, then a centred
- * display serif title that rises out of a mask, a short grotesk description and one ghost link.
+ * Exhibition-wall section title: small uppercase labels in opposite corners, then a centred display
+ * serif title whose characters slide in from the last one (Slush's data-anim-slant), a short grotesk
+ * description and one text link with Slush's sweeping underline.
  */
 export function SectionHeading({
   id,
@@ -28,31 +28,21 @@ export function SectionHeading({
     <div className="mb-12 md:mb-16">
       {(index || label) && (
         <div className="rule-draw label-caps text-muted-foreground mb-10 flex justify-between pt-4">
-          <span>{index && <Scramble text={index} />}</span>
-          <span>{label && <Scramble text={label} />}</span>
+          <span>{index}</span>
+          <span>{label}</span>
         </div>
       )}
-      <h2 id={id} className="text-display mx-auto max-w-[14ch] text-center text-balance">
-        <MaskReveal>{title}</MaskReveal>
-      </h2>
+      <SlantText as="h2" id={id} text={title} className="text-display mx-auto block max-w-[14ch] text-center text-balance" />
       {(description || action) && (
-        <Reveal className="mt-6 flex flex-col items-center gap-3 text-center">
-          {description && (
-            <RevealItem as="p" className="text-muted-foreground max-w-md text-[0.9375rem] leading-relaxed">
-              {description}
-            </RevealItem>
-          )}
+        <div className="mt-6 flex flex-col items-center gap-3 text-center">
+          {description && <p className="text-muted-foreground max-w-md text-[0.9375rem] leading-relaxed">{description}</p>}
           {action && (
-            <RevealItem>
-              <Link
-                href={action.href}
-                className="link-u inline-flex items-center py-3 text-sm"
-              >
-                {action.label}
-              </Link>
-            </RevealItem>
+            <Link href={action.href} className="text-link py-3 text-sm">
+              {action.label}
+              <TextLinkLine />
+            </Link>
           )}
-        </Reveal>
+        </div>
       )}
     </div>
   );

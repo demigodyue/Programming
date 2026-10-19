@@ -1,7 +1,6 @@
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
-import { PageTransition } from "@/components/motion/page-transition";
-import { WordReveal } from "@/components/motion/word-reveal";
+import { SlantText } from "@/components/motion/slant-text";
 import { RecipeBrowser } from "@/components/recipe/recipe-browser";
 import { db } from "@/db/db";
 import { listCuisines } from "@/db/queries/cuisines";
@@ -25,16 +24,14 @@ export default async function RecipesPage() {
   );
 
   return (
-    <PageTransition>
-      <div className="container-page pt-32 pb-24 md:pt-36">
-        <header className="mb-14 flex flex-col items-center border-b pb-12 text-center">
-          <WordReveal text="All recipes" className="text-[clamp(3.5rem,11vw,5.875rem)] leading-[0.84]" />
-          <p className="rise text-muted-foreground mt-6 max-w-md text-base" style={{ "--delay": "350ms" } as CSSProperties}>
-            Every dish on World Plate. Search by name or ingredient, or narrow it down by cuisine, effort and time.
-          </p>
-        </header>
-        <RecipeBrowser recipes={searchable} cuisines={cuisines.map((c) => ({ id: c.slug, label: c.name, emoji: c.emoji }))} />
-      </div>
-    </PageTransition>
+    <div className="container-page pt-32 pb-24 md:pt-36">
+      <header className="hero-content mb-14 flex flex-col items-center border-b pb-12 text-center">
+        <SlantText as="h1" mode="load" text="All recipes" className="block text-[clamp(3.5rem,11vw,5.875rem)] leading-[0.84]" />
+        <p className="load-stagger text-muted-foreground mt-6 max-w-md text-base" style={{ "--i": 0 } as CSSProperties}>
+          Every dish on World Plate. Search by name or ingredient, or narrow it down by cuisine, effort and time.
+        </p>
+      </header>
+      <RecipeBrowser recipes={searchable} cuisines={cuisines.map((c) => ({ id: c.slug, label: c.name, emoji: c.emoji }))} />
+    </div>
   );
 }

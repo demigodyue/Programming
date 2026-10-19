@@ -4,6 +4,7 @@ import { Leaf, Search, X } from "lucide-react";
 import { m, AnimatePresence, useReducedMotion } from "motion/react";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FlipFace, flipClass } from "@/components/motion/flip-face";
 import { RecipeCard } from "@/components/recipe/recipe-card";
 import { ContinuousTabs } from "@/components/watermelon/continuous-tabs";
 import { EmojiSpreeChips } from "@/components/watermelon/emoji-spree-choice-chips";
@@ -153,12 +154,8 @@ export function RecipeBrowser({
           <div className="bg-card rounded-lg border px-6 py-20 text-center">
             <p className="font-display text-[2.125rem] leading-tight">No dishes match those filters.</p>
             <p className="text-muted-foreground mt-2">Try another cuisine, a longer cooking time, or clear the filters to see everything.</p>
-            <button
-              type="button"
-              onClick={clear}
-              className="btn-swap bg-primary text-primary-foreground mt-6 inline-flex h-11 items-center rounded-full px-6 font-medium"
-            >
-              Show all recipes
+            <button type="button" onClick={clear} data-accent="mint" className={flipClass("solid", "mt-6")}>
+              <FlipFace>Show all recipes</FlipFace>
             </button>
           </div>
         ) : (

@@ -3,7 +3,7 @@
 import { ChefHat, RotateCcw } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useMemo, useState, useSyncExternalStore } from "react";
-import { Reveal, RevealItem } from "@/components/motion/reveal";
+import { FlipFace, flipClass } from "@/components/motion/flip-face";
 import { useActiveIndex } from "@/components/motion/use-active-index";
 import { Stepper } from "@/components/watermelon/stepper";
 import type { Ingredient } from "@/db/queries/recipes";
@@ -102,10 +102,10 @@ export function RecipeKitchen({
             <button
               type="button"
               onClick={() => setServings(baseServings)}
-              className="text-accent-ink mt-3 inline-flex items-center gap-1.5 text-sm font-medium underline-offset-4 link-u"
+              className="text-accent-ink mt-3 inline-flex items-center gap-1.5 text-sm font-medium"
             >
               <RotateCcw className="size-3.5" strokeWidth={2} aria-hidden />
-              Back to original {baseServings} servings
+              <span className="link">Back to original {baseServings} servings</span>
             </button>
           )}
 
@@ -118,7 +118,7 @@ export function RecipeKitchen({
                     const isChecked = checked.has(index);
                     const qty = formatQuantity(ing.amount, ing.unit, baseServings, servings);
                     return (
-                      <li key={index} data-checked={isChecked} className="sd-rise">
+                      <li key={index} data-checked={isChecked}>
                         <label className="group flex cursor-pointer items-start gap-3 py-3">
                           <input type="checkbox" checked={isChecked} onChange={() => toggle(index)} className="peer sr-only" />
                           <span
@@ -167,19 +167,17 @@ export function RecipeKitchen({
           <h2 id="method-title" className="text-[clamp(2.25rem,5vw,3.25rem)] leading-none">
             Method
           </h2>
-          <button
-            type="button"
-            onClick={() => setCooking(true)}
-            className="btn-swap bg-primary text-primary-foreground inline-flex min-h-11 items-center gap-2 rounded-full px-[17px] py-[9px] text-sm"
-          >
-            <ChefHat className="size-4" strokeWidth={1.5} aria-hidden />
-            Start Cook Mode
+          <button type="button" onClick={() => setCooking(true)} data-accent="orange" className={flipClass()}>
+            <FlipFace>
+              <ChefHat className="size-4" strokeWidth={1.5} aria-hidden />
+              Start Cook Mode
+            </FlipFace>
           </button>
         </div>
-        <Reveal as="ol" className="mt-8 space-y-8">
+        <ol className="mt-8 space-y-8">
           {steps.map((step, i) => (
-            <RevealItem as="li" key={i} id={`step-${i + 1}`} ref={registerStep(i)} className="flex scroll-mt-28 gap-5">
-              {/* LaunchDarkly stepper: the step you're reading morphs from circle to filled square. */}
+            <li key={i} id={`step-${i + 1}`} ref={registerStep(i)} className="flex scroll-mt-28 gap-5">
+              {/* The step you're reading turns from a circle into a filled square (elastic radius). */}
               <span
                 aria-hidden
                 className={cn(
@@ -193,9 +191,9 @@ export function RecipeKitchen({
                 <span className="sr-only">Step {i + 1}: </span>
                 {step}
               </p>
-            </RevealItem>
+            </li>
           ))}
-        </Reveal>
+        </ol>
       </section>
 
       {cooking && <CookMode title={title} steps={steps} onClose={() => setCooking(false)} />}

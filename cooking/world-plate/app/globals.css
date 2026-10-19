@@ -68,15 +68,6 @@
   --text-display--letter-spacing: -0.009em;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
-  --animate-marquee: marquee var(--duration) linear infinite;
-  @keyframes marquee {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(calc(-100% - var(--gap)));
-    }
-  }
 }
 
 /* Palette — the only place hex colours live. See CLAUDE.md "Design rules".
@@ -230,43 +221,102 @@
   }
 }
 
-/* ---------- Motion — modelled on launchdarkly.com ----------
-   Recorded from the live site: widgets rise 120px + fade over 700ms on cubic-bezier(.22,.61,.36,1),
-   staggered, then drift forever; chart lines draw on with a mask; shapes morph on
-   cubic-bezier(.32,.72,0,1) over 350ms; hovers are 300ms colour swaps. Headlines don't do tricks. */
+/* ---------- Motion — modelled on slush.app (recorded from the live site, 2026-10-19) ----------
+   Slush animates with GSAP and two custom eases, both copied here exactly:
+   - "slush"        = cubic-bezier(.65,.05,0,1) — GSAP's default for the site (0.525s), tab swaps, hovers.
+   - "slush-bounce" = an elastic overshoot that peaks at 1.142 around 25% — every entrance springs in on it.
+     Slush draws it with CustomEase; their CSS uses the same points as `linear()` (--elastic-ease-out).
+   Durations come straight from their scripts (0.65s chars, 0.85s cards/lines, 1s load stagger, 1.25s letters). */
 :root {
-  --ease-ld: cubic-bezier(0.22, 0.61, 0.36, 1);
-  --ease-morph: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-slush: cubic-bezier(0.65, 0.05, 0, 1);
+  --ease-slush-bounce: linear(
+    0,
+    0.5737 7.6%,
+    0.8382 11.87%,
+    0.9463 14.19%,
+    1.0292 16.54%,
+    1.0886 18.97%,
+    1.1258 21.53%,
+    1.137 22.97%,
+    1.1424 24.48%,
+    1.1423 26.1%,
+    1.1366 27.86%,
+    1.1165 31.01%,
+    1.0507 38.62%,
+    1.0219 42.57%,
+    0.9995 46.99%,
+    0.9872 51.63%,
+    0.9842 58.77%,
+    1.0011 81.26%,
+    1
+  );
+  --ease-color: cubic-bezier(0.216, 0.62, 0.356, 1);
+  --ease-menu-line: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --duration-default: 0.75s;
+  --duration-medium: 0.85s;
+  --duration-fade: 0.15s;
+  /* The page-load clock. --load-start is when a page's entrance begins (the wordmark roll, the tagline);
+     --load-delay is Slush's runPageLoad delay (title chars, staggered blocks). A client navigation pushes
+     both past the 3D page swing — PageSwing sets data-load on <html>. */
+  --load-start: 0s;
+  --load-delay: 0.1s;
+  /* Slush's candy colours. Used only for moments of motion: the page-swing panels, the back face of a
+     flipping button and the tab frame behind a sliding photo. The site itself stays putty and ink. */
+  --slush-blue: #4da2ff;
+  --slush-yellow: #ffd731;
+  --slush-lavender: #e9ccff;
+  --slush-mint: #55db9c;
+  --slush-orange: #fb4903;
+  --slush-violet: #5c4ade;
+  --slush-ink: #000000;
+  --slush-paper: #ffffff;
+}
+/* runTransition fires the new page's load at 1.5s, with a 0.15s delay. */
+:root[data-load="swing"] {
+  --load-start: 1.5s;
+  --load-delay: 1.65s;
+}
+/* runReducedTransition: the new page fades in and loads at 0.15s. */
+:root[data-load="fade"] {
+  --load-delay: 0.15s;
 }
 
-/* Route changes: the old page lifts away (up 60px, shrinks a touch, fades) while the new page
-   rises in from 120px below on the same curve as the hero widgets — a deliberate ~0.85s hand-off.
-   The header stays put; a clicked recipe photo morphs into the recipe page's hero image. */
+/* ---------- Page transition (Slush's Barba "runTransition") ----------
+   The old page shrinks into a rounded card, sinks back in 3D and swings out to the left while three
+   candy-coloured panels sweep past; the new page swings in from the right and settles flat. PageSwing
+   drives it with the View Transitions API: these rules switch off the browser's crossfade and set the
+   stacking (panels behind both pages, old page above the new one); the keyframes are sampled from
+   Slush's GSAP timeline in components/motion/page-swing.tsx. The header is not part of the swing. */
 ::view-transition {
   pointer-events: none;
+  background-color: var(--room-background);
 }
-::view-transition-group(.morph) {
-  animation-duration: 750ms;
-  animation-timing-function: var(--ease-ld);
+::view-transition-group(root) {
+  animation: none;
+  z-index: 1;
 }
-::view-transition-old(.page-fade) {
-  animation: 450ms var(--ease-ld) both wp-page-out;
-  transform-origin: 50% 0;
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
 }
-::view-transition-new(.page-fade) {
-  animation: 750ms var(--ease-ld) 120ms both wp-page-in;
+::view-transition-old(root) {
+  z-index: 2;
+  clip-path: inset(0 round 2rem);
 }
-@keyframes wp-page-out {
-  to {
-    opacity: 0;
-    transform: translate3d(0, -60px, 0) scale(0.97);
-  }
+::view-transition-new(root) {
+  z-index: 1;
 }
-@keyframes wp-page-in {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 120px, 0);
-  }
+::view-transition-group(wp-panel-0),
+::view-transition-group(wp-panel-1),
+::view-transition-group(wp-panel-2) {
+  animation: none;
+  z-index: 0;
+}
+::view-transition-new(wp-panel-0),
+::view-transition-new(wp-panel-1),
+::view-transition-new(wp-panel-2) {
+  animation: none;
 }
 ::view-transition-group(site-header) {
   animation: none;
@@ -278,274 +328,710 @@
 ::view-transition-new(site-header) {
   animation: none;
 }
+/* The panels (.page-transition-el): only rendered while a swing is captured. */
+.wp-panel {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+  border-radius: 2rem;
+  pointer-events: none;
+}
+:root[data-swing-panels] .wp-panel {
+  display: block;
+}
+
+/* ---------- Keyframes ---------- */
 @keyframes wp-fade-in {
   from {
     opacity: 0;
   }
 }
-@keyframes wp-fade-out {
+/* Title characters: x -0.25em → 0 with autoAlpha (data-anim-hero / data-anim-slant). */
+@keyframes wp-char-in {
+  from {
+    opacity: 0;
+    transform: translateX(-0.25em);
+  }
+}
+/* data-load-stagger: y 3em → 0. */
+@keyframes wp-load-rise {
+  from {
+    opacity: 0;
+    transform: translateY(3em);
+  }
+}
+/* data-home-sub-el: y 2em → 0. */
+@keyframes wp-sub-rise {
+  from {
+    opacity: 0;
+    transform: translateY(2em);
+  }
+}
+/* The hero's lottie stickers: scale 0.2, rotate -90° → rest. */
+@keyframes wp-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.2) rotate(-90deg);
+  }
+}
+/* #navContainer drops from y -300%. */
+@keyframes wp-nav-in {
+  from {
+    transform: translateY(-300%);
+  }
+}
+/* Home logo letters roll up one slice at a time. */
+@keyframes wp-roll-up {
+  to {
+    transform: translateY(-100%);
+  }
+}
+/* data-card-reveal: cards fly in from the right and from in front of the screen. */
+@keyframes wp-card-in {
+  from {
+    opacity: 0;
+    transform: translate3d(5em, 0, 20em) rotateY(-30deg) scale(0.75);
+  }
+}
+/* data-heading-reveal: each line tips in around its own vertical axis. */
+@keyframes wp-line-in {
+  from {
+    opacity: 0;
+    transform: translateZ(5em) rotateY(-45deg);
+  }
+}
+/* initHomeVideoIntro: the showcase rises 40% and grows from 0.75. */
+@keyframes wp-intro-in {
+  from {
+    opacity: 0;
+    transform: translateY(40%) scale(0.75);
+  }
+}
+/* Tab system: incoming title chars, paragraph and button; outgoing text and visual. */
+@keyframes wp-tab-char-in {
+  from {
+    opacity: 0;
+    transform: translateX(-0.35em);
+  }
+}
+@keyframes wp-tab-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-3em);
+  }
+}
+@keyframes wp-tab-text-out {
   to {
     opacity: 0;
+    transform: translateX(-15%);
+    visibility: hidden;
+  }
+}
+@keyframes wp-tab-visual-in {
+  from {
+    opacity: 0;
+    transform: translateY(10%);
+  }
+}
+@keyframes wp-tab-visual-out {
+  to {
+    opacity: 0;
+    transform: translateY(10%);
+    visibility: hidden;
   }
 }
 
-/* Above-the-fold entrances: pure CSS so they start at first paint, before hydration.
-   Stagger with style={{ "--i": n }}; extra offset with --delay. */
-@keyframes wp-rise {
-  from {
+@layer components {
+  /* ---------- Page load (runPageLoad / runHomeLoad) ----------
+     Pure CSS so it plays at first paint, before hydration. Stagger index: --i. */
+  /* [data-hero-content]: the first section is invisible until the load begins. */
+  .hero-content {
+    animation: wp-fade-in 0.1s ease-out both;
+    animation-delay: var(--load-delay);
+  }
+  /* [data-anim-hero] title: characters slide in from the last one back (stagger 0.015s, from "end"). */
+  .chars .char {
+    display: inline-block;
+    padding: 0 0.1em;
+    margin: 0 -0.1em;
+  }
+  .load-chars .char {
+    animation: wp-char-in 0.65s var(--ease-slush-bounce) both;
+    animation-delay: calc(var(--load-delay) + var(--ci, 0) * 15ms);
+  }
+  /* [data-load-stagger]: 0.5s after the title, 0.1s apart. */
+  .load-stagger {
+    animation: wp-load-rise 1s var(--ease-slush-bounce) both;
+    animation-delay: calc(var(--load-delay) + 0.5s + var(--i, 0) * 0.1s);
+  }
+  /* [data-hero-fade] */
+  .load-fade {
+    animation: wp-fade-in 0.525s var(--ease-slush-bounce) both;
+    animation-delay: calc(var(--load-delay) + 0.5s);
+  }
+  /* Lottie stickers: random order (--r), 0.1s apart. */
+  .load-pop {
+    animation: wp-pop 1s var(--ease-slush-bounce) both;
+    animation-delay: calc(var(--load-delay) + 0.5s + var(--r, 0) * 0.1s);
+  }
+  /* [data-home-sub-el]: the home tagline lines, 1.5s in, 0.3s apart. */
+  .home-sub {
+    display: block;
+    animation: wp-sub-rise 1s var(--ease-slush-bounce) both;
+    animation-delay: calc(var(--load-start) + 1.5s + var(--i, 0) * 0.3s);
+  }
+  /* The header drops in once, on the first page load (Barba "once"). */
+  .nav-intro {
+    animation: wp-nav-in 0.8s var(--ease-slush) 0.6s both;
+  }
+
+  /* Home wordmark (.home-logo-letter-list): each letter column holds five stacked copies — the full glyph
+     plus slices cut to its bottom 30/22/15/5% — over a clean copy waiting below. The copies leave upward
+     0.15s apart, trailing slices, while the clean copy rises into place from 0.5s. Letters start 0.05s apart. */
+  .roll {
+    position: relative;
+    display: inline-block;
+    overflow-x: visible; /* glyphs may overhang their advance; only the roll needs clipping */
+    overflow-y: clip;
+    vertical-align: top;
+    margin-block: -0.12em -0.24em;
+  }
+  .roll__el {
+    position: relative;
+    display: block;
+  }
+  .roll__el--next {
+    position: absolute;
+    inset: 100% 0 auto 0;
+    animation: wp-roll-up 1.25s var(--ease-slush) both;
+    animation-delay: calc(var(--load-start) + var(--li, 0) * 50ms + 0.5s);
+  }
+  .roll__copy {
+    display: block;
+    padding-block: 0.12em 0.24em;
+    animation: wp-roll-up 1.25s var(--ease-slush) both;
+    animation-delay: calc(var(--load-start) + var(--li, 0) * 50ms + var(--ci, 0) * 150ms);
+  }
+  .roll__el--next .roll__copy {
+    animation: none;
+  }
+  .roll__copy:nth-child(n + 2) {
+    position: absolute;
+    inset: 0;
+  }
+  .roll__copy:nth-child(2) {
+    clip-path: inset(70% 0 0 0);
+  }
+  .roll__copy:nth-child(3) {
+    clip-path: inset(78% 0 0 0);
+  }
+  .roll__copy:nth-child(4) {
+    clip-path: inset(85% 0 0 0);
+  }
+  .roll__copy:nth-child(5) {
+    clip-path: inset(95% 0 0 0);
+  }
+
+  /* ---------- Scroll reveals (ScrollTrigger "top 80%", once) ----------
+     ScrollMotion sets data-in when the element's top crosses 80% of the viewport (data-reveal-at overrides).
+     Until then the animations sit paused on their first frame. Only with JS: without it they just play. */
+  [data-reveal="slant"] .char {
+    animation: wp-char-in 0.65s var(--ease-slush-bounce) both;
+    animation-delay: calc(var(--ci, 0) * 15ms);
+  }
+  [data-reveal="cards"] {
+    perspective: 1000px;
+  }
+  /* stagger { amount: 0.2 } — the whole row spreads over 0.2s. */
+  [data-reveal="cards"] > .reveal-card {
+    animation: wp-card-in 0.85s var(--ease-slush-bounce) both;
+    animation-delay: calc(var(--i, 0) * 0.2s / max(var(--n, 2) - 1, 1));
+  }
+  /* Lines tip in 0.15s apart. Every word rotates about its line's axis (--ox, measured by HeadingReveal),
+     which renders exactly like rotating the whole line. */
+  [data-reveal="lines"] {
+    position: relative;
+    perspective: 1000px;
+  }
+  [data-reveal="lines"] > .word {
+    display: inline-block;
+    transform-origin: var(--ox, 50%) 50%;
+    animation: wp-line-in 0.85s var(--ease-slush-bounce) both;
+    animation-delay: calc(var(--line, 0) * 0.15s);
+  }
+  [data-reveal="intro"] {
+    animation: wp-intro-in 1.2s var(--ease-slush-bounce) both;
+  }
+  @media (scripting: enabled) {
+    [data-reveal]:not([data-in]) :is(.char, .reveal-card, .word),
+    [data-reveal="intro"]:not([data-in]) {
+      animation-play-state: paused;
+    }
+  }
+
+  /* ---------- Buttons (.button-main): a 3D flip on hover ----------
+     The face tips back and up (rotateX 85°, fading in 0.15s) while a candy-coloured back face swings up
+     from underneath (rotateX -90° → 0) with the label sliding in after it. Press: scale 0.955 (0.5s elastic).
+     Markup: <FlipFace> inside an element with .btn-flip (components/motion/flip-face.tsx). */
+  .btn-flip {
+    --flip-accent: var(--slush-blue);
+    --flip-accent-ink: var(--slush-ink);
+    position: relative;
+    display: inline-flex;
+    border-radius: 9999px;
+    transition: transform 0.5s var(--ease-slush-bounce);
+  }
+  .btn-flip:active {
+    transform: scale(0.955);
+  }
+  .btn-flip[data-accent="yellow"] {
+    --flip-accent: var(--slush-yellow);
+  }
+  .btn-flip[data-accent="lavender"] {
+    --flip-accent: var(--slush-lavender);
+  }
+  .btn-flip[data-accent="mint"] {
+    --flip-accent: var(--slush-mint);
+  }
+  .btn-flip[data-accent="orange"] {
+    --flip-accent: var(--slush-orange);
+  }
+  .btn-flip[data-accent="violet"] {
+    --flip-accent: var(--slush-violet);
+    --flip-accent-ink: var(--slush-paper);
+  }
+  .btn-flip[data-accent="paper"] {
+    --flip-accent: var(--slush-paper);
+  }
+  .btn-flip__inner {
+    display: grid;
+    width: 100%;
+    perspective: 500px;
+    transform-style: preserve-3d;
+    pointer-events: none;
+  }
+  .btn-flip__front {
+    display: grid;
+    grid-area: 1 / 1;
+    transition:
+      translate var(--duration-medium) var(--ease-slush-bounce),
+      rotate var(--duration-default) var(--ease-slush-bounce),
+      opacity var(--duration-fade) ease-out;
+  }
+  .btn-flip__bg {
+    grid-area: 1 / 1;
+    border: 1px solid var(--primary);
+    border-radius: 9999px;
+    background-color: var(--primary);
+    transition:
+      background-color 0.2s var(--ease-color),
+      border-color 0.2s var(--ease-color);
+  }
+  .btn-flip__text,
+  .btn-flip__label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding-inline: 1.0625rem;
+    white-space: nowrap;
+  }
+  .btn-flip__text {
+    grid-area: 1 / 1;
+    color: var(--primary-foreground);
+    transition:
+      translate var(--duration-default) var(--ease-slush-bounce),
+      color 0.2s var(--ease-color);
+  }
+  .btn-flip__back {
+    display: flex;
+    grid-area: 1 / 1;
+    place-self: center;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - 1px);
+    height: calc(100% - 1px);
+    border: 1px solid var(--slush-ink);
+    border-radius: 9999px;
+    background-color: var(--flip-accent);
+    color: var(--flip-accent-ink);
     opacity: 0;
-    transform: translate3d(0, 40px, 0);
+    translate: 0 2em -6em;
+    rotate: 1 0 0 -90deg;
+    transition:
+      translate var(--duration-medium) var(--ease-slush-bounce),
+      rotate var(--duration-default) var(--ease-slush-bounce),
+      opacity 0.15s ease-out;
   }
-}
-/* LaunchDarkly widgetFadeSlideIn. */
-@keyframes wp-widget-in {
-  from {
+  .btn-flip__label {
+    translate: 0 0.75em 0;
+    transition: translate var(--duration-default) var(--ease-slush-bounce);
+  }
+  /* data-button-theme="light": a paper pill with an ink edge. */
+  .btn-flip--outline .btn-flip__bg {
+    border-color: var(--foreground);
+    background-color: var(--card);
+  }
+  .btn-flip--outline .btn-flip__text {
+    color: var(--foreground);
+  }
+  .btn-flip--outline[aria-current="page"] .btn-flip__bg {
+    border-color: var(--foreground);
+    background-color: var(--foreground);
+  }
+  .btn-flip--outline[aria-current="page"] .btn-flip__text {
+    color: var(--background);
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .btn-flip:is(:hover, :focus-visible) .btn-flip__front {
+      translate: 0 -2em -6em;
+      rotate: 1 0 0 85deg;
+      opacity: 0;
+    }
+    .btn-flip:is(:hover, :focus-visible) .btn-flip__text {
+      translate: 0 -0.75em 0;
+    }
+    .btn-flip:is(:hover, :focus-visible) .btn-flip__back {
+      transition:
+        translate var(--duration-medium) var(--ease-slush-bounce),
+        rotate var(--duration-default) var(--ease-slush-bounce),
+        opacity 0.075s ease-out;
+      rotate: 1 0 0 0deg;
+      translate: 0 0 0;
+      opacity: 1;
+    }
+    .btn-flip:is(:hover, :focus-visible) .btn-flip__label {
+      translate: 0 0 0;
+      transition-delay: 0.012s;
+    }
+  }
+  /* Reduced motion: no flip — the pill swaps its colours instead (Slush's own fallback). */
+  @media (hover: hover) and (prefers-reduced-motion: reduce) {
+    .btn-flip:is(:hover, :focus-visible) .btn-flip__bg {
+      border-color: var(--foreground);
+      background-color: transparent;
+    }
+    .btn-flip:is(:hover, :focus-visible) .btn-flip__text {
+      color: var(--foreground);
+    }
+    .btn-flip--outline:is(:hover, :focus-visible) .btn-flip__bg {
+      background-color: var(--foreground);
+    }
+    .btn-flip--outline:is(:hover, :focus-visible) .btn-flip__text {
+      color: var(--background);
+    }
+  }
+
+  /* ---------- Links ---------- */
+  /* .link: the underline grows in from the right edge and leaves to the left (0.4s, slush). */
+  .link {
+    position: relative;
+  }
+  .link::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 1px;
+    background: currentColor;
+    transform: scale(0, 1);
+    transform-origin: left center;
+  }
+  .link[aria-current="page"]::after {
+    transform: scale(1, 1);
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .link::after,
+    .link-group::after {
+      transition: transform 0.4s var(--ease-slush);
+    }
+    .link:hover::after,
+    .group:hover .link-group::after {
+      transform: scale(1, 1);
+      transform-origin: right center;
+    }
+  }
+  .link-group {
+    position: relative;
+  }
+  .link-group::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 1px;
+    background: currentColor;
+    transform: scale(0, 1);
+    transform-origin: left center;
+  }
+  /* [data-text-link]: a resting underline that sweeps out to the right while a copy follows it in. */
+  .text-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+  .text-link__track {
+    position: absolute;
+    inset: auto 0 0.5rem 0;
+    height: 1px;
+    overflow: hidden;
+  }
+  .text-link__bar {
+    position: absolute;
+    inset: 0;
+  }
+  .text-link__bar::before,
+  .text-link__bar::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: currentColor;
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .text-link__bar {
+      transform: translateX(-100%);
+      transition: transform 0.75s var(--ease-slush);
+    }
+    .text-link__bar::before {
+      transform: translateX(-100%);
+    }
+    .text-link__bar::after {
+      transform: translateX(100%);
+    }
+    .text-link:hover .text-link__bar {
+      transform: translateX(100%);
+    }
+  }
+
+  /* ---------- Header (Slush's .nav-w) ---------- */
+  /* It sits lower on the home page until you scroll, then rides up (top, 0.6s elastic). */
+  .nav-bar {
+    --nav-top: 1.25rem;
+    position: fixed;
+    inset-inline: 0;
+    top: var(--nav-top);
+    z-index: 40;
+    overflow-x: clip;
+    pointer-events: none;
+    transition: top 0.6s var(--ease-slush-bounce);
+  }
+  .nav-bar[data-home] {
+    --nav-top: 2.25rem;
+  }
+  .nav-bar[data-scrolled] {
+    --nav-top: 0.75rem;
+  }
+  @media (width < 480px) {
+    .nav-bar[data-home] {
+      --nav-top: 2rem;
+    }
+    .nav-bar[data-scrolled] {
+      --nav-top: 0.5rem;
+    }
+  }
+  /* Circle buttons spin on hover (90°; the logo a full turn over 1s) and press to 0.955. */
+  .nav-circle {
+    transition: transform 0.5s var(--ease-slush-bounce);
+  }
+  .nav-logo {
+    transition-duration: 1s;
+  }
+  .nav-circle:active {
+    transform: scale(0.955);
+  }
+  @media (hover: hover) {
+    .nav-circle:hover {
+      transform: rotate(90deg);
+    }
+    .nav-logo:hover {
+      transform: rotate(360deg);
+    }
+    .nav-menu:hover .nav-menu__h {
+      transform: scaleX(0);
+    }
+  }
+  /* The plus turns into a minus: rotate 90° and drop the horizontal bar. */
+  .nav-menu[data-open] {
+    transform: rotate(90deg);
+  }
+  .nav-menu[data-open] .nav-menu__h {
+    transform: scaleX(0);
+  }
+  .nav-menu__line {
+    position: absolute;
+    background: currentColor;
+    transition: transform 0.25s var(--ease-menu-line);
+  }
+  .nav-menu__h {
+    width: 100%;
+    height: 1.5px;
+  }
+  .nav-menu__v {
+    width: 1.5px;
+    height: 100%;
+  }
+  /* Nav pills. Showing staggers from the last pill, hiding from the first (0.03s apart, 0.75s elastic).
+     Desktop: they fly up out of view while you scroll down and come back when you scroll up or hover the
+     plus. Mobile (≤991px): they wait off to the right and slide in under the bar when the plus is tapped. */
+  .nav-pill {
+    translate: 0 0;
+    transition: translate 0.75s var(--ease-slush-bounce);
+    transition-delay: calc((var(--n, 1) - 1 - var(--i, 0)) * 30ms);
+  }
+  @media (width >= 992px) {
+    .nav-pills[data-hidden]:not(:focus-within) .nav-pill {
+      translate: 0 -300%;
+      transition-delay: calc(var(--i, 0) * 30ms);
+    }
+  }
+  @media (width < 992px) {
+    /* Its own row under the buttons, pills wrapping right-aligned within 20rem. */
+    .nav-pills {
+      order: 1;
+      flex-basis: 100%;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      padding-left: max(0px, calc(100% - 20rem));
+    }
+    .nav-pills:not([data-open]) .nav-pill {
+      translate: 300% 0;
+      transition-delay: calc(var(--i, 0) * 30ms);
+    }
+  }
+
+  /* ---------- Cursor label (Slush's .cursor) ----------
+     A pill that follows the pointer (0.525s power3.out) and appears over anything with data-cursor,
+     showing that attribute as its text. It flips to the left near the right edge and above near the bottom. */
+  .wp-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 60;
+    display: none;
+    padding: 0.75em 1em;
+    border: 1px solid var(--foreground);
+    border-radius: 9999px;
+    background: var(--card);
+    color: var(--foreground);
+    font: 500 0.75rem/1 var(--font-sans);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    pointer-events: none;
     opacity: 0;
-    transform: translate3d(var(--entry-x, 0px), var(--entry-y, 120px), 0);
+    transition: opacity 0.2s;
   }
-}
-/* LaunchDarkly widgetFloat: a slow figure-of-eight drift around the resting spot. */
-@keyframes wp-widget-float {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
+  .wp-cursor[data-on] {
+    display: flex;
   }
-  25% {
-    transform: translate3d(calc(var(--float-x, 5px) * var(--float-dir, 1) * 0.6), calc(var(--float-y, 8px) * 0.55), 0);
-  }
-  50% {
-    transform: translate3d(calc(var(--float-x, 5px) * var(--float-dir, 1)), calc(var(--float-y, 8px) * -0.4), 0);
-  }
-  75% {
-    transform: translate3d(calc(var(--float-x, 5px) * var(--float-dir, 1) * -0.5), calc(var(--float-y, 8px) * -0.9), 0);
-  }
-}
-/* LaunchDarkly costLineReveal: the chart line is drawn left → right by growing a mask. */
-@keyframes wp-line-reveal {
-  from {
-    mask-size: 0% 100%;
-  }
-  to {
-    mask-size: 100% 100%;
-  }
-}
-/* LaunchDarkly growFromBottom. */
-@keyframes wp-grow-bar {
-  from {
-    transform: scaleY(0);
-    opacity: 0;
-  }
-  50% {
+  body:has([data-cursor]:hover) .wp-cursor {
     opacity: 1;
   }
-}
-@keyframes wp-pill-scroll {
-  to {
-    transform: translateX(-50%);
+  @media (width < 768px) {
+    .wp-cursor[data-on] {
+      display: none;
+    }
   }
-}
 
-@layer components {
-  .rise {
-    animation: wp-rise 700ms var(--ease-ld) both;
-    animation-delay: calc(var(--delay, 0ms) + var(--i, 0) * 80ms);
+  /* ---------- Tab system (Slush's data-tabs) ----------
+     The highlight pill (white, difference-blended so it reads as ink on bone) follows the hovered tab and
+     settles back on the active one (0.5s slush). Switching tabs: the old text slides off -15% and fades,
+     the old photo drops 10%; the new title's characters slide in from the last one, then the paragraph and
+     button from -3em, then the new photo rises 10% — all 0.65s on "slush". */
+  /* Drawn above the tab labels so the difference blend inverts them too. */
+  .tabs-pill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    border-radius: 9999px;
+    background: var(--slush-paper);
+    mix-blend-mode: difference;
+    pointer-events: none;
   }
-  /* Kept for older markup: a whole-block fade-rise (no per-word tricks). */
-  .mask {
-    display: inline-block;
+  .tab-frame {
+    transition: background-color 0.65s var(--ease-slush);
   }
-  .frame-in {
-    animation: wp-rise 700ms var(--ease-ld) both;
-    animation-delay: var(--delay, 0ms);
+  .tab-text {
+    grid-area: 1 / 1;
+    visibility: hidden;
   }
-  /* Outer element slides in; the inner one drifts, so the two transforms never fight. */
-  .widget {
-    animation: wp-widget-in 700ms var(--ease-ld) both;
-    animation-delay: var(--delay, 0ms);
+  .tab-text[data-state="enter"],
+  .tab-text[data-state="leave"] {
+    visibility: visible;
   }
-  .widget > .widget-float {
-    animation: wp-widget-float var(--float-duration, 9s) ease-in-out infinite;
-    animation-delay: calc(var(--delay, 0ms) + 700ms);
+  .tab-text[data-state="enter"] .char {
+    animation: wp-tab-char-in 0.65s var(--ease-slush) both;
+    animation-delay: calc(0.2s + var(--ci, 0) * 15ms);
   }
-  .line-reveal {
-    mask-image: linear-gradient(#000, #000);
-    mask-repeat: no-repeat;
-    mask-size: 0% 100%;
-    animation: wp-line-reveal 1000ms linear forwards;
-    animation-delay: var(--delay, 600ms);
+  .tab-text[data-state="enter"] .tab-text__p {
+    animation: wp-tab-slide-in 0.65s var(--ease-slush) 0.275s both;
   }
-  .pill-scroll {
-    animation: wp-pill-scroll 22s linear infinite;
+  .tab-text[data-state="enter"] .tab-text__cta {
+    animation: wp-tab-slide-in 0.65s var(--ease-slush) 0.35s both;
   }
-  .grow-bar {
-    transform-origin: center bottom;
-    animation: wp-grow-bar 800ms var(--ease-ld) both;
-    animation-delay: var(--delay, 0ms);
+  .tab-text[data-state="leave"] {
+    pointer-events: none;
+    animation: wp-tab-text-out 0.65s var(--ease-slush) both;
   }
-  /* Hold the wall's entrance until it scrolls into view (data-inview is set by WidgetWall). */
-  .widget-wall:not([data-inview]) :is(.widget, .widget-float, .line-reveal, .grow-bar) {
-    animation-play-state: paused;
+  .tab-visual {
+    visibility: hidden;
   }
-  /* Shape morph — LaunchDarkly's stepper squares and logo cards. */
+  .tab-visual[data-state="enter"] {
+    visibility: visible;
+    animation: wp-tab-visual-in 0.65s var(--ease-slush) 0.35s both;
+  }
+  .tab-visual[data-state="leave"] {
+    visibility: visible;
+    pointer-events: none;
+    animation: wp-tab-visual-out 0.65s var(--ease-slush) both;
+  }
+
+  /* ---------- Marquee (Slush's marquee-advanced) ----------
+     ScrollMarquee runs each copy of the strip with the Web Animations API, flips its direction with the
+     scroll direction, and drifts the whole track ±10vw across its pass through the viewport. */
+  .marquee {
+    position: relative;
+    overflow: hidden;
+  }
+  .marquee__scroll {
+    display: flex;
+    width: 120%;
+    margin-left: -10%;
+    will-change: transform;
+  }
+  .marquee__collection {
+    display: flex;
+    flex: none;
+    will-change: transform;
+  }
+
+  /* Tile press (Slush's .footer-social-link): hovered tiles sink to 0.92 on the elastic curve. */
+  .tile-press {
+    transition: transform 0.5s var(--ease-slush-bounce);
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .tile-press:hover,
+    .group:hover .tile-press-group {
+      transform: scale(0.92);
+    }
+  }
+  .tile-press-group {
+    transition: transform 0.5s var(--ease-slush-bounce);
+  }
+
+  /* Recipe step marker: the step you're reading turns into a filled square (radius on the elastic curve). */
   .morph-shape {
     transition:
-      border-radius 350ms var(--ease-morph),
-      background-color 350ms var(--ease-morph),
-      color 350ms var(--ease-morph),
-      border-color 350ms var(--ease-morph);
-  }
-  /* Pill CTA: filled → outlined on hover, 300ms ease. */
-  .btn-swap {
-    border: 1px solid var(--primary);
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .btn-swap:hover {
-      background-color: transparent;
-      color: var(--foreground);
-      border-color: var(--foreground);
-    }
-  }
-}
-
-/* ---------- Everything moves: shared motion utilities ---------- */
-@keyframes wp-drop-in {
-  from {
-    opacity: 0;
-    transform: translate3d(0, -24px, 0);
-  }
-}
-@keyframes wp-slide-in {
-  from {
-    opacity: 0;
-    transform: translate3d(var(--from-x, -40px), 0, 0);
-  }
-}
-@keyframes wp-letter {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 0.5em, 0);
-  }
-}
-@keyframes wp-sd-zoom {
-  from {
-    transform: scale(1.18);
-  }
-  to {
-    transform: scale(1);
-  }
-}
-@keyframes wp-sd-rise {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 36px, 0);
-  }
-}
-@keyframes wp-sd-rule {
-  from {
-    transform: scaleX(0);
-  }
-}
-@keyframes wp-sd-hero-out {
-  to {
-    opacity: 0.15;
-    transform: translate3d(0, -80px, 0) scale(0.96);
-  }
-}
-@keyframes wp-sd-wordmark {
-  to {
-    transform: translate3d(0, -12%, 0) scale(1.06);
-  }
-}
-/* svz.io: the hero stays pinned while the next panel slides over it — blurring, dimming, shrinking. */
-@keyframes wp-sd-hero-stack {
-  to {
-    filter: blur(10px) brightness(0.55);
-    transform: scale(0.9);
-  }
-}
-/* svz.io parallax photo: drifts against the scroll inside its frame. */
-@keyframes wp-sd-parallax {
-  from {
-    transform: translate3d(0, -9%, 0) scale(1.2);
-  }
-  to {
-    transform: translate3d(0, 9%, 0) scale(1.2);
-  }
-}
-@keyframes wp-sd-progress {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-
-@layer components {
-  /* Header chips drop in on first load. */
-  .drop-in {
-    animation: wp-drop-in 700ms var(--ease-ld) both;
-    animation-delay: calc(var(--i, 0) * 90ms + 100ms);
-  }
-  /* Corner labels slide in from their side (--from-x). */
-  .slide-in {
-    animation: wp-slide-in 800ms var(--ease-ld) both;
-    animation-delay: var(--delay, 150ms);
-  }
-  /* Wordmark letters rise one by one. */
-  .letter {
-    display: inline-block;
-    animation: wp-letter 900ms var(--ease-ld) both;
-    animation-delay: calc(var(--delay, 0ms) + var(--i, 0) * 55ms);
+      border-radius 0.5s var(--ease-slush-bounce),
+      background-color 0.2s var(--ease-color),
+      color 0.2s var(--ease-color),
+      border-color 0.2s var(--ease-color);
   }
 
-  /* Links: underline draws in from the left on hover / for the current page. */
-  .link-u {
-    background-image: linear-gradient(currentColor, currentColor);
-    background-repeat: no-repeat;
-    background-origin: content-box; /* the line hugs the text, not the padded tap area */
-    background-position: 0 100%;
-    background-size: 0% 1px;
-    transition: background-size 350ms var(--ease-ld);
-  }
-  .link-u[aria-current="page"] {
-    background-size: 100% 1px;
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .link-u:hover,
-    .group:hover .link-u-group {
-      background-size: 100% 1px;
-    }
-  }
-  .link-u-group {
-    background-image: linear-gradient(currentColor, currentColor);
-    background-repeat: no-repeat;
-    background-position: 0 100%;
-    background-size: 0% 1px;
-    transition: background-size 350ms var(--ease-ld);
-  }
-
-  /* Buttons: press feedback and a nudging arrow. */
-  .btn-swap {
-    transition:
-      background-color 300ms ease,
-      color 300ms ease,
-      border-color 300ms ease,
-      transform 160ms var(--ease-out);
-  }
-  .btn-swap:active {
-    transform: scale(0.97);
-  }
-  .btn-swap svg {
-    transition: transform 300ms var(--ease-ld);
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .btn-swap:hover svg {
-      transform: translateX(3px);
-    }
-  }
-
-  /* A hairline that draws itself left → right (replaces border-t on section label rows). */
+  /* A static hairline above section label rows. */
   .rule-draw {
     position: relative;
   }
@@ -555,122 +1041,6 @@
     inset: 0 0 auto 0;
     height: 1px;
     background: var(--border);
-    transform-origin: left center;
-  }
-
-  /* svz.io cursor follower (components/motion/cursor.tsx). One 76px disc, scaled per state so
-     only transform/opacity ever animate. `difference` keeps it visible on any surface. */
-  .wp-cursor {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 60;
-    display: none;
-    pointer-events: none;
-    mix-blend-mode: difference;
-  }
-  .wp-cursor[data-on] {
-    display: block;
-  }
-  .wp-cursor-dot {
-    display: grid;
-    place-items: center;
-    width: 76px;
-    height: 76px;
-    margin: -38px 0 0 -38px;
-    border-radius: 999px;
-    background: #fff;
-    transform: scale(0.15);
-    transition:
-      transform 450ms var(--ease-ld),
-      opacity 200ms ease;
-  }
-  .wp-cursor[data-state="hover"] .wp-cursor-dot {
-    transform: scale(0.55);
-  }
-  /* Over photos: a solid ink disc with a readable label (no inversion over busy images). */
-  .wp-cursor[data-state="view"] {
-    mix-blend-mode: normal;
-  }
-  .wp-cursor[data-state="view"] .wp-cursor-dot {
-    transform: scale(1);
-    background: var(--foreground);
-  }
-  .wp-cursor[data-state="hidden"] .wp-cursor-dot {
-    opacity: 0;
-  }
-  .wp-cursor-label {
-    color: var(--background);
-    font: 500 0.6875rem/1 var(--font-sans);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    opacity: 0;
-    transition: opacity 200ms ease;
-  }
-  .wp-cursor[data-state="view"] .wp-cursor-label {
-    opacity: 1;
-  }
-
-  /* svz.io manifesto: words light up in order from one --p (0–1) set by Manifesto. */
-  .manifesto-word {
-    opacity: clamp(0.16, calc(var(--p, 1) * (var(--n) + 6) - var(--i)), 1);
-    transition: opacity 180ms linear;
-  }
-
-  /* Scroll-progress hairline under the header. */
-  .scroll-progress {
-    transform-origin: left center;
-    transform: scaleX(0);
-  }
-}
-
-/* Scroll-driven motion (runs on the compositor, tied to scroll position). Browsers without
-   scroll timelines simply show everything in its resting state. */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    /* Photos settle from a slight zoom as they scroll into view. Uses `transform`, so it
-       composes with Tailwind's hover `scale`. */
-    .sd-img {
-      animation: wp-sd-zoom linear both;
-      animation-timeline: view();
-      animation-range: entry 0% cover 45%;
-    }
-    /* Blocks fade up as they enter. */
-    .sd-rise {
-      animation: wp-sd-rise linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 80%;
-    }
-    .rule-draw::before {
-      animation: wp-sd-rule linear both;
-      animation-timeline: view();
-      animation-range: entry 10% cover 30%;
-    }
-    /* Hero copy recedes as you scroll away; the wordmark lifts and grows. */
-    .sd-hero-out {
-      animation: wp-sd-hero-out linear both;
-      animation-timeline: scroll(root);
-      animation-range: 0 70vh;
-    }
-    .sd-wordmark {
-      animation: wp-sd-wordmark linear both;
-      animation-timeline: scroll(root);
-      animation-range: 0 90vh;
-    }
-    .scroll-progress {
-      animation: wp-sd-progress linear both;
-      animation-timeline: scroll(root);
-    }
-    .sd-hero-stack {
-      transform-origin: 50% 30%;
-      animation: wp-sd-hero-stack linear both;
-      animation-timeline: scroll(root);
-      animation-range: 0 100vh;
-    }
-    .sd-parallax {
-      animation: wp-sd-parallax linear both;
-      animation-timeline: view();
-    }
   }
 }
 
@@ -737,36 +1107,41 @@
   transform: scaleX(1);
 }
 
+/* Reduced motion: no 3D, no travel, no rolling or marquee drift — content fades in where it would have moved. */
 @media (prefers-reduced-motion: reduce) {
-  .manifesto-word {
-    opacity: 1;
-  }
-  .drop-in,
-  .slide-in,
-  .letter,
-  .rise,
-  .frame-in,
-  .widget {
+  .load-chars .char,
+  .load-stagger,
+  .load-pop,
+  .home-sub,
+  .nav-intro,
+  [data-reveal="slant"] .char,
+  [data-reveal="cards"] > .reveal-card,
+  [data-reveal="lines"] > .word,
+  [data-reveal="intro"],
+  .tab-text[data-state="enter"] .char,
+  .tab-text[data-state="enter"] .tab-text__p,
+  .tab-text[data-state="enter"] .tab-text__cta,
+  .tab-visual[data-state="enter"] {
     animation-name: wp-fade-in;
     animation-duration: 300ms;
+    animation-timing-function: ease-out;
   }
-  .widget > .widget-float,
-  .pill-scroll,
-  .grow-bar {
+  .tab-text[data-state="leave"],
+  .tab-visual[data-state="leave"] {
+    animation-duration: 200ms;
+  }
+  .roll__copy,
+  .roll__el--next {
     animation: none;
   }
-  .line-reveal {
-    animation: none;
-    mask-size: 100% 100%;
-  }
-  ::view-transition-group(*) {
-    animation-duration: 0.01ms !important;
-  }
-  ::view-transition-old(.page-fade) {
-    animation: 200ms ease both wp-fade-out;
-  }
-  ::view-transition-new(.page-fade) {
-    animation: 250ms ease both wp-fade-in;
+  .nav-bar,
+  .nav-circle,
+  .nav-pill,
+  .btn-flip,
+  .tile-press,
+  .tile-press-group,
+  .morph-shape {
+    transition-duration: 0.01ms;
   }
   .strike::after {
     transition-duration: 0.01ms;

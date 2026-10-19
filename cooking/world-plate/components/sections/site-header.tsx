@@ -1,24 +1,21 @@
 "use client";
 
-import { Menu, Search, X } from "lucide-react";
-import { m, AnimatePresence, useMotionValueEvent, useReducedMotion, useScroll } from "motion/react";
+import { Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { LogoMark } from "@/components/logo";
-import { cn } from "@/lib/utils";
-import { Scramble } from "@/components/motion/scramble";
+import { FlipFace, flipClass, type FlipAccent } from "@/components/motion/flip-face";
 import { ThemeIconToggle } from "@/components/theme-switch";
-import { LazyThemeSwitch } from "@/components/theme-switch-lazy";
+import { cn } from "@/lib/utils";
 
-const NAV = [
-  { href: "/recipes", label: "Recipes" },
-  { href: "/#cuisines", label: "Cuisines" },
-  { href: "/favorites", label: "Favorites" },
+const NAV: { href: string; label: string; accent: FlipAccent }[] = [
+  { href: "/recipes", label: "Recipes", accent: "yellow" },
+  { href: "/#cuisines", label: "Cuisines", accent: "orange" },
+  { href: "/favorites", label: "Favorites", accent: "mint" },
 ];
 
-const EASE_OUT = [0.23, 1, 0.32, 1] as const;
-const EASE_LD = [0.22, 0.61, 0.36, 1] as const;
+const MOBILE = "(max-width: 991px)";
 
 function isActive(pathname: string, href: string) {
   if (href.startsWith("/#")) return pathname.startsWith("/cuisine");
@@ -26,19 +23,47 @@ function isActive(pathname: string, href: string) {
 }
 
 /**
- * Floating header after launchdarkly.com: the monogram sits in its own chip, the links in a
- * centred pill, the tools in a third. Scrolling collapses the "World Plate" name into the
- * monogram (width, 300ms linear) and the chips gain their surface (350ms morph curve).
- * The active link is marked by a sliding hairline underline.
+ * Slush's floating nav: a logo circle on the left; on the right a row of pill links, a plus button,
+ * the theme circle and a dark "Search" pill. Every pill flips in 3D on hover.
+ *
+ * - The bar rides lower on the home page until you scroll 50px, then moves up (top, 0.6s elastic).
+ * - Desktop: scrolling down flies the pills up out of view, first pill first (0.03s apart, 0.75s
+ *   elastic); scrolling up — or hovering the plus — brings them back, last pill first. Leaving the
+ *   right-hand group while scrolled down hides them again.
+ * - ≤991px: the pills wait off-screen to the right; the plus slides them in under the bar (last pill
+ *   first) and turns into a minus. No backdrop, as on Slush.
+ * - Scroll direction is only read after 10px of movement (initDetectScrollingDirection).
  */
 export function SiteHeader() {
   const pathname = usePathname();
-  const reduce = useReducedMotion();
-  const { scrollY } = useScroll();
-  const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [pillsHidden, setPillsHidden] = useState(false);
+  const [mobile, setMobile] = useState(false);
+  const lastY = useRef(0);
 
-  useMotionValueEvent(scrollY, "change", (y) => setScrolled(y > 24));
+  useEffect(() => {
+    const media = window.matchMedia(MOBILE);
+    const sync = () => setMobile(media.matches);
+    sync();
+    media.addEventListener("change", sync);
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (Math.abs(y - lastY.current) < 10) return;
+      const down = y > lastY.current;
+      const started = y > 50;
+      lastY.current = y;
+      setScrolled(started);
+      if (down && started) setPillsHidden(true);
+      else if (!down) setPillsHidden(false);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      media.removeEventListener("change", sync);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, []);
 
   // Close the mobile menu on navigation and on Escape.
   const [lastPath, setLastPath] = useState(pathname);
@@ -53,132 +78,82 @@ export function SiteHeader() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
-  const chip = cn(
-    "morph-shape border",
-    scrolled || open ? "bg-card border-border" : "border-transparent bg-transparent",
-  );
+  const expanded = mobile ? open : !pillsHidden;
+  const onPlus = () => {
+    if (window.matchMedia(MOBILE).matches) setOpen((o) => !o);
+    else setPillsHidden(false);
+  };
 
   return (
-    <header style={{ viewTransitionName: "site-header" }} className="fixed inset-x-0 top-0 z-40">
-      <m.div
-        aria-hidden
-        initial={false}
-        animate={{ opacity: open ? 1 : 0 }}
-        transition={{ duration: 0.3, ease: EASE_OUT }}
-        className="bg-background pointer-events-none absolute inset-0 border-b"
-      />
-      {/* Reading progress: a hairline that fills as you scroll (scroll-driven, no JS). */}
-      <span aria-hidden className="scroll-progress bg-foreground pointer-events-none absolute inset-x-0 top-0 h-px" />
-      <div className="container-page relative">
-        <div className="text-foreground">
-          <nav aria-label="Main" className="relative flex h-16 items-center justify-between gap-2 pt-2">
-            <Link
-              href="/"
-              className={cn(chip, "drop-in flex h-11 items-center rounded-full pr-1 pl-1.5")}
-              style={{ "--i": 0 } as CSSProperties}
-              aria-label="World Plate home"
-            >
-              <LogoMark />
-              {/* The name collapses into the monogram on scroll (LaunchDarkly's wordmark → arrow). */}
-              <span
-                className={cn(
-                  "label-caps grid overflow-hidden whitespace-nowrap transition-[grid-template-columns,opacity,padding] duration-300 ease-linear",
-                  scrolled ? "grid-cols-[0fr] pl-0 opacity-0" : "grid-cols-[1fr] pr-2 pl-2.5 opacity-100",
-                )}
-              >
-                <span className="min-w-0">World Plate</span>
-              </span>
-            </Link>
+    <header
+      style={{ viewTransitionName: "site-header" }}
+      className="nav-bar"
+      data-home={pathname === "/" || undefined}
+      data-scrolled={scrolled || undefined}
+    >
+      <nav aria-label="Main" className="nav-intro container-page flex items-start justify-between gap-3">
+        <Link
+          href="/"
+          aria-label="World Plate home"
+          className="nav-circle nav-logo bg-card text-foreground pointer-events-auto grid size-11 shrink-0 place-items-center rounded-full border border-foreground"
+        >
+          <LogoMark ring={false} className="size-9" />
+        </Link>
 
-            <ul
-              className="drop-in bg-card absolute left-1/2 hidden h-11 -translate-x-1/2 items-center gap-6 rounded-full border px-6 md:flex"
-              style={{ "--i": 1 } as CSSProperties}
-            >
-              {NAV.map((item) => {
-                const active = isActive(pathname, item.href);
-                return (
-                  <li key={item.href}>
-                    <Link href={item.href} aria-current={active ? "page" : undefined} className="link-u relative block py-2 text-[0.8125rem]">
-                      <Scramble text={item.label} onHover duration={450} />
-                      {active && (
-                        <m.span
-                          layoutId="nav-active"
-                          transition={{ type: "spring", duration: 0.45, bounce: 0 }}
-                          className="bg-foreground absolute inset-x-0 bottom-1 h-px"
-                        />
-                      )}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
+        <div
+          className="pointer-events-auto flex flex-wrap items-center justify-end gap-1.5"
+          onMouseLeave={() => {
+            if (window.scrollY > 50 && !window.matchMedia(MOBILE).matches) setPillsHidden(true);
+          }}
+        >
+          <ul
+            id="site-nav"
+            className="nav-pills flex items-center gap-1.5"
+            data-hidden={pillsHidden || undefined}
+            data-open={open || undefined}
+            inert={mobile && !open}
+            style={{ "--n": NAV.length } as CSSProperties}
+          >
+            {NAV.map((item, i) => (
+              <li key={item.href} className="nav-pill" style={{ "--i": i } as CSSProperties}>
+                <Link
+                  href={item.href}
+                  data-accent={item.accent}
+                  aria-current={isActive(pathname, item.href) ? "page" : undefined}
+                  className={flipClass("outline", "text-[0.8125rem]")}
+                >
+                  <FlipFace className="min-h-11">{item.label}</FlipFace>
+                </Link>
+              </li>
+            ))}
+          </ul>
 
-            <div className={cn(chip, "drop-in flex h-11 items-center gap-0.5 rounded-full px-0.5")} style={{ "--i": 2 } as CSSProperties}>
-              <Link
-                href="/recipes"
-                aria-label="Search recipes"
-                className="hover-fine:bg-foreground/8 grid size-10 place-items-center rounded-full transition-colors duration-300"
-              >
-                <Search className="size-[17px]" strokeWidth={1.5} aria-hidden />
-              </Link>
-              <ThemeIconToggle />
-              <button
-                type="button"
-                aria-expanded={open}
-                aria-controls="mobile-menu"
-                aria-label={open ? "Close menu" : "Open menu"}
-                onClick={() => setOpen((o) => !o)}
-                className="hover-fine:bg-foreground/8 grid size-10 place-items-center rounded-full md:hidden"
-              >
-                {open ? (
-                  <X className="size-5" strokeWidth={1.5} aria-hidden />
-                ) : (
-                  <Menu className="size-5" strokeWidth={1.5} aria-hidden />
-                )}
-              </button>
-            </div>
-          </nav>
+          <ThemeIconToggle className="nav-circle bg-card size-11 border border-foreground" />
 
-          <AnimatePresence>
-            {open && (
-              <m.div
-                id="mobile-menu"
-                // The panel unrolls downward (clip-path), LaunchDarkly curve; reduced motion: fade.
-                initial={reduce ? { opacity: 0 } : { clipPath: "inset(0 0 100% 0)" }}
-                animate={reduce ? { opacity: 1 } : { clipPath: "inset(0 0 0% 0)" }}
-                exit={reduce ? { opacity: 0 } : { clipPath: "inset(0 0 100% 0)" }}
-                transition={{ duration: 0.45, ease: EASE_LD }}
-                className="relative pt-2 pb-6 md:hidden"
-              >
-                <ul className="grid">
-                  {NAV.map((item, i) => (
-                    <m.li
-                      key={item.href}
-                      initial={{ opacity: 0, transform: reduce ? "none" : "translateY(40px)" }}
-                      animate={{ opacity: 1, transform: "translateY(0px)" }}
-                      transition={{ duration: 0.7, delay: 0.12 + 0.07 * i, ease: EASE_LD }}
-                    >
-                      <Link
-                        href={item.href}
-                        onClick={() => setOpen(false)}
-                        aria-current={isActive(pathname, item.href) ? "page" : undefined}
-                        className="aria-[current=page]:underline flex items-center justify-between border-b py-3 font-display text-4xl leading-none font-medium underline-offset-[6px]"
-                      >
-                        {item.label}
-                        <span aria-hidden className="hex-outline" />
-                      </Link>
-                    </m.li>
-                  ))}
-                </ul>
-                <div className="mt-4 flex items-center justify-between">
-                  <span className="label-caps text-muted-foreground">Theme</span>
-                  <LazyThemeSwitch />
-                </div>
-              </m.div>
-            )}
-          </AnimatePresence>
+          <button
+            type="button"
+            aria-expanded={expanded}
+            aria-controls="site-nav"
+            aria-label={mobile ? (open ? "Close menu" : "Open menu") : "Show navigation"}
+            data-open={(mobile && open) || undefined}
+            onMouseEnter={() => !window.matchMedia(MOBILE).matches && setPillsHidden(false)}
+            onClick={onPlus}
+            className="nav-circle nav-menu bg-card text-foreground grid size-11 place-items-center rounded-full border border-foreground"
+          >
+            <span aria-hidden className="relative grid size-4 place-items-center">
+              <span className="nav-menu__line nav-menu__h" />
+              <span className="nav-menu__line nav-menu__v" />
+            </span>
+          </button>
+
+          <Link href="/recipes" data-accent="yellow" className={cn(flipClass("solid"), "text-[0.8125rem]")}>
+            <FlipFace>
+              <Search className="size-4" strokeWidth={1.75} aria-hidden />
+              Search
+            </FlipFace>
+          </Link>
         </div>
-      </div>
+      </nav>
     </header>
   );
 }

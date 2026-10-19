@@ -33,17 +33,25 @@ Skills used on this project:
 Decisions made with the user where skills conflicted with the brief:
 - Body font: skill wins → **Instrument Sans** instead of Inter (Fraunces stays for display, standing in for the "Davinci" serif of the Structured reference).
 - Motion density: brief wins → every section reveals on scroll, every card lifts on hover.
-- Navbar: minimal flat bar (monogram + text links) per the Structured style; keeps a few nav links since the app needs them.
+- Navbar: ~~minimal flat bar (monogram + text links)~~ — superseded 2026-10-19 by Slush's pill nav (below).
 - Icons: Lucide (shadcn default), 1.5 stroke.
+- Motion (2026-10-19): the user asked for slush.app's exact animations, transitions and mobile behaviour. Slush's six
+  candy colours are allowed **only in motion moments** (page-swing panels, button back faces, tab frame behind a
+  sliding photo) — the user chose this over neutral tones. Slush's timings win over "no animation delays content
+  >1s" (the home tagline rises at 1.5s; a new page's entrance waits ~1.65s for the swing). The header became Slush's
+  pill nav (logo circle, flip pills, plus/minus, dark "Search" pill) because its motion needs discrete pills.
 
 Note on the senior-* skills (senior-security, senior-backend, senior-frontend): their scripts and reference
 docs are unfilled templates. The final security review used the built-in `security-review` skill instead.
 
 ## Technical decisions (keep these unless there's a reason to revisit)
-- **Card → hero morph uses React `<ViewTransition>`** (shared `name`, `share="morph"`), not Motion `layoutId`:
-  the App Router unmounts the old page before Motion can snapshot it. `layoutId` is used for in-page shared
-  elements (nav pill, filter pills, carousel dots). View-transition names must be unique per page — see the
-  `morph` prop on `RecipeCard`.
+- **Page transitions are a hand-run view transition, not React `<ViewTransition>`.** `components/motion/page-swing.tsx`
+  takes over internal link clicks in the capture phase (`preventDefault` makes next/link skip its own navigation),
+  calls `router.push` inside `document.startViewTransition` and animates the root old/new snapshots and three panel
+  groups with WAAPI keyframes sampled from Slush's GSAP timeline. Don't add React `<ViewTransition>` boundaries —
+  React would start competing transitions. The update callback polls the URL with `setTimeout` (rAF doesn't fire
+  while a view transition captures). `data-load` on `<html>` shifts the new page's CSS load clock (`--load-start`,
+  `--load-delay`). `layoutId` is still used for in-page shared elements (filter pills).
 - **Motion is loaded lazily**: always use `m.*` components, never `motion.*` — `<LazyMotion strict>` in
   `components/motion/motion-provider.tsx` throws on `motion.*`. Features (`domMax`) load asynchronously.
 - **Reduced motion without hydration mismatches**: `MotionConfig reducedMotion="user"` drops transform
@@ -51,8 +59,9 @@ docs are unfilled templates. The final security review used the built-in `securi
   entrances use `y`/`scale`. Never branch `initial`/`style` on `useReducedMotion()` in components that render
   on the server (the server can't know the preference → hydration mismatch). Branching is fine in components
   that mount after interaction (menus, Cook Mode, toasts).
-- **Above-the-fold entrances are pure CSS** (`.rise`, `.word` in globals.css, stagger via `--i`), so they play
-  before hydration and don't delay LCP. Motion `<Reveal>` is for below-the-fold scroll reveals only.
+- **Above-the-fold entrances are pure CSS** (`.hero-content`, `.load-chars`, `.load-stagger`, `.load-fade`, `.home-sub`,
+  `.roll` in globals.css, stagger via `--i`), so they play before hydration. Scroll reveals are CSS animations paused
+  until `ScrollMotion` adds `data-in` (`[data-reveal="slant|lines|cards|intro"]`); without JS they simply play.
 - **Tailwind needs the Turbopack loader** in `next.config.ts` (`turbopack.rules["*.css"]`); without it no CSS is
   generated. `tw-animate-css` was removed (its `style` export condition doesn't resolve with this loader).
 - **Images**: the custom loader (`lib/image-loader.ts`) lets Unsplash's CDN resize. Above-the-fold heroes use
@@ -106,7 +115,7 @@ app/                     routes (Server Components by default)
 components/ui/           shadcn primitives
 components/watermelon/   Watermelon registry components (adapted, see README)
 components/sections/     page sections (hero, carousel, grids, footer…)
-components/motion/       motion primitives (Reveal, WordReveal, CountUp, Magnetic, Lenis + Motion providers, PageTransition)
+components/motion/       Slush motion (PageSwing, ScrollMotion, SlantText, HeadingReveal, CardReveal, LetterRoll, FlipFace, ScrollMarquee, Cursor) + Lenis/Motion providers
 components/recipe/       recipe-detail client widgets
 db/                      schema.ts, client.ts, migrations/, queries/, seed.ts
 data/                    recipes.seed.ts (source of truth for seed content), cuisines
@@ -129,30 +138,27 @@ tests/unit, tests/e2e    Vitest and Playwright
 - Type: Fraunces = display serif (weights 400/500, tight negative tracking, `text-display` 94px titles, leading 0.84); Instrument Sans = utility grotesk. Only weights 400 and 500.
 - Small uppercase museum labels via the `label-caps` utility (corner labels, metadata). Sentence case for headings and buttons.
 - Shapes: cards/images 9px (`rounded-lg`), links/chips 2px, buttons are compact pills (`rounded-full px-[17px] py-[9px] text-sm`, black fill). Circular crops for feature imagery; `.hex` / `.hex-outline` for indicators and separators; `.notched` for the floating dish card.
-- Header: monogram + small text links, flat bar with a hairline after scroll. The oversized "World Plate" wordmark is cropped at the viewport edge in the hero and footer.
+- Header: Slush-style floating pill nav (see Motion decision above). The oversized "World Plate" wordmark is cropped at the viewport edge in the hero and footer.
 
-## Animation rules
-- Springs or strong ease-out (`--ease-out: cubic-bezier(0.23,1,0.32,1)`); UI micro-interactions ≤ 300ms.
-- Motion is modelled on launchdarkly.com (recorded from the live site): `--ease-ld` = cubic-bezier(.22,.61,.36,1) for
-  entrances (700ms; widgets rise 120px + fade, staggered, then drift via `.widget` / `.widget-float`), `--ease-morph` =
-  cubic-bezier(.32,.72,0,1) for 350ms shape morphs (`.morph-shape`: stepper circle → filled square, marquee cards),
-  `.line-reveal` / `.grow-bar` for charts, `.btn-swap` for the filled → outlined pill hover (300ms ease). Headlines
-  rise in (`.rise`, hero lines staggered; wordmark `.letter`s). Page changes: old page lifts away, new page rises
-  120px (`wp-page-out` / `wp-page-in`). Scroll-spy steppers use `useActiveIndex`.
-- Everything moves: header chips `.drop-in`; links `.link-u` / `.link-u-group` (underline draws in); `.btn-swap` press +
-  arrow nudge; mobile menu unrolls (clip-path) with staggered links. Scroll-driven CSS (`animation-timeline`, with
-  graceful fallback): `.sd-img` photo settle, `.sd-rise`, `.rule-draw` hairlines, `.sd-hero-out`, `.sd-wordmark`,
-  `.scroll-progress`. Image hover zooms use the `scale` property so they compose with `.sd-img`'s `transform`.
-- svz.io scroll transitions (recorded from the live site): the homepage hero is sticky and blurs/dims/shrinks
-  (`.sd-hero-stack`) while the widget panel (rounded top) slides over it; `Manifesto` lights words in reading order
-  from one `--p` variable; `Scramble` flickers labels into place (in view, or on hover for nav links); trending photos
-  drift with `.sd-parallax`; `Cursor` is a trailing dot that swells over links and shows "View" over
-  `[data-cursor='view']` photos (fine pointers, no reduced motion).
-- Animate only `transform` and `opacity` (`clip-path` allowed for reveals; blur only on short hero entrances).
-- `prefers-reduced-motion`: no parallax, floating, Ken Burns or layout morphs — simple opacity fades only.
-- No animation hides or delays content for more than ~1s. Scroll reveals run once.
-- Hover motion gated behind `(hover: hover) and (pointer: fine)`.
-- Never `scale(0)`, never `ease-in`, never `transition: all`.
+## Animation rules (modelled on slush.app — recorded from its GSAP scripts and CSS, 2026-10-19)
+- Two eases only, copied exactly: `--ease-slush` = cubic-bezier(.65,.05,0,1) (GSAP default, tab swaps, hovers, links)
+  and `--ease-slush-bounce` = Slush's elastic `linear()` (peaks 1.142) for every entrance and press. JS twins live in
+  `components/motion/slush-ease.ts`. Don't invent new curves or durations — look up Slush's value.
+- Page load (runPageLoad): `.hero-content` fades in at `--load-delay` (0.1s); `SlantText mode="load"` chars slide from
+  -0.25em, last character first, 15ms apart, 0.65s; `.load-stagger` blocks rise 3em, +0.5s, 0.1s apart, 1s; `.load-fade`;
+  `.load-pop` (sticker pop). Home only: `LetterRoll` wordmark (1.25s slices, 0.15s apart) and `.home-sub` (2em, 1.5s, 0.3s apart).
+- Page swing (runTransition): see Technical decisions. Reduced motion: crossfade (0.525s out / 1s in).
+- Scroll (ScrollTrigger "top 80%", once): `SlantText` (display titles), `HeadingReveal` (lines tip in from rotateY -45°,
+  0.15s apart, 0.85s), `CardReveal` (x 5em, z 20em, rotateY -30°, scale .75, row spread 0.2s, perspective 1000px),
+  `data-reveal="intro"` (showcase: y 40%, scale .75, 1.2s, at 50%). Parallax via `data-parallax` attributes (ScrollMotion).
+- `ScrollMarquee`: duration = speed × (strip ÷ viewport) × 1/.5/.25; direction follows scroll; track drifts ±10vw.
+- Hover: `.btn-flip` + `<FlipFace>` (3D flip to a `data-accent` back face, press 0.955), `.nav-circle` spins 90° (logo 360°, 1s),
+  `.tile-press` sinks to .92, `.link` / `.link-group` underline (0.4s), `.text-link` + `<TextLinkLine>` sweep (0.75s),
+  `Cursor` label over `[data-cursor="…"]` (text = attribute value; ≥768px, fine pointers).
+- Nav: pills hide upward on scroll down (desktop), slide in from the right via the plus (≤991px); 10px direction threshold.
+- Tabs (TrendingDishes): Flip pill 0.5s; text/photo swap 0.65s on "slush"; auto-advance to tab 2 at "center 75%".
+- Reduced motion: opacity fades only — no 3D, travel, parallax, marquee, letter roll. Hover flips become colour swaps.
+- Hover motion gated behind `(hover: hover)`. Never `transition: all`. Animate transform/opacity (+ clip-path for the swing).
 
 ## Database rules
 - Schema in `db/schema.ts`; every change goes through `npm run db:generate` → committed migration in `db/migrations/`.

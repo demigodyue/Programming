@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { m, AnimatePresence, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import { useState } from "react";
+import { FlipFace, flipClass } from "@/components/motion/flip-face";
 import { RecipeCard } from "@/components/recipe/recipe-card";
 import type { RecipeCard as RecipeCardData } from "@/db/queries/recipes";
 import { setFavorite, useFavorites } from "@/lib/local-store";
@@ -32,11 +33,8 @@ export function FavoritesGrid({ allRecipes }: { allRecipes: RecipeCardData[] }) 
         <span aria-hidden className="hex-outline mx-auto block size-6" />
         <p className="font-display mt-6 text-[2.125rem] leading-tight">Nothing saved yet.</p>
         <p className="text-muted-foreground mx-auto mt-2 max-w-md">Tap “Save recipe” on any dish and it will wait for you here.</p>
-        <Link
-          href="/recipes"
-          className="btn-swap bg-primary text-primary-foreground mt-8 inline-flex min-h-11 items-center rounded-full px-[17px] py-[9px] text-sm"
-        >
-          Browse recipes
+        <Link href="/recipes" data-accent="yellow" className={flipClass("solid", "mt-8")}>
+          <FlipFace>Browse recipes</FlipFace>
         </Link>
       </div>
     );

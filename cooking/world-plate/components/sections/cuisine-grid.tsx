@@ -1,12 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Reveal, RevealItem } from "@/components/motion/reveal";
+import { CardReveal } from "@/components/motion/card-reveal";
 import type { CuisineSummary } from "@/db/queries/cuisines";
 import { SectionHeading } from "./section-heading";
 
 /**
- * The dark room: a centred serif title, then circular vignettes — serif caption above,
- * a round crop of the dish, a hexagon marker and the count below.
+ * The dark room: a centred serif title, then circular vignettes — serif caption above, a round crop
+ * of the dish, a hexagon marker and the count below. The row flies in like Slush's cards; hovering a
+ * vignette sinks the photo to 0.92 on the elastic curve (Slush's footer tiles).
  */
 export function CuisineGrid({ cuisines }: { cuisines: CuisineSummary[] }) {
   return (
@@ -19,34 +20,31 @@ export function CuisineGrid({ cuisines }: { cuisines: CuisineSummary[] }) {
           title="Explore by cuisine"
           description="Ten kitchens, from Kathmandu street stalls to Parisian bakeries."
         />
-        <Reveal as="ul" className="grid grid-cols-2 gap-x-7 gap-y-14 sm:grid-cols-3 lg:grid-cols-5">
+        <CardReveal className="grid grid-cols-2 gap-x-7 gap-y-14 sm:grid-cols-3 lg:grid-cols-5">
           {cuisines.map((c) => (
-            <RevealItem as="li" key={c.slug}>
-              <Link
-                href={`/cuisine/${c.slug}`}
-                className="group flex flex-col items-center gap-4 text-center focus-visible:outline-offset-8"
-              >
-                <h3 className="text-[1.375rem] leading-tight font-normal transition-transform duration-500 ease-(--ease-ld) group-hover-fine:-translate-y-1">{c.name}</h3>
-                <span data-cursor="view" className="bg-muted group-hover-fine:scale-[1.04] relative block aspect-square w-full max-w-[200px] overflow-hidden rounded-full transition-[scale] duration-500 ease-(--ease-ld)">
+            <li key={c.slug}>
+              <Link href={`/cuisine/${c.slug}`} className="group flex flex-col items-center gap-4 text-center focus-visible:outline-offset-8">
+                <h3 className="link-group text-[1.375rem] leading-tight font-normal">{c.name}</h3>
+                <span
+                  data-cursor="Explore"
+                  className="tile-press-group bg-muted relative block aspect-square w-full max-w-[200px] overflow-hidden rounded-full"
+                >
                   <Image
                     src={c.image}
                     alt={c.imageAlt}
                     fill
                     sizes="(min-width: 1024px) 200px, (min-width: 640px) 30vw, 45vw"
-                    className="sd-img group-hover-fine:scale-[1.08] object-cover transition-[scale] duration-700 ease-(--ease-ld)"
+                    className="object-cover"
                   />
                 </span>
                 <span className="label-caps text-muted-foreground flex items-center gap-2">
-                  <span
-                    aria-hidden
-                    className="hex-outline text-foreground group-hover-fine:rotate-[120deg] transition-transform duration-500 ease-(--ease-out)"
-                  />
+                  <span aria-hidden className="hex-outline text-foreground" />
                   {c.recipeCount} {c.recipeCount === 1 ? "recipe" : "recipes"}
                 </span>
               </Link>
-            </RevealItem>
+            </li>
           ))}
-        </Reveal>
+        </CardReveal>
       </div>
     </section>
   );

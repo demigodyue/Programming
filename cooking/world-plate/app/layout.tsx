@@ -4,6 +4,8 @@ import { preconnect } from "react-dom";
 import { Cursor } from "@/components/motion/cursor";
 import { LenisProvider } from "@/components/motion/lenis-provider";
 import { MotionProvider } from "@/components/motion/motion-provider";
+import { PageSwing } from "@/components/motion/page-swing";
+import { ScrollMotion } from "@/components/motion/scroll-motion";
 import { SiteFooter } from "@/components/sections/site-footer";
 import { SiteHeader } from "@/components/sections/site-header";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -58,6 +60,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             Skip to content
           </a>
           <LenisProvider />
+          <ScrollMotion />
+          <PageSwing />
           <Cursor />
           <SiteHeader />
           <main id="main" className="flex-1">

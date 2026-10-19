@@ -1,7 +1,6 @@
 import Link from "next/link";
-import { MaskReveal } from "@/components/motion/mask-reveal";
-import { PageTransition } from "@/components/motion/page-transition";
-import { Reveal, RevealItem } from "@/components/motion/reveal";
+import { FlipFace, flipClass } from "@/components/motion/flip-face";
+import { SlantText } from "@/components/motion/slant-text";
 import { CuisineGrid } from "@/components/sections/cuisine-grid";
 import { DishMarquee } from "@/components/sections/dish-marquee";
 import { Hero } from "@/components/sections/hero";
@@ -21,7 +20,7 @@ export default async function HomePage() {
   ]);
 
   return (
-    <PageTransition>
+    <>
       <Hero
         recipeCount={all.length}
         cuisineCount={cuisines.length}
@@ -33,28 +32,22 @@ export default async function HomePage() {
       <Manifesto recipeCount={all.length} cuisineCount={cuisines.length} />
       <TrendingDishes recipes={trending} />
       <CuisineGrid cuisines={cuisines} />
-      <QuickMeals recipes={quick} morphExclude={new Set(trending.map((r) => r.slug))} />
+      <QuickMeals recipes={quick} />
       <section aria-labelledby="cta-title" className="room py-24 md:py-36">
         <div className="container-page flex flex-col items-center text-center">
-          <span aria-hidden className="hex-outline mb-8" />
-          <h2 id="cta-title" className="text-display max-w-[14ch]">
-            <MaskReveal>Pick a dish. Start cooking tonight.</MaskReveal>
-          </h2>
-          <Reveal className="mt-8 flex flex-col items-center gap-5">
-            <RevealItem as="p" className="text-muted-foreground max-w-md text-[0.9375rem]">
+          {/* Drifts against the scroll like Slush's floating stickers (yPercent 0 → -30). */}
+          <span aria-hidden data-parallax data-parallax-start="0" data-parallax-end="-30" className="hex-outline mb-8 size-6" />
+          <SlantText as="h2" id="cta-title" text="Pick a dish. Start cooking tonight." className="text-display block max-w-[14ch]" />
+          <div className="mt-8 flex flex-col items-center gap-5">
+            <p className="text-muted-foreground max-w-md text-[0.9375rem]">
               Real ingredients, honest timings and a step-by-step Cook Mode that keeps your screen awake.
-            </RevealItem>
-            <RevealItem>
-              <Link
-                href="/recipes"
-                className="btn-swap bg-primary text-primary-foreground inline-flex min-h-11 items-center rounded-full px-[17px] py-[9px] text-sm"
-              >
-                Browse recipes
-              </Link>
-            </RevealItem>
-          </Reveal>
+            </p>
+            <Link href="/recipes" data-accent="yellow" className={flipClass()}>
+              <FlipFace>Browse recipes</FlipFace>
+            </Link>
+          </div>
         </div>
       </section>
-    </PageTransition>
+    </>
   );
 }

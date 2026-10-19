@@ -57,7 +57,7 @@ app/                     routes (Server Components by default), server actions, 
 components/ui/           shadcn primitives
 components/watermelon/   Watermelon UI components (adapted — see below)
 components/sections/     page sections: header, hero, carousel, cuisine grid, footer…
-components/motion/       Reveal, WordReveal, CountUp, Magnetic, Lenis + Motion providers, PageTransition
+components/motion/       Slush motion: PageSwing, ScrollMotion, SlantText, HeadingReveal, CardReveal, LetterRoll, FlipFace, ScrollMarquee, Cursor; Lenis + Motion providers
 components/recipe/       recipe card, browser/filters, kitchen (servings + checklist + steps), Cook Mode, actions
 db/                      schema, client, migrations, typed queries, idempotent seed
 data/                    seed content (15 recipes, 10 cuisines) + Zod schemas
@@ -79,16 +79,21 @@ Each one was checked against the registry index (`https://registry.watermelon.sh
 | `motion-carousel` | `npx shadcn@latest add https://registry.watermelon.sh/r/motion-carousel.json` | Trending dishes | Takes real slides, carousel ARIA, dot indicator uses `layoutId` (transform) instead of animating width |
 | `newsletter-1` | `npx shadcn@latest add https://registry.watermelon.sh/r/newsletter-1.json` | Newsletter CTA | Validated server action via `useActionState`, honeypot, error and success states |
 | `footer-1` | `npx shadcn@latest add https://registry.watermelon.sh/r/footer-1.json` | Site footer | Placeholder form replaced by a slot, `next/link`, rounded corners, theme tokens |
-| `marquee` | `npx shadcn@latest add https://registry.watermelon.sh/r/marquee.json` | Dish-name ticker | Repeated copies `aria-hidden`, pauses for reduced motion |
 | `theme-toggler` | `npx shadcn@latest add https://registry.watermelon.sh/r/theme-toggler.json` | Light / Dark / System switch | Invalid `aria-selected` removed, prop syncing moved out of effects; loaded lazily |
 
-`motion-carousel`, `newsletter-1`, `footer-1`, `marquee` and `theme-toggler` have no `-base` variant in the registry; their fixed colours were replaced with theme tokens by hand. The other components are custom builds in the same style: header, hero, recipe card, Cook Mode, ingredient checklist, favorite heart and star rating.
+(`marquee` was removed when the motion moved to Slush's scroll-direction marquee, `components/motion/scroll-marquee.tsx`.) `motion-carousel`, `newsletter-1`, `footer-1` and `theme-toggler` have no `-base` variant in the registry; their fixed colours were replaced with theme tokens by hand. The other components are custom builds in the same style: header, hero, recipe card, Cook Mode, ingredient checklist, favorite heart and star rating.
 
 ## Animation notes
 
-- **Hero:** the headline appears word by word (stagger, blur to sharp, slide up) with pure CSS, so it plays from the first paint. The photo has a CSS Ken Burns zoom and Motion scroll parallax. SVG chili, basil and garlic drift slowly and lean toward the mouse. The CTAs fade in after the headline and pull toward the pointer on hover.
-- **Card image to recipe hero morph:** React's `<ViewTransition>` with a shared name, which is how Next 16 handles transitions between routes. Motion's `layoutId` can't pair elements across an App Router navigation because the old page unmounts first, so `layoutId` is used for in-page shared elements instead: the nav pill, filter pills and carousel dots.
-- **Reduced motion:** `MotionConfig reducedMotion="user"` plus CSS media queries. Parallax, drifting, the Ken Burns zoom and layout morphs are switched off; only opacity fades remain. Lenis isn't loaded.
+All motion is modelled on [slush.app](https://slush.app) (the "Slush" style on Refero), recorded from the live site's own GSAP scripts and CSS on 2026-10-19. Values are copied exactly: the `slush` ease `cubic-bezier(.65,.05,0,1)`, the elastic `slush-bounce` (as a CSS `linear()` with Slush's own points), and their durations and staggers.
+
+- **Page transition:** the old page shrinks into a rounded card, sinks back in 3D and swings out left while three panels in Slush's colours sweep past; the new page swings in from the right and settles flat (~2.1s). Built on the View Transitions API (`components/motion/page-swing.tsx`) with keyframes sampled from Slush's GSAP timeline. The header stays put. Back/forward and browsers without view transitions navigate without it.
+- **Page load:** the title's characters slide in from the last one, then blocks rise 3em 0.1s apart; on a client navigation this waits until the swing has landed. On the home page the "World Plate" wordmark rolls up letter by letter and the tagline rises at 1.5s.
+- **Scroll:** display titles slide in by character, smaller headings tip in line by line in 3D, card rows fly in from the right in 3D, the home showcase rises and grows, marquees reverse with your scroll direction, and the wordmark and CTA hexagon drift (parallax). All play once, when the top crosses 80% of the viewport.
+- **Hover:** pill buttons flip in 3D to a coloured back face, circle buttons spin, tiles sink to 0.92, links draw their underline, and a "View recipe" label follows the pointer over dishes.
+- **Nav:** pills fly up while you scroll down and return when you scroll up; on mobile the plus slides them in from the right and turns into a minus.
+- **Trending dishes:** Slush's tab system — a difference-blended pill follows the hovered tab; switching slides the old text off and the new title in by character.
+- **Reduced motion:** no 3D, no travel, no parallax or marquee drift — opacity fades only; the page transition becomes a crossfade. Lenis isn't loaded.
 - **Performance:** Motion is loaded via `LazyMotion` and `m.*` components, with its features fetched asynchronously. Lenis and Cook Mode are loaded on demand, and the display font isn't preloaded so it doesn't compete with the hero photo.
 
 ## Status (last verified)

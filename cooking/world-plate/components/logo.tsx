@@ -1,10 +1,10 @@
 import { cn } from "@/lib/utils";
 
 /** Circled serif "W" monogram — monoline, no fill, the only graphic mark on the page. */
-export function LogoMark({ className }: { className?: string }) {
+export function LogoMark({ className, ring = true }: { className?: string; ring?: boolean }) {
   return (
     <svg viewBox="0 0 32 32" aria-hidden className={cn("size-8", className)}>
-      <circle cx="16" cy="16" r="15" fill="none" stroke="currentColor" strokeWidth="1" />
+      {ring && <circle cx="16" cy="16" r="15" fill="none" stroke="currentColor" strokeWidth="1" />}
       <text
         x="16"
         y="21.4"
