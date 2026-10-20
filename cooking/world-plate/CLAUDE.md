@@ -187,7 +187,7 @@ tests/unit, tests/e2e    Vitest and Playwright
 - Nav: pills hide upward on scroll down (desktop), slide in from the right via the plus (≤991px); 10px direction threshold.
 - Tabs (TrendingDishes): Flip pill 0.5s; text/photo swap 0.65s on "slush"; auto-advance to tab 2 at "center 75%".
 - Home from the About section down (2026-10-20): AboutPanel, TrendingPanel, CuisinePanel, QuickPanel, CtaPanel
-  (components/sections/home-panels.tsx, trending-panel.tsx, cuisine-panel.tsx). About: "A kitchen atlas" headline, short ScrubWords pitch,
+  (components/sections/home-panels.tsx, trending-panel.tsx, cuisine-panel.tsx, quick-panel.tsx). About: "A kitchen atlas" headline, short ScrubWords pitch,
   CountUp stats (dishes, cuisines, avg. hours), button, and three endlessly running photo columns (.about-cols; middle
   reversed; paused on hover/focus; still for reduced motion). The stacking-panel transition was tried and dropped
   (user: "make it new… like text going from left to right after scrolling"), and so was giving every section the same
@@ -201,9 +201,15 @@ tests/unit, tests/e2e    Vitest and Playwright
   - Cuisines (#cuisines, client component): pinned horizontal gallery — the section is 100svh + n × 36svh tall, its
     stage is sticky, and the card track translates by --p × (100vw − 100%); photos drift inside their cards and a bar
     fills. Focusing a card scrolls the page to where it is in view. Fallback: a normal sideways-scrolling row.
-  - Quick meals: a circle wipe (the card colour grows from the top centre over the room colour), a ScrubWords heading,
-    and tiles that stand up in 3D (rotateX 80° → 0, hinged at the bottom, staggered by --k).
-  - CTA: a window growing from an inset rounded card to full bleed; its two lines slide in from opposite sides.
+  Everything after Cuisines was redone again on request ("redo after this"; the circle wipe / 3D tiles / growing
+  window were dropped):
+  - Quick meals (client component): pinned zoom-out (260svh). The first dish starts as a full-screen photo under a
+    giant "Dinner in 30 minutes" and shrinks into its grid slot — uniform scale + translate from --dx/--dy/--s, which
+    the component measures (stage centre vs. slot, scale to cover); the other three rise in, the heading slides down.
+  - CTA: pinned zoom-through (240svh). "Cook tonight" is filled with a dish photo (background-clip: text) and scales
+    from pow(18, 1 − z) down to 1; the photo is counter-scaled (background-size 130% / S, centred on the zoom
+    origin) so it stays sharp and still while the letters close in; the line and button rise in last. The photo is
+    the first trending dish (page.tsx passes it).
   The hero exit and footer .foot-rise letters are unchanged.
 - Intro curtain (2026-10-19, recorded from kervangida.com; that site has no route transition, its transition is
   this first-load preloader): `IntroCurtain` (components/motion/intro-curtain.tsx, `.wp-intro` in globals.css). A

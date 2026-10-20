@@ -1421,8 +1421,10 @@
      · Trending: a SlideBand (headline sliding left to right, outlined copy the other way; x-parallax), rows whose
        rule draws across and whose title rises out of a mask one by one, a photo window that opens and zooms out
      · Cuisines: pinned — the stage sticks and the scroll pans a row of cards sideways, photos drifting inside them
-     · Quick meals: a circle wipe from the top centre, a word-by-word heading, tiles standing up in 3D
-     · call to action: a window that grows from an inset card to full bleed, its two lines meeting from both sides
+     · Quick meals: pinned zoom-out — the first dish starts as a full-screen photo under "Dinner in 30 minutes" and
+       shrinks into its grid slot while the other three rise in beside it and the heading slides up
+     · call to action: pinned zoom-through — a photo-filled "Cook tonight" shrinks from one screen-filling letter
+       to its place over a photo that stays put (counter-scaled, so it stays sharp); the line and button rise in last
      Without JS or with reduced motion --p is never set and everything sits in its finished state.
    - footer: the wordmark letters rise one after another
    The hero and footer use CSS scroll-driven animations (off the main thread); browsers without them show the end state. */
@@ -1665,15 +1667,66 @@
     transform-origin: left;
   }
 
-  /* Quick meals: its own colour grows as a circle over the cuisine section's (the base underneath). */
-  .quick-wipe {
-    background: var(--room-background);
+  /* Quick meals (zoom-out). Static layout = the finished grid. */
+  .quick-zoom__stage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    padding-block: 6rem;
   }
-  .quick-wipe__circle {
+  .quick-zoom__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+  @media (width >= 64rem) {
+    .quick-zoom__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1rem;
+    }
+    .quick-zoom__grid .quick-tile {
+      aspect-ratio: 4 / 5;
+    }
+  }
+  .quick-zoom__hero {
+    z-index: 2;
+  }
+  .quick-zoom__hero::after {
+    content: "";
     position: absolute;
     inset: 0;
-    z-index: -1;
-    background: var(--card);
+    background: linear-gradient(to top, rgb(0 0 0 / 0.55), rgb(0 0 0 / 0.15));
+    opacity: 0;
+    pointer-events: none;
+  }
+  .quick-zoom__title {
+    display: none;
+  }
+
+  /* Call to action (zoom-through). The words are filled with a dish photo. */
+  .cta-zoom__stage {
+    display: flex;
+    min-height: 100svh;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2rem;
+    padding-block: 6rem 3rem;
+  }
+  .cta-zoom__word {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: clamp(5rem, 29vw, 24rem);
+    line-height: 0.84;
+    text-transform: uppercase;
+    color: transparent;
+    background: var(--fill) center / cover no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-stroke: 2px var(--background);
+    transform-origin: 50% 74%;
   }
 
   /* Quick meals: photo tiles. */
@@ -1743,27 +1796,82 @@
     scale: var(--p, 0) 1;
   }
 
-  .quick-wipe__circle {
-    clip-path: circle(calc(var(--p, 1) * 150%) at 50% 0%);
+  .quick-zoom {
+    --e: clamp(0, var(--p, 1) / 0.45, 1);
+    height: 260svh;
   }
-  .quick-tiles {
-    perspective: 1400px;
+  .quick-zoom__stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: clip;
+    padding-block: 4.5rem 2rem;
   }
-  .quick-tiles__item {
-    --q: clamp(0, (var(--p, 1) - var(--k, 0) * 0.15) / 0.55, 1);
-    transform-origin: 50% 100%;
-    transform: rotateX(calc((1 - var(--q)) * 80deg));
-    opacity: clamp(0, var(--q) * 2, 1);
+  .quick-zoom__hero {
+    transform: translate(calc(var(--dx, 0px) * (1 - var(--e))), calc(var(--dy, 0px) * (1 - var(--e))))
+      scale(calc(1 + (var(--s, 1) - 1) * (1 - var(--e))));
+    border-radius: calc(var(--radius) / (1 + (var(--s, 1) - 1) * (1 - var(--e))));
+  }
+  .quick-zoom__hero::after {
+    opacity: calc(1 - var(--e));
+  }
+  .quick-zoom__pill {
+    opacity: clamp(0, (var(--e) - 0.8) / 0.2, 1);
+  }
+  .quick-zoom__slot {
+    --r: clamp(0, (var(--p, 1) - 0.3 - var(--k, 0) * 0.08) / 0.3, 1);
+  }
+  .quick-zoom__rest {
+    translate: 0 calc((1 - var(--r)) * 60svh);
+    opacity: var(--r);
+  }
+  .quick-zoom__head {
+    translate: 0 calc((1 - clamp(0, (var(--p, 1) - 0.4) / 0.3, 1)) * -3rem);
+    opacity: clamp(0, (var(--p, 1) - 0.4) / 0.3, 1);
+  }
+  .quick-zoom__title {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #fff8ec; /* warm white over the photo, both themes */
+    font-size: clamp(3.5rem, 13vw, 12rem);
+    line-height: 0.88;
+    text-align: center;
+    text-transform: uppercase;
+    pointer-events: none;
+    opacity: clamp(0, 1 - var(--p, 1) / 0.22, 1);
+    scale: calc(1 + var(--p, 1) * 0.6);
   }
 
-  .cta-window {
-    clip-path: inset(0 calc((1 - var(--p, 1)) * 6vw) round calc((1 - var(--p, 1)) * 48px));
+  .cta-zoom {
+    --z: clamp(0, var(--p, 1) / 0.62, 1);
+    height: 240svh;
   }
-  .cta-window__line {
-    translate: calc((1 - var(--p, 1)) * -35vw) 0;
+  .cta-zoom__stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    min-height: 0;
+    overflow: clip;
+    padding-block: 4.5rem 2rem;
   }
-  .cta-window__line--right {
-    translate: calc((1 - var(--p, 1)) * 35vw) 0;
+  /* The photo is counter-scaled (and centred on the zoom origin) so it stays at screen size and sharp while the
+     letters close in around it, like a stencil shrinking over a fixed picture. */
+  .cta-zoom__word {
+    --S: pow(18, calc(1 - var(--z)));
+    scale: var(--S);
+    background-size: calc(130% / var(--S)) auto;
+    background-position: 50% 74%;
+    -webkit-text-stroke-width: calc(2px / var(--S));
+  }
+  .cta-zoom__foot,
+  .cta-zoom__stage > .label-caps {
+    translate: 0 calc((1 - clamp(0, (var(--p, 1) - 0.62) / 0.2, 1)) * 2.5rem);
+    opacity: clamp(0, (var(--p, 1) - 0.62) / 0.2, 1);
   }
 }
 
