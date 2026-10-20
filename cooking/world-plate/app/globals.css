@@ -203,8 +203,8 @@
 
   /* The background artwork (PageArt): paper grain over the blob tile, with the engraved line-art tile masked over
      it in the text colour.
-     Desktop shows the whole 1440-wide tile (its drawings sit in the outer bands); narrower screens show its middle
-     at 150% of the width, so the drawings stay a readable size. */
+     Desktop shows the whole 1440-wide tile (its drawings sit in the outer bands, at least 1200px wide so they keep
+     their size); phones show the whole tile at the screen width, so the drawings still line both edges. */
   .page-art {
     --art-w: max(100%, 1200px);
     position: absolute;
@@ -234,9 +234,22 @@
     mask: var(--art-lines) top center / var(--art-w) auto repeat-y;
   }
   @media (width < 48rem) {
-    .page-art {
-      --art-w: 150%;
+    .page-art,
+    .section-art {
+      --art-w: 100%;
     }
+  }
+  /* SectionArt: the same engravings inside a coloured section, in that section's text colour. */
+  .section-art {
+    --art-w: max(100%, 1200px);
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    background: color-mix(in srgb, currentColor 26%, transparent);
+    -webkit-mask: var(--art-lines) center var(--art-y, 0px) / var(--art-w) auto repeat-y;
+    mask: var(--art-lines) center var(--art-y, 0px) / var(--art-w) auto repeat-y;
   }
   /* Anton (for Beni 900), uppercase, normal tracking. */
   h1,

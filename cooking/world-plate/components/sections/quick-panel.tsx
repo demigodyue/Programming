@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, type CSSProperties } from "react";
 import { TextLinkLine } from "@/components/motion/flip-face";
+import { SectionArt } from "@/components/section-art";
 import type { RecipeCard } from "@/db/queries/recipes";
 import { formatMinutes } from "@/lib/scale";
 
@@ -43,8 +44,9 @@ export function QuickPanel({ recipes }: { recipes: RecipeCard[] }) {
       data-progress
       data-progress-start="top top"
       data-progress-end="bottom bottom"
-      className="quick-zoom bg-card text-card-foreground"
+      className="quick-zoom bg-card text-card-foreground relative isolate"
     >
+      <SectionArt offset={2400} />
       <div ref={stage} className="quick-zoom__stage">
         <div className="container-page quick-zoom__head">
           <div className="label-caps text-muted-foreground flex justify-between border-b pb-3">

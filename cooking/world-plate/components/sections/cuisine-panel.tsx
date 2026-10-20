@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, type CSSProperties } from "react";
+import { SectionArt } from "@/components/section-art";
 import type { CuisineSummary } from "@/db/queries/cuisines";
 
 /** How far each card leans while it is still in the stack (degrees). */
@@ -57,8 +58,9 @@ export function CuisinePanel({ cuisines }: { cuisines: CuisineSummary[] }) {
       data-progress
       data-progress-start="top top"
       data-progress-end="bottom bottom"
-      className="room cuisine-stack scroll-mt-0"
+      className="room cuisine-stack relative isolate scroll-mt-0"
     >
+      <SectionArt offset={1200} />
       <div className="cuisine-stack__stage container-page">
         <div className="label-caps text-muted-foreground flex justify-between border-b pb-3">
           <span>02 · The collection</span>

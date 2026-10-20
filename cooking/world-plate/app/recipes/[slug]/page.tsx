@@ -10,6 +10,7 @@ import { SlantText } from "@/components/motion/slant-text";
 import { RecipeActions } from "@/components/recipe/recipe-actions";
 import { RecipeCard } from "@/components/recipe/recipe-card";
 import { RecipeKitchen } from "@/components/recipe/recipe-kitchen";
+import { SectionArt } from "@/components/section-art";
 import { SectionHeading } from "@/components/sections/section-heading";
 import { db } from "@/db/db";
 import { getRecipeBySlug, listRecipeSlugs, listRelatedRecipes } from "@/db/queries/recipes";
@@ -132,7 +133,8 @@ export default async function RecipePage({ params }: PageProps<"/recipes/[slug]"
           />
         </div>
 
-        <section aria-labelledby="story-title" className="room">
+        <section aria-labelledby="story-title" className="room relative isolate overflow-hidden">
+          <SectionArt offset={1800} />
           <div className="container-page grid gap-6 py-20 md:grid-cols-[1fr_2fr] md:gap-16 md:py-28">
             <ScrubWords id="story-title" text="The story of this dish" className="text-[clamp(2.5rem,6vw,3.25rem)] leading-none" />
             <p className="font-display max-w-[60ch] text-[1.375rem] leading-[1.5] text-pretty sm:text-[1.625rem]">{recipe.story}</p>

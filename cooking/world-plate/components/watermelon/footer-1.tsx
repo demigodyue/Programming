@@ -6,6 +6,7 @@
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { CardReveal } from "@/components/motion/card-reveal";
+import { SectionArt } from "@/components/section-art";
 
 export interface FooterLink {
   label: string;
@@ -27,7 +28,8 @@ export interface Footer1Props {
 
 export function Footer1({ logo, description, aside, linkGroups, copyright }: Footer1Props) {
   return (
-    <footer className="bg-chalk w-full overflow-hidden border-t">
+    <footer className="bg-chalk relative isolate w-full overflow-hidden border-t">
+      <SectionArt offset={3000} />
       <div className="container-page pt-16 pb-8 sm:pt-20">
         <div className="flex flex-col justify-between gap-12 xl:flex-row xl:gap-24">
           <div className="shrink-0 space-y-6 xl:w-[400px]">

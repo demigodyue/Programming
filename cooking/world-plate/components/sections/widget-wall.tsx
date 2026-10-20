@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { ScrollMarquee } from "@/components/motion/scroll-marquee";
+import { SectionArt } from "@/components/section-art";
 import type { CuisineSummary } from "@/db/queries/cuisines";
 import type { RecipeCard } from "@/db/queries/recipes";
 import { formatMinutes } from "@/lib/scale";
@@ -59,7 +60,8 @@ export function WidgetWall({
   const maxCount = Math.max(...cuisines.map((cu) => cu.recipeCount), 1);
 
   return (
-    <section aria-label="A look inside the collection" className="room relative z-10 overflow-hidden rounded-t-[28px] py-16 md:rounded-t-[40px] md:py-24">
+    <section aria-label="A look inside the collection" className="room relative isolate z-10 overflow-hidden rounded-t-[28px] py-16 md:rounded-t-[40px] md:py-24">
+      <SectionArt offset={1800} />
       <div
         data-reveal="intro"
         data-reveal-at="50"

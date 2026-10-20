@@ -4,6 +4,7 @@ import type { CSSProperties } from "react";
 import { CountUp } from "@/components/motion/count-up";
 import { FlipFace, flipClass } from "@/components/motion/flip-face";
 import { ScrubWords } from "@/components/motion/scrub-words";
+import { SectionArt } from "@/components/section-art";
 import { StoveScene } from "@/components/sections/stove-scene";
 import type { RecipeCard } from "@/db/queries/recipes";
 
@@ -21,7 +22,8 @@ export function AboutPanel({ recipes, cuisineCount }: { recipes: RecipeCard[]; c
   const averageHours = Math.round(recipes.reduce((s, r) => s + r.totalMinutes, 0) / Math.max(recipes.length, 1) / 6) / 10;
   const columns = [0, 1, 2].map((c) => recipes.filter((_, i) => i % 3 === c));
   return (
-    <section aria-labelledby="about-title" className="room relative flex flex-col justify-center overflow-hidden py-20 lg:h-svh lg:py-0">
+    <section aria-labelledby="about-title" className="room relative isolate flex flex-col justify-center overflow-hidden py-20 lg:h-svh lg:py-0">
+      <SectionArt offset={0} />
       <div className="container-page grid h-full items-center gap-10 lg:grid-cols-[1fr_1.05fr] lg:gap-14">
         <div className="relative z-10 lg:py-16">
           <div className="label-caps text-muted-foreground flex justify-between border-b pb-3">
@@ -97,8 +99,9 @@ export function CtaPanel() {
       data-progress
       data-progress-start="top top"
       data-progress-end="bottom bottom"
-      className="cta-stove bg-headline text-background"
+      className="cta-stove bg-headline text-background relative isolate"
     >
+      <SectionArt offset={600} />
       <div className="cta-stove__stage container-page">
         <div className="label-caps flex justify-between border-b border-current pb-3">
           <span>04 · Tonight</span>
