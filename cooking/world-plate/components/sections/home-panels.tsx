@@ -4,12 +4,13 @@ import type { CSSProperties } from "react";
 import { CountUp } from "@/components/motion/count-up";
 import { FlipFace, flipClass, TextLinkLine } from "@/components/motion/flip-face";
 import { ScrubWords } from "@/components/motion/scrub-words";
+import { SlideBand } from "@/components/motion/slide-band";
 import type { CuisineSummary } from "@/db/queries/cuisines";
 import type { RecipeCard } from "@/db/queries/recipes";
 import { formatMinutes } from "@/lib/scale";
 
-// The home page from the About section down: full-screen panels that StackPanels piles up as you scroll.
-// Each one fills its card (h-full) and carries its own background so it covers the panel beneath.
+// The home page from the About section down. After About, each section opens with a SlideBand (a giant headline
+// sliding left to right with the scroll) and its content slides in from the side (.slide-in, scrubbed by its view).
 
 /**
  * About: the pitch and three numbers on the left (they count up as the panel arrives); on the right, three tall
@@ -20,7 +21,7 @@ export function AboutPanel({ recipes, cuisineCount }: { recipes: RecipeCard[]; c
   const averageHours = Math.round(recipes.reduce((s, r) => s + r.totalMinutes, 0) / Math.max(recipes.length, 1) / 6) / 10;
   const columns = [0, 1, 2].map((c) => recipes.filter((_, i) => i % 3 === c));
   return (
-    <section aria-labelledby="about-title" className="room relative flex h-full flex-col justify-center overflow-hidden py-20 lg:py-0">
+    <section aria-labelledby="about-title" className="room relative flex flex-col justify-center overflow-hidden py-20 lg:h-svh lg:py-0">
       <div className="container-page grid h-full items-center gap-10 lg:grid-cols-[1fr_1.05fr] lg:gap-14">
         <div className="relative z-10 lg:py-16">
           <div className="label-caps text-muted-foreground flex justify-between border-b pb-3">
@@ -90,14 +91,15 @@ export function AboutPanel({ recipes, cuisineCount }: { recipes: RecipeCard[]; c
  */
 export function CuisinePanel({ cuisines }: { cuisines: CuisineSummary[] }) {
   return (
-    <section id="cuisines" aria-labelledby="cuisines-title" className="room flex h-full scroll-mt-0 flex-col justify-center py-20 lg:py-10">
+    <section id="cuisines" aria-labelledby="cuisines-title" className="room flex scroll-mt-0 flex-col justify-center overflow-x-clip pb-24 lg:pb-32">
+      <SlideBand text="Explore by cuisine" />
       <div className="container-page">
         <div className="label-caps text-muted-foreground flex justify-between border-b pb-3">
           <span>02 · The collection</span>
           <span>{cuisines.length} kitchens</span>
         </div>
         <div className="mt-6 flex flex-wrap items-end justify-between gap-4">
-          <h2 id="cuisines-title" className="text-display">
+          <h2 id="cuisines-title" className="sr-only">
             Explore by cuisine
           </h2>
           <p className="text-muted-foreground max-w-xs pb-2 text-[0.9375rem] leading-relaxed">
@@ -106,7 +108,7 @@ export function CuisinePanel({ cuisines }: { cuisines: CuisineSummary[] }) {
         </div>
         <ul className="cuisine-strips mt-8">
           {cuisines.map((c, i) => (
-            <li key={c.slug} style={{ "--i": i } as CSSProperties}>
+            <li key={c.slug} className="slide-in" style={{ "--i": i, "--k": i } as CSSProperties}>
               <Link href={`/cuisine/${c.slug}`} data-cursor="Explore" className="cuisine-strip group">
                 <Image src={c.image} alt={c.imageAlt} fill sizes="(min-width: 1024px) 40vw, 50vw" className="object-cover" />
                 <span className="cuisine-strip__label font-display">{c.name}</span>
@@ -127,14 +129,15 @@ export function CuisinePanel({ cuisines }: { cuisines: CuisineSummary[] }) {
 
 export function QuickPanel({ recipes }: { recipes: RecipeCard[] }) {
   return (
-    <section aria-labelledby="quick-title" className="bg-card text-card-foreground flex h-full flex-col justify-center py-20 lg:py-10">
+    <section aria-labelledby="quick-title" className="bg-card text-card-foreground flex flex-col justify-center overflow-x-clip pb-24 lg:pb-32">
+      <SlideBand text="Quick meals under 30 minutes" />
       <div className="container-page grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
         <div>
           <div className="label-caps text-muted-foreground flex justify-between border-b pb-3">
             <span>03 · Weeknights</span>
             <span>Under 30 min</span>
           </div>
-          <h2 id="quick-title" className="text-display mt-6">
+          <h2 id="quick-title" className="sr-only">
             Quick meals
           </h2>
           <p className="text-muted-foreground mt-5 max-w-sm text-[0.9375rem] leading-relaxed">
@@ -146,8 +149,8 @@ export function QuickPanel({ recipes }: { recipes: RecipeCard[] }) {
           </Link>
         </div>
         <ul className="grid grid-cols-2 gap-3 lg:gap-4">
-          {recipes.slice(0, 4).map((r) => (
-            <li key={r.slug}>
+          {recipes.slice(0, 4).map((r, i) => (
+            <li key={r.slug} className="slide-in" style={{ "--k": i } as CSSProperties}>
               <Link href={`/recipes/${r.slug}`} data-cursor="View recipe" className="quick-tile group">
                 <Image src={r.image} alt={r.imageAlt} fill sizes="(min-width: 1024px) 26vw, 46vw" className="object-cover" />
                 <span className="bg-card text-card-foreground absolute inset-x-3 bottom-3 flex items-center justify-between gap-2 rounded-full px-3.5 py-1.5">
@@ -165,13 +168,16 @@ export function QuickPanel({ recipes }: { recipes: RecipeCard[] }) {
 
 export function CtaPanel() {
   return (
-    <section aria-labelledby="cta-title" className="bg-headline text-background flex h-full flex-col justify-center py-24 lg:py-12">
+    <section aria-labelledby="cta-title" className="bg-headline text-background flex flex-col justify-center overflow-x-clip py-24 lg:py-36">
       <div className="container-page flex flex-col items-start gap-8">
         <span className="label-caps">04 · Tonight</span>
         <h2 id="cta-title" className="text-[clamp(3.5rem,10vw,9rem)] leading-[0.9] text-inherit">
-          Pick a dish.
-          <br />
-          Start cooking tonight.
+          <span className="slide-in block" style={{ "--k": 0 } as CSSProperties}>
+            Pick a dish.
+          </span>
+          <span className="slide-in block" style={{ "--k": 1 } as CSSProperties}>
+            Start cooking tonight.
+          </span>
         </h2>
         <div className="flex flex-wrap items-center gap-6">
           <p className="max-w-md text-[0.9375rem] leading-relaxed">

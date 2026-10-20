@@ -12,6 +12,7 @@ import { useEffect } from "react";
  *   `data-parallax-start` / `-end` are yPercent values (default 20 → -20), `data-parallax-scroll-start` /
  *   `-scroll-end` are ScrollTrigger positions (default "top bottom" → "bottom top"), and
  *   `data-parallax-trigger` names an ancestor (closest selector) to measure instead of the element itself.
+ *   `data-parallax-axis="x"` moves it sideways instead (xPercent), for the sliding headline bands.
  *   Skipped for reduced motion.
  *
  * - `[data-scrub="words"]` (ScrubWords) fill word by word as you scroll — Hungry Tiger's text scrub: each `.word`
@@ -50,7 +51,7 @@ export function ScrollMotion() {
 
     // ---- Parallax ----
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-    type Item = { el: HTMLElement; trigger: HTMLElement; from: number; to: number; start: string; end: string; s0: number; s1: number };
+    type Item = { el: HTMLElement; trigger: HTMLElement; from: number; to: number; start: string; end: string; s0: number; s1: number; x: boolean };
     const items: Item[] = [];
 
     const position = (spec: string, trigger: HTMLElement) => {
@@ -125,7 +126,8 @@ export function ScrollMotion() {
         }
         const span = item.s1 - item.s0;
         const p = span > 0 ? Math.min(1, Math.max(0, (y - item.s0) / span)) : y >= item.s1 ? 1 : 0;
-        item.el.style.translate = `0 ${(item.from + (item.to - item.from) * p).toFixed(3)}%`;
+        const v = `${(item.from + (item.to - item.from) * p).toFixed(3)}%`;
+        item.el.style.translate = item.x ? `${v} 0` : `0 ${v}`;
       }
     };
     const schedule = () => {
@@ -144,6 +146,7 @@ export function ScrollMotion() {
         to: num(el.dataset.parallaxEnd, -20),
         start: el.dataset.parallaxScrollStart ?? "top bottom",
         end: el.dataset.parallaxScrollEnd ?? "bottom top",
+        x: el.dataset.parallaxAxis === "x",
         s0: 0,
         s1: 0,
       });

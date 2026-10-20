@@ -186,19 +186,17 @@ tests/unit, tests/e2e    Vitest and Playwright
   `Cursor` label over `[data-cursor="…"]` (text = attribute value; ≥768px, fine pointers).
 - Nav: pills hide upward on scroll down (desktop), slide in from the right via the plus (≤991px); 10px direction threshold.
 - Tabs (TrendingDishes): Flip pill 0.5s; text/photo swap 0.65s on "slush"; auto-advance to tab 2 at "center 75%".
-- Home from the About section down (2026-10-20, user: "redo from this point", chose stacking full-screen panels and
-  "start fresh"): StackPanels (components/motion/stack-panels.tsx) wraps AboutPanel, TrendingPanel, CuisinePanel,
-  QuickPanel and CtaPanel (components/sections/home-panels.tsx, trending-panel.tsx). Large screens (≥1024px wide and
-  ≥700px tall): each panel is a sticky 100svh card with a 40svh spacer after it; the next card slides up over it (28px
-  top corners) and the covered card sinks back (scale 0.92, -2%, darkens to 55% scrim), scrubbed by the next card's
-  distance from the top. Smaller screens: ordinary sections. About (redone 2026-10-20, user: "too plain, only text"):
-  "A kitchen atlas" headline, a short ScrubWords pitch, three CountUp stats (dishes, cuisines, avg. hours) and a
-  button on the left; three columns of dish photos running endlessly on the right (.about-cols, middle column
-  reversed, own speeds, paused on hover/focus, still for reduced motion), each photo a recipe link. Trending: numbered rows, hover/focus wipes that dish's
-  photo up into the frame. Cuisines (#cuisines): ten strips, the hovered/focused one widens (flex-grow) to show name,
-  country, count; small screens a 2-column tile grid. Quick meals: 2×2 photo tiles. CTA: full tomato panel.
-  The hero exit (.hero-scroll / .hero-exit / .hero-fan) and footer .foot-rise letters are unchanged.
-  Removed with this: the pinned Trending tabs, the flash-card deck, the GSAP card fan (GSAP uninstalled), the CTA iris.
+- Home from the About section down (2026-10-20): AboutPanel, TrendingPanel, CuisinePanel, QuickPanel, CtaPanel
+  (components/sections/home-panels.tsx, trending-panel.tsx). About: "A kitchen atlas" headline, short ScrubWords pitch,
+  CountUp stats (dishes, cuisines, avg. hours), button, and three endlessly running photo columns (.about-cols; middle
+  reversed; paused on hover/focus; still for reduced motion). The stacking-panel transition was tried and dropped
+  (user: "make it new… like text going from left to right after scrolling"). Now each later section opens with a
+  SlideBand (components/motion/slide-band.tsx): a giant headline sliding left to right with the scroll while an
+  outlined copy slides the other way — ScrollMotion's data-parallax with data-parallax-axis="x" (xPercent -38 → -4 and
+  back), so it works in every browser. The section's real h2 is sr-only. Its rows / strips / tiles / CTA lines slide in
+  from the left (the trending photo from the right) with .slide-in, a view-timeline animation staggered by --k.
+  Trending: hover/focus wipes that dish's photo in. Cuisines (#cuisines): ten strips, the hovered one widens; a tile
+  grid on phones. The hero exit and footer .foot-rise letters are unchanged.
 - Intro curtain (2026-10-19, recorded from kervangida.com; that site has no route transition, its transition is
   this first-load preloader): `IntroCurtain` (components/motion/intro-curtain.tsx, `.wp-intro` in globals.css). A
   full-screen `--dot` panel; the WORLD PLATE wordmark fills left to right over its outline (2s linear, from 0.1s), holds,

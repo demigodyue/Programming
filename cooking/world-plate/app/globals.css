@@ -1417,8 +1417,8 @@
 /* ---------- Scroll-scrubbed sections (2026-10-19) ----------
    Everything here moves with the scroll position, like the jar stage, instead of playing once:
    - hero: as it scrolls away the headline block sinks back and fades, and the WORLD PLATE letters fan apart
-   - About and below: stacking full-screen panels (StackPanels, components/motion/stack-panels.tsx) — each panel
-     slides up over the last, which sinks back and darkens with the scroll; styles below
+   - after About: each section opens with a SlideBand (a giant headline sliding left to right, an outlined copy the
+     other way; ScrollMotion x-parallax) and its rows / strips / tiles slide in from the side (.slide-in, view timeline)
    - footer: the wordmark letters rise one after another
    The CSS ones use scroll-driven animations (off the main thread); browsers without them show the end state. */
 @keyframes wp-hero-exit {
@@ -1439,6 +1439,19 @@
     transform: translateY(calc(-50% - 0.375rem));
   }
 }
+/* Content sliding in from the side as its section scrolls in (.slide-in, --k staggers it). */
+@keyframes wp-slide-in {
+  from {
+    translate: -22vw 0;
+    opacity: 0;
+  }
+}
+@keyframes wp-slide-in-right {
+  from {
+    translate: 22vw 0;
+    opacity: 0;
+  }
+}
 @keyframes wp-foot-rise {
   from {
     translate: 0 85%;
@@ -1447,37 +1460,34 @@
 }
 
 @layer components {
-  /* Stacking panels. Large screens: every panel is a sticky full-height card; a 40svh spacer after each one is the
-     pause before the next card arrives. StackPanels sinks and darkens the covered card. */
-  .stack-card {
-    position: relative;
+  /* Sliding headline bands (SlideBand). */
+  .slide-band {
+    overflow: hidden;
+    padding-block: clamp(3rem, 7vw, 6rem) clamp(1.5rem, 3vw, 2.5rem);
   }
-  .stack-dim {
-    position: absolute;
-    inset: 0;
-    background: var(--scrim);
-    opacity: 0;
-    pointer-events: none;
+  .slide-band__line {
+    display: flex;
+    width: max-content;
+    align-items: center;
+    gap: 2.5vw;
+    padding-right: 2.5vw;
+    font-size: clamp(4rem, 12vw, 11rem);
+    line-height: 0.9;
+    text-transform: uppercase;
+    white-space: nowrap;
+    will-change: translate;
   }
-  @media (width >= 1024px) and (height >= 700px) {
-    .stack-panel {
-      position: sticky;
-      top: 0;
-      height: 100svh;
-    }
-    .stack-card {
-      height: 100%;
-      overflow: hidden;
-      transform-origin: 50% 0;
-      will-change: transform;
-    }
-    .stack-panel:not(:first-child) > .stack-card {
-      border-radius: 28px 28px 0 0;
-    }
-    .stack-spacer {
-      height: 40svh;
-      pointer-events: none;
-    }
+  .slide-band__line--outline {
+    margin-top: 0.08em;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--headline);
+    opacity: 0.6;
+  }
+  .slide-band__mark {
+    width: 0.45em;
+    height: 0.45em;
+    flex-shrink: 0;
+    color: var(--headline);
   }
 
   /* About: three columns of dish photos running endlessly (the middle one downward), paused while pointed at. */
@@ -1672,6 +1682,14 @@
       animation: wp-hero-fan linear both;
       animation-timeline: --hero;
       animation-range: exit 0% exit 90%;
+    }
+    .slide-in {
+      animation: wp-slide-in linear both;
+      animation-timeline: view();
+      animation-range: entry calc(var(--k, 0) * 6%) cover calc(30% + var(--k, 0) * 6%);
+    }
+    .slide-in--right {
+      animation-name: wp-slide-in-right;
     }
     .foot-rise > span {
       display: inline-block;

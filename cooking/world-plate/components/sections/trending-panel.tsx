@@ -3,12 +3,14 @@
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
+import { SlideBand } from "@/components/motion/slide-band";
 import type { RecipeCard } from "@/db/queries/recipes";
 import { formatMinutes } from "@/lib/scale";
 
 /**
- * Trending dishes as a big numbered list beside one large photo. Hovering (or focusing) a row makes it the active
+ * Trending dishes as a big numbered list beside one large photo, under a sliding headline band; the rows slide in from
+ * the left one by one and the photo from the right as the section scrolls in. Hovering (or focusing) a row makes it the active
  * dish: its title turns to the headline colour and its photo wipes up into the frame over the previous one.
  */
 export function TrendingPanel({ recipes }: { recipes: RecipeCard[] }) {
@@ -16,19 +18,20 @@ export function TrendingPanel({ recipes }: { recipes: RecipeCard[] }) {
   const [active, setActive] = useState(0);
 
   return (
-    <section aria-labelledby="trending-title" className="bg-background flex h-full flex-col justify-center py-20 lg:py-10">
+    <section aria-labelledby="trending-title" className="bg-background flex flex-col justify-center overflow-x-clip pb-24 lg:pb-32">
+      <SlideBand text="Trending this week" />
       <div className="container-page grid items-center gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
         <div>
           <div className="label-caps text-muted-foreground flex justify-between border-b pb-3">
             <span>01 · This week</span>
             <span>Trending</span>
           </div>
-          <h2 id="trending-title" className="text-display mt-6">
+          <h2 id="trending-title" className="sr-only">
             Trending dishes
           </h2>
           <ol className="mt-6">
             {rows.map((r, i) => (
-              <li key={r.slug} className="border-b">
+              <li key={r.slug} className="slide-in border-b" style={{ "--k": i } as CSSProperties}>
                 <Link
                   href={`/recipes/${r.slug}`}
                   onMouseEnter={() => setActive(i)}
@@ -48,7 +51,7 @@ export function TrendingPanel({ recipes }: { recipes: RecipeCard[] }) {
           </ol>
         </div>
 
-        <div className="trend-frame relative aspect-[4/5] w-full overflow-hidden rounded-lg border lg:max-h-[74svh]">
+        <div className="trend-frame slide-in slide-in--right relative aspect-[4/5] w-full overflow-hidden rounded-lg border lg:max-h-[74svh]">
           {rows.map((r, i) => (
             <span key={r.slug} aria-hidden data-on={active === i || undefined} className="trend-shot">
               <Image src={r.image} alt="" fill sizes="(min-width: 1024px) 42vw, 92vw" className="object-cover" />

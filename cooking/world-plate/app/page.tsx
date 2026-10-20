@@ -1,4 +1,3 @@
-import { StackPanels } from "@/components/motion/stack-panels";
 import { DishStage } from "@/components/sections/dish-stage";
 import { DishMarquee } from "@/components/sections/dish-marquee";
 import { Hero } from "@/components/sections/hero";
@@ -27,14 +26,12 @@ export default async function HomePage() {
       />
       <DishMarquee items={all.map((r) => r.title)} />
       <DishStage href="/recipes/butter-chicken" />
-      {/* From the About section down: full-screen panels that slide up over one another. */}
-      <StackPanels>
-        <AboutPanel recipes={all} cuisineCount={cuisines.length} />
-        <TrendingPanel recipes={trending} />
-        <CuisinePanel cuisines={cuisines} />
-        <QuickPanel recipes={quick} />
-        <CtaPanel />
-      </StackPanels>
+      <AboutPanel recipes={all} cuisineCount={cuisines.length} />
+      {/* After About: giant headline bands slide left to right with the scroll and the content slides in from the side. */}
+      <TrendingPanel recipes={trending} />
+      <CuisinePanel cuisines={cuisines} />
+      <QuickPanel recipes={quick} />
+      <CtaPanel />
     </>
   );
 }
