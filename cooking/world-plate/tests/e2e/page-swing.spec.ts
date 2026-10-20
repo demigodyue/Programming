@@ -32,3 +32,12 @@ test("reduced motion swaps the swing for a crossfade", async ({ browser }) => {
   await expect(page.getByRole("heading", { level: 1, name: "All recipes" })).toBeVisible();
   await context.close();
 });
+
+test("the header logo on the home page goes back to the top", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("main [data-reveal][data-observed], main [data-reveal][data-in]").first()).toBeAttached();
+  await page.evaluate(() => window.scrollTo(0, 3000));
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(1000);
+  await page.getByRole("link", { name: "World Plate home" }).click();
+  await expect.poll(() => page.evaluate(() => window.scrollY), { timeout: 5000 }).toBe(0);
+});

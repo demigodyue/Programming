@@ -95,6 +95,12 @@ export function SiteHeader() {
         <Link
           href="/"
           aria-label="World Plate home"
+          onClick={(e) => {
+            // Already home: a link to the same page would do nothing, so glide back to the top instead.
+            if (pathname !== "/") return;
+            e.preventDefault();
+            window.dispatchEvent(new Event("wp:scroll-top"));
+          }}
           className="nav-circle nav-logo bg-dot text-dot-foreground pointer-events-auto grid size-[50px] shrink-0 place-items-center rounded-full"
         >
           <LogoMark ring={false} className="size-9" />

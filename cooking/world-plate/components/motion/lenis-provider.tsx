@@ -24,13 +24,20 @@ export function LenisProvider() {
       if (document.documentElement.hasAttribute("data-intro-lock")) lenisRef.current.stop();
     };
     const resume = () => lenisRef.current?.start();
+    // "Back to the top" (the header logo on the home page): a quick glide, or a jump for reduced motion.
+    const toTop = () => {
+      if (lenisRef.current) lenisRef.current.scrollTo(0, { duration: 1.4, easing: (t) => 1 - Math.pow(1 - t, 4) });
+      else window.scrollTo({ top: 0, behavior: media.matches ? "auto" : "smooth" });
+    };
     void start();
     media.addEventListener("change", start);
     window.addEventListener("wp:intro-done", resume);
+    window.addEventListener("wp:scroll-top", toTop);
     return () => {
       cancelled = true;
       media.removeEventListener("change", start);
       window.removeEventListener("wp:intro-done", resume);
+      window.removeEventListener("wp:scroll-top", toTop);
       lenisRef.current?.destroy();
       lenisRef.current = null;
     };
