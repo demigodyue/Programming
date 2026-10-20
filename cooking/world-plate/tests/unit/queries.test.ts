@@ -73,6 +73,11 @@ describe("recipe queries", () => {
     expect(r!.steps).toHaveLength(7);
     expect(r!.totalMinutes).toBe(25);
     expect(r!.tags).toContain("pasta");
+    // The Japanese edition comes along, lined up with the English lists.
+    expect(r!.ja.title).toBe("スパゲッティ・カルボナーラ");
+    expect(r!.ja.cuisineName).toBe("イタリア料理");
+    expect(r!.ja.ingredients).toHaveLength(r!.ingredients.length);
+    expect(r!.ja.steps).toHaveLength(r!.steps.length);
   });
 
   it("returns null for an unknown slug", async () => {
@@ -81,15 +86,15 @@ describe("recipe queries", () => {
 
   it("searches across title, cuisine, tags and ingredients", async () => {
     expect((await search({ q: "ramen" })).map((r) => r.slug)).toEqual(["shoyu-ramen"]);
-    expect((await search({ q: "korean" })).map((r) => r.slug).sort()).toEqual(["bibimbap", "tteokbokki"]);
+    expect((await search({ q: "korean" })).map((r) => r.slug).sort()).toEqual(["bibimbap", "kimchi-jjigae", "tteokbokki", "yangnyeom-chicken"]);
     expect((await search({ q: "tamarind" })).map((r) => r.slug)).toContain("pad-thai");
     expect((await search({ q: "dumplings" })).map((r) => r.slug)).toContain("chicken-momo");
   });
 
   it("treats LIKE wildcards in the query literally", async () => {
     expect(likePattern("50%_off")).toBe("%50\\%\\_off%");
-    // Only the croissants contain a literal "%" ("82% fat butter"); unescaped it would match everything.
-    expect((await search({ q: "%" })).map((r) => r.slug)).toEqual(["croissants"]);
+    // Only two recipes contain a literal "%" ("82% fat" butter, "60–70%" chocolate); unescaped it would match everything.
+    expect((await search({ q: "%" })).map((r) => r.slug).sort()).toEqual(["churros", "croissants"]);
     expect(await search({ q: "_" })).toHaveLength(0);
   });
 
@@ -102,7 +107,7 @@ describe("recipe queries", () => {
     expect(quick.every((r) => r.totalMinutes <= 30)).toBe(true);
 
     const easyNepali = await search({ cuisine: "nepali", difficulty: "easy" });
-    expect(easyNepali.map((r) => r.slug)).toEqual(["dal-bhat"]);
+    expect(easyNepali.map((r) => r.slug)).toEqual(["dal-bhat", "thukpa"]);
 
     const multi = await search({ cuisine: "japanese,thai" });
     expect(new Set(multi.map((r) => r.cuisineSlug))).toEqual(new Set(["japanese", "thai"]));
@@ -125,7 +130,7 @@ describe("recipe queries", () => {
   it("puts same-cuisine dishes first in related recipes", async () => {
     const ramen = (await getRecipeBySlug(db, "shoyu-ramen"))!;
     const related = await listRelatedRecipes(db, ramen, 3);
-    expect(related[0].slug).toBe("maki-sushi");
+    expect(related.map((r) => r.cuisineSlug)).toEqual(["japanese", "japanese", "japanese"]);
     expect(related.map((r) => r.slug)).not.toContain("shoyu-ramen");
   });
 });
@@ -133,7 +138,7 @@ describe("recipe queries", () => {
 describe("cuisine queries", () => {
   it("lists every cuisine in display order with recipe counts", async () => {
     const list = await listCuisines(db);
-    expect(list).toHaveLength(10);
+    expect(list).toHaveLength(12);
     expect(list[0].slug).toBe("japanese");
     expect(list.every((c) => c.recipeCount >= 1)).toBe(true);
   });
@@ -141,7 +146,8 @@ describe("cuisine queries", () => {
   it("gets a cuisine and its dishes", async () => {
     expect((await getCuisine(db, "nepali"))?.country).toBe("Nepal");
     expect(await getCuisine(db, "atlantis")).toBeNull();
-    expect((await listRecipesByCuisine(db, "nepali")).map((r) => r.slug)).toEqual(["chicken-momo", "dal-bhat"]);
+    expect((await listRecipesByCuisine(db, "nepali")).map((r) => r.slug)).toEqual(["chicken-momo", "dal-bhat", "thukpa"]);
+    expect((await getCuisine(db, "vietnamese"))?.ja.name).toBe("ベトナム料理");
   });
 });
 

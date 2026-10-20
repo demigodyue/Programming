@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type CSSProperties } from "react";
+import { T } from "@/components/i18n";
 import { GasBurner } from "@/components/motion/gas-burner";
 import { SectionArt } from "@/components/section-art";
 
@@ -331,7 +332,9 @@ export function IntroCurtain() {
         <span className="wp-intro__mouse">
           <span />
         </span>
-        <span className="label-caps">Scroll to start cooking</span>
+        <span className="label-caps">
+          <T en="Scroll to start cooking" ja="スクロールして料理をはじめよう" />
+        </span>
       </div>
     </div>
   );

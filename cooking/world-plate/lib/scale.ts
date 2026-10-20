@@ -60,9 +60,39 @@ export function formatQuantity(
   return unit ? `${value} ${unit}` : value;
 }
 
+/**
+ * The same quantity written the Japanese way: spoons lead (小さじ2, 大さじ1½), metric units sit tight (250g),
+ * and a counted item takes its counter (卵 4個, にんにく 2片 — `counter` defaults to 個).
+ */
+export function formatQuantityJa(
+  amount: number | null,
+  unit: string | null,
+  fromServings: number,
+  toServings: number,
+  counter = "個",
+): string {
+  const scaled = scaleAmount(amount, fromServings, toServings);
+  const value = formatAmount(scaled, unit);
+  if (!value) return "";
+  if (unit === "tsp") return `小さじ${value}`;
+  if (unit === "tbsp") return `大さじ${value}`;
+  if (unit === "cup" || unit === "cups") return `${value}カップ`;
+  if (unit === "pinch") return value === "1" ? "ひとつまみ" : `${value}つまみ`;
+  if (unit === "l") return `${value}L`;
+  if (unit) return `${value}${unit}`;
+  return `${value}${counter}`;
+}
+
 export function formatMinutes(minutes: number): string {
   if (minutes < 60) return `${minutes} min`;
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
   return m ? `${h} h ${m} min` : `${h} h`;
+}
+
+export function formatMinutesJa(minutes: number): string {
+  if (minutes < 60) return `${minutes}分`;
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return m ? `${h}時間${m}分` : `${h}時間`;
 }

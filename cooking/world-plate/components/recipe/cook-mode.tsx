@@ -4,15 +4,32 @@ import { ArrowLeft, ArrowRight, Check, X } from "lucide-react";
 import { m, AnimatePresence, useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { StepIcon } from "@/components/recipe/step-icon";
+import { StepTimer } from "@/components/recipe/step-timer";
 import { StepIndicator } from "@/components/watermelon/step-indicator";
+import { useT } from "@/lib/lang";
+import type { StepAction } from "@/lib/step-info";
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 
 /**
  * Full-screen, one-step-at-a-time view for cooking with messy hands:
  * huge text, big buttons, arrow keys / space to advance, Esc to exit, screen kept awake.
+ * Each step brings its animated action drawing and big timer buttons (shared with the page, so a running
+ * timer carries on here).
  */
-export function CookMode({ title, steps, onClose }: { title: string; steps: string[]; onClose: () => void }) {
+export function CookMode({
+  slug,
+  title,
+  steps,
+  onClose,
+}: {
+  slug: string;
+  title: string;
+  steps: { text: string; action: StepAction; timers: number[] }[];
+  onClose: () => void;
+}) {
+  const t = useT();
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const reduce = useReducedMotion();
@@ -97,7 +114,7 @@ export function CookMode({ title, steps, onClose }: { title: string; steps: stri
     >
       <div className="container-page flex items-center justify-between gap-4 pt-5">
         <div className="min-w-0">
-          <p className="label-caps text-muted-foreground">Cook Mode</p>
+          <p className="label-caps text-muted-foreground">{t("Cook Mode", "クックモード")}</p>
           <h2 id="cook-mode-title" className="truncate text-xl font-medium">
             {title}
           </h2>
@@ -105,7 +122,7 @@ export function CookMode({ title, steps, onClose }: { title: string; steps: stri
         <button
           type="button"
           onClick={onClose}
-          aria-label="Exit Cook Mode"
+          aria-label={t("Exit Cook Mode", "クックモードを終了")}
           className="bg-card hover-fine:bg-muted grid size-12 shrink-0 place-items-center rounded-full border"
         >
           <X className="size-5" strokeWidth={1.75} aria-hidden />
@@ -114,16 +131,31 @@ export function CookMode({ title, steps, onClose }: { title: string; steps: stri
 
       <div className="container-page mt-10">
         <StepIndicator
-          steps={steps.map((_, i) => ({ id: String(i), label: `Step ${i + 1}` }))}
+          steps={steps.map((_, i) => ({ id: String(i), label: t(`Step ${i + 1}`, `手順${i + 1}`), aria: t(`Go to step ${i + 1}`, `手順${i + 1}へ`) }))}
           current={index}
           onStepChange={go}
         />
       </div>
 
       <div className="container-page flex flex-1 flex-col justify-center py-10">
-        <p className="text-accent-ink font-display text-2xl" aria-live="polite">
-          Step {index + 1} of {steps.length}
-        </p>
+        <div className="flex items-center gap-4">
+          <AnimatePresence mode="popLayout" initial={false}>
+            <m.span
+              key={index}
+              initial={{ opacity: 0, transform: reduce ? "none" : "scale(0.6) rotate(-12deg)" }}
+              animate={{ opacity: 1, transform: "scale(1) rotate(0deg)" }}
+              exit={{ opacity: 0, transform: reduce ? "none" : "scale(0.6) rotate(12deg)" }}
+              transition={{ duration: 0.35, ease: EASE_OUT }}
+              data-active
+              className="text-headline grid"
+            >
+              <StepIcon action={steps[index].action} className="size-16 sm:size-20" />
+            </m.span>
+          </AnimatePresence>
+          <p className="text-accent-ink font-display text-2xl" aria-live="polite">
+            {t(`Step ${index + 1} of ${steps.length}`, `手順 ${index + 1} / ${steps.length}`)}
+          </p>
+        </div>
         <div className="relative mt-4">
           <AnimatePresence mode="wait" initial={false} custom={direction}>
             <m.p
@@ -135,10 +167,17 @@ export function CookMode({ title, steps, onClose }: { title: string; steps: stri
               transition={{ duration: 0.3, ease: EASE_OUT }}
               className="font-display max-w-[30ch] text-[clamp(1.75rem,4.6vw,3.25rem)] leading-[1.2] text-pretty"
             >
-              {steps[index]}
+              {steps[index].text}
             </m.p>
           </AnimatePresence>
         </div>
+        {steps[index].timers.length > 0 && (
+          <div className="mt-8 flex flex-wrap gap-3">
+            {steps[index].timers.map((sec, k) => (
+              <StepTimer key={`${index}-${k}`} id={`${slug}:${index}:${k}`} seconds={sec} large />
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="container-page flex items-center justify-between gap-3 pb-8">
@@ -149,7 +188,7 @@ export function CookMode({ title, steps, onClose }: { title: string; steps: stri
           className="bg-card hover-fine:bg-muted inline-flex h-16 items-center gap-2 rounded-full border px-6 text-lg font-medium disabled:opacity-40 sm:px-8"
         >
           <ArrowLeft className="size-5" strokeWidth={1.75} aria-hidden />
-          Back
+          {t("Back", "戻る")}
         </button>
         {isLast ? (
           <button
@@ -158,7 +197,7 @@ export function CookMode({ title, steps, onClose }: { title: string; steps: stri
             className="bg-primary text-primary-foreground inline-flex h-16 items-center gap-2 rounded-full px-8 text-lg font-medium transition-transform duration-150 active:scale-[0.97]"
           >
             <Check className="size-5" strokeWidth={2} aria-hidden />
-            Done — enjoy
+            {t("Done — enjoy", "完成！めしあがれ")}
           </button>
         ) : (
           <button
@@ -166,7 +205,7 @@ export function CookMode({ title, steps, onClose }: { title: string; steps: stri
             onClick={() => go(index + 1)}
             className="bg-primary text-primary-foreground inline-flex h-16 items-center gap-2 rounded-full px-8 text-lg font-medium transition-transform duration-150 active:scale-[0.97]"
           >
-            Next step
+            {t("Next step", "次の手順")}
             <ArrowRight className="size-5" strokeWidth={1.75} aria-hidden />
           </button>
         )}

@@ -5,6 +5,7 @@ import { m, AnimatePresence, useReducedMotion } from "motion/react";
 import { useTheme } from "next-themes";
 import { useSyncExternalStore } from "react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/watermelon/theme-toggler";
+import { useT } from "@/lib/lang";
 import { cn } from "@/lib/utils";
 
 const useMounted = () =>
@@ -15,28 +16,29 @@ const useMounted = () =>
   );
 
 const OPTIONS = [
-  { value: "light", label: "Light theme", Icon: Sun },
-  { value: "dark", label: "Dark theme", Icon: Moon },
-  { value: "system", label: "Match system theme", Icon: Monitor },
+  { value: "light", label: "Light theme", ja: "ライトテーマ", Icon: Sun },
+  { value: "dark", label: "Dark theme", ja: "ダークテーマ", Icon: Moon },
+  { value: "system", label: "Match system theme", ja: "システムに合わせる", Icon: Monitor },
 ] as const;
 
 /** Three-way Light / Dark / System switch (Watermelon theme-toggler). */
 export function ThemeSwitch({ className }: { className?: string }) {
   const { theme, setTheme } = useTheme();
   const mounted = useMounted();
+  const t = useT();
 
   return (
     <ToggleGroup
       type="single"
       variant="outline"
       size="sm"
-      aria-label="Colour theme"
+      aria-label={t("Colour theme", "カラーテーマ")}
       value={mounted ? (theme ?? "system") : ""}
       onValueChange={(v: string) => v && setTheme(v)}
       className={cn("bg-card", className)}
     >
-      {OPTIONS.map(({ value, label, Icon }) => (
-        <ToggleGroupItem key={value} value={value} aria-label={label} title={label}>
+      {OPTIONS.map(({ value, label, ja, Icon }) => (
+        <ToggleGroupItem key={value} value={value} aria-label={t(label, ja)} title={t(label, ja)}>
           <Icon strokeWidth={1.75} />
         </ToggleGroupItem>
       ))}
@@ -51,12 +53,13 @@ export function ThemeIconToggle({ className }: { className?: string }) {
   const reduce = useReducedMotion();
   const isDark = mounted && resolvedTheme === "dark";
   const Icon = isDark ? Moon : Sun;
+  const t = useT();
 
   return (
     <button
       type="button"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+      aria-label={isDark ? t("Switch to light theme", "ライトテーマに切り替え") : t("Switch to dark theme", "ダークテーマに切り替え")}
       className={cn(
         "relative grid size-10 place-items-center rounded-full transition-colors duration-200 hover-fine:bg-foreground/8",
         className,

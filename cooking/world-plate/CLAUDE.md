@@ -76,8 +76,8 @@ docs are unfilled templates. The final security review used the built-in `securi
 - **Images**: the custom loader (`lib/image-loader.ts`) lets Unsplash's CDN resize. Above-the-fold heroes use
   `loading="eager"` + `fetchPriority="high"` (Next 16 deprecated `priority`); allowed qualities are listed in
   `images.qualities`.
-- **Fonts**: Anton (single weight 400, preloaded — the home LCP is the Anton wordmark/headline), Barlow Condensed
-  500/600/700 (`preload: false`), Inter (variable, preloaded). Anton has no italic: `<em>` in display type is a colour switch.
+- **Fonts**: Anton (single weight 400, preloaded — the home LCP is the Anton wordmark/headline), Inter (variable,
+  preloaded), Dela Gothic One + Noto Sans JP for Japanese (`preload: false`). Anton has no italic: `<em>` in display type is a colour switch.
 - **Hex colours** live only in `app/globals.css`. Two unavoidable exceptions: `viewport.themeColor` in
   `app/layout.tsx` and `app/opengraph-image.tsx` (neither can read CSS variables).
 - Registry gotcha: a Watermelon item rewrote `cn` imports to `from "cn"` and installed an unrelated npm package
@@ -92,6 +92,33 @@ docs are unfilled templates. The final security review used the built-in `securi
 - **No runtime server**: SQLite/Drizzle is read only at build time. Favorites and ratings live in localStorage
   (`lib/local-store.ts`); /recipes filters in the browser (`lib/recipe-filter.ts`, mirrors `searchRecipes`).
   There is no newsletter, no server actions, no API routes, no session cookie and no response headers (CSP etc.).
+- **English + Japanese (2026-10-20)**: every page carries both languages. `<T en ja>` (`components/i18n.tsx`) renders
+  two `[data-l]` spans; unlayered CSS hides the one not matching `<html data-lang>` (the shown one is
+  `display: contents`, so wrappers never affect layout). It works in server components and never flashes: the
+  `LANG_INIT` head script in `app/layout.tsx` sets `data-lang`/`lang` before paint (localStorage `wp:lang`, else
+  the browser language). Attributes CSS can't swap (aria-label, alt, title) use `useT()` from `lib/lang.ts` in
+  client components, and `LImage` for alt text. `SlantText`/`ScrubWords`/`SlideBand` take a `ja` prop; Japanese copy
+  marks phrase breaks with "|" (no spaces), and ScrollMotion only scrubs the shown language's words. Recipe and
+  cuisine Japanese lives in `data/recipes.ja.ts` / `data/cuisines.ja.ts`, keyed by slug, with ingredients and steps
+  lined up **by position** with the English seed (`tests/unit/i18n-data.test.ts` checks counts and section names).
+  A new recipe needs its Japanese edition too. Queries attach it as `.ja`. Japanese quantities: `formatQuantityJa`
+  (spoons first, a counter after counted items, default 個). Fonts: Dela Gothic One under Anton and Noto Sans JP
+  under Inter (`preload: false`). Don't stack two next/font instances of one family for different weights: they
+  share a family name, so the browser mixes the weights.
+- **Accounts (2026-10-20)**: Firebase Auth (email/password) + Firestore Lite, called from the browser
+  (`lib/account/`). `store.ts` is the external store (`off | loading | out | in`); the SDK is a dynamic import,
+  loaded on /account, on form submit, or when the `wp:signed-in` hint says this browser was signed in last time.
+  While signed in, the localStorage favourites are the account's: merged in at sign-in (`mergeFavorites`, guest list
+  first), written back 500 ms after a change (not while the sign-in merge runs), cleared at sign-out. Config is
+  `NEXT_PUBLIC_FIREBASE_*` in `.env.local` (public by design); `firestore.rules` limits `users/{uid}` to its owner.
+  The E2E specs set localStorage `wp-account-demo=1` to use `demo-backend.ts` (localStorage, plaintext passwords,
+  test-only). The account panels use enter-only keyed animations: an `AnimatePresence mode="wait"` exit can stall
+  before Motion's lazy features load, leaving the panel blank.
+- **Recipe kitchen (2026-10-20)**: `lib/step-info.ts` reads each English step for its action (the earliest verb
+  wins → `StepIcon`) and its timings (`parseDurations`: a range's first value, 10 s–6 h). Timers live in a module
+  store in `step-timer.tsx`, keyed `slug:step:index` and shared with Cook Mode. The pot (`MisePot`) is drawn full
+  and lowered by `--fill`; ticked names fly in with WAAPI (`flyIntoPot`). Rows and steps reveal via
+  `[data-reveal="rows"|"step"]`.
 
 ## Tech stack
 - Next.js 16 (App Router, Turbopack) + TypeScript (strict) + React 19
@@ -121,14 +148,17 @@ app/                     routes (Server Components by default)
   recipes/[slug]/        recipe detail
   cuisine/[name]/        cuisine page
   favorites/             saved recipes
+  account/               sign in / create account / profile
 components/ui/           shadcn primitives
 components/watermelon/   Watermelon registry components (adapted, see README)
 components/sections/     page sections (hero, carousel, grids, footer…)
 components/motion/       Slush motion (PageSwing, ScrollMotion, SlantText, HeadingReveal, CardReveal, LetterRoll, FlipFace, ScrollMarquee, Cursor), Cult Eats MouseDepth + Lenis/Motion providers
-components/recipe/       recipe-detail client widgets
+components/recipe/       recipe-detail client widgets (kitchen, step icons, timers, Cook Mode)
+components/account/      account panel, header button, favorites note, boot
+components/i18n.tsx      <T>, Minutes, Difficulty (+ i18n-image.tsx LImage, lang-toggle.tsx)
 db/                      schema.ts, client.ts, migrations/, queries/, seed.ts
-data/                    recipes.seed.ts (source of truth for seed content), cuisines
-lib/                     pure helpers (scaling, session, rate limit, validation)
+data/                    recipes.seed.ts (source of truth for seed content), cuisines, *.ja.ts (Japanese editions)
+lib/                     pure helpers (scaling, validation, step-info), lang.ts, account/ (Firebase + demo backends, store)
 tests/unit, tests/e2e    Vitest and Playwright
 ```
 

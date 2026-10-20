@@ -5,6 +5,9 @@ import { power3Out } from "./slush-ease";
 
 type Tween = { from: number; to: number; start: number; dur: number };
 
+// The cursor labels in Japanese (labels are written in English on the data-cursor attribute).
+const CURSOR_JA: Record<string, string> = { "View recipe": "レシピを見る", Explore: "見てみる" };
+
 /**
  * Slush's cursor label: a small pill that trails the pointer and shows over anything with a
  * `data-cursor` attribute, using that attribute as its text ("View recipe", "Explore"…).
@@ -55,7 +58,8 @@ export function Cursor() {
 
     const over = (e: PointerEvent) => {
       const target = e.target instanceof Element ? e.target.closest<HTMLElement>("[data-cursor]") : null;
-      const text = target?.dataset.cursor;
+      const en = target?.dataset.cursor;
+      const text = en && document.documentElement.dataset.lang === "ja" ? (CURSOR_JA[en] ?? en) : en;
       if (text && text !== label) {
         label = text;
         el.textContent = text;

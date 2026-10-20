@@ -113,11 +113,14 @@ export function ScrollMotion() {
     };
 
     // ---- Word scrub (Hungry Tiger) ----
-    type Scrub = { el: HTMLElement; words: HTMLElement[]; s0: number; s1: number };
+    // A bilingual heading holds both languages' words (components/i18n.tsx); only the shown language's words count.
+    type Scrub = { el: HTMLElement; en: HTMLElement[]; ja: HTMLElement[]; s0: number; s1: number };
     const scrubs: Scrub[] = [];
     const addScrub = (el: HTMLElement) => {
       if (reduce.matches || scrubs.some((s) => s.el === el)) return;
-      scrubs.push({ el, words: Array.from(el.querySelectorAll<HTMLElement>(".word")), s0: 0, s1: 0 });
+      const words = Array.from(el.querySelectorAll<HTMLElement>(".word"));
+      const of = (lang: string) => words.filter((w) => (w.closest<HTMLElement>("[data-l]")?.dataset.l ?? lang) === lang);
+      scrubs.push({ el, en: of("en"), ja: of("ja"), s0: 0, s1: 0 });
     };
     const measureScrubs = () => {
       for (const s of scrubs) {
@@ -134,8 +137,9 @@ export function ScrollMotion() {
         }
         const span = s.s1 - s.s0;
         const p = span > 0 ? Math.min(1, Math.max(0, (y - s.s0) / span)) : y >= s.s1 ? 1 : 0;
-        const t = p * ((s.words.length - 1) * 0.4 + 0.2);
-        s.words.forEach((w, k) => {
+        const words = document.documentElement.dataset.lang === "ja" ? s.ja : s.en;
+        const t = p * ((words.length - 1) * 0.4 + 0.2);
+        words.forEach((w, k) => {
           const local = Math.min(1, Math.max(0, (t - k * 0.4) / 0.2));
           const eased = 1 - (1 - local) * (1 - local); // power1.out
           w.style.opacity = (0.2 + 0.8 * eased).toFixed(3);
@@ -222,15 +226,20 @@ export function ScrollMotion() {
       if (!reduce.matches) return;
       items.forEach((item) => (item.el.style.translate = ""));
       items.length = 0;
-      scrubs.forEach((s) => s.words.forEach((w) => (w.style.opacity = "")));
+      scrubs.forEach((s) => [...s.en, ...s.ja].forEach((w) => (w.style.opacity = "")));
       scrubs.length = 0;
       progress.forEach((p) => p.el.style.removeProperty("--p"));
       progress.length = 0;
     };
 
+    // Switching language reflows the page: measure again.
+    const onLang = () => requestAnimationFrame(refresh);
+
     window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("wp:lang", onLang);
     reduce.addEventListener("change", onReduce);
     return () => {
+      window.removeEventListener("wp:lang", onLang);
       observers.forEach((io) => io.disconnect());
       // Let a re-run (React Strict Mode in dev runs effects twice) observe these elements again.
       document.querySelectorAll("[data-observed]:not([data-in])").forEach((el) => el.removeAttribute("data-observed"));

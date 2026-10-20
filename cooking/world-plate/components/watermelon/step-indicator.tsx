@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { m, AnimatePresence } from 'motion/react';
 import { useRef, useState } from 'react';
 
-export type Step = { id: string; label: string };
+export type Step = { id: string; label: string; /** Accessible name of the step's button; defaults to "Go to <label>". */ aria?: string };
 
 interface StepIndicatorProps {
   steps: Step[];
@@ -95,7 +95,7 @@ export const StepIndicator = ({ steps, current, onStepChange, className }: StepI
               buttonRefs.current[index] = el;
             }}
             type="button"
-            aria-label={`Go to ${step.label.toLowerCase()}`}
+            aria-label={step.aria ?? `Go to ${step.label.toLowerCase()}`}
             aria-current={index === current ? 'step' : undefined}
             onMouseEnter={() => handleShow(index)}
             onFocus={() => handleShow(index)}

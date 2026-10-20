@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, type CSSProperties } from "react";
 import { FlipFace, flipClass } from "@/components/motion/flip-face";
+import { T } from "@/components/i18n";
 import { ScrubWords } from "@/components/motion/scrub-words";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
@@ -181,16 +182,20 @@ export function DishStage({ href }: { href: string }) {
 
       <div className="relative z-10 -mt-[100svh]">
         <div className="container-page flex h-[100svh] flex-col items-center pt-28 text-center md:pt-32">
-          <p className="label-caps text-muted-foreground">World Plate · House masala</p>
-          <ScrubWords id="stage-title" text="Spice it up" className="text-display mt-3 max-w-[12ch]" />
+          <p className="label-caps text-muted-foreground">
+            <T en="World Plate · House masala" ja="World Plate · 特製マサラ" />
+          </p>
+          <ScrubWords id="stage-title" text="Spice it up" ja="スパイスで|もっと|おいしく" className="text-display mt-3 max-w-[12ch]" />
         </div>
         <div className="container-page flex h-[130svh] items-center">
-          <ScrubWords text="Every turn, more flavour" className="text-display max-w-[10ch]" />
+          <ScrubWords text="Every turn, more flavour" ja="ひとふりごとに、|香りが|広がる" className="text-display max-w-[10ch]" />
         </div>
         <div className="container-page flex h-[130svh] flex-col items-center justify-center gap-8 text-center">
-          <ScrubWords text="Open the jar tonight" className="text-display max-w-[12ch]" />
+          <ScrubWords text="Open the jar tonight" ja="今夜、|瓶を|開けよう" className="text-display max-w-[12ch]" />
           <Link href={href} data-accent="yellow" className={flipClass()}>
-            <FlipFace>Cook with it</FlipFace>
+            <FlipFace>
+              <T en="Cook with it" ja="これで作る" />
+            </FlipFace>
           </Link>
         </div>
       </div>

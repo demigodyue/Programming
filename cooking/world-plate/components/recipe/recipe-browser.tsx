@@ -4,26 +4,28 @@ import { Leaf, Search, X } from "lucide-react";
 import { m, AnimatePresence, useReducedMotion } from "motion/react";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { T } from "@/components/i18n";
 import { FlipFace, flipClass } from "@/components/motion/flip-face";
 import { RecipeCard } from "@/components/recipe/recipe-card";
 import { ContinuousTabs } from "@/components/watermelon/continuous-tabs";
 import { EmojiSpreeChips } from "@/components/watermelon/emoji-spree-choice-chips";
 import { FloatingInput } from "@/components/watermelon/floating-input";
 import type { RecipeCard as RecipeCardData } from "@/db/queries/recipes";
+import { useT } from "@/lib/lang";
 import { emptyFilters, filterRecipes, parseFilters, toQuery, type Filters } from "@/lib/recipe-filter";
 import { cn } from "@/lib/utils";
 
 const DIFFICULTY = [
-  { id: "", label: "Any" },
-  { id: "easy", label: "Easy" },
-  { id: "medium", label: "Medium" },
-  { id: "hard", label: "Challenging" },
+  { id: "", label: <T en="Any" ja="すべて" /> },
+  { id: "easy", label: <T en="Easy" ja="かんたん" /> },
+  { id: "medium", label: <T en="Medium" ja="ふつう" /> },
+  { id: "hard", label: <T en="Challenging" ja="本格派" /> },
 ];
 const TIME = [
-  { id: "", label: "Any time" },
-  { id: "under-30", label: "≤ 30 min" },
-  { id: "30-60", label: "30–60 min" },
-  { id: "over-60", label: "1 h +" },
+  { id: "", label: <T en="Any time" ja="時間指定なし" /> },
+  { id: "under-30", label: <T en="≤ 30 min" ja="30分以内" /> },
+  { id: "30-60", label: <T en="30–60 min" ja="30〜60分" /> },
+  { id: "over-60", label: <T en="1 h +" ja="1時間以上" /> },
 ];
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
@@ -44,9 +46,11 @@ export function RecipeBrowser({
   cuisines,
 }: {
   recipes: (RecipeCardData & { searchText: string })[];
-  cuisines: { id: string; label: string; emoji: string }[];
+  cuisines: { id: string; label: string; ja: string; emoji: string }[];
 }) {
   const reduce = useReducedMotion();
+  const t = useT();
+  const chips = useMemo(() => cuisines.map((c) => ({ id: c.id, emoji: c.emoji, label: <T en={c.label} ja={c.ja} /> })), [cuisines]);
   const [filters, setFilters] = useState<Filters>(emptyFilters);
   const lastWritten = useRef<string | null>(null);
   // Bumped when filters come from the URL (page load, footer links): the list is swapped in place
@@ -80,7 +84,7 @@ export function RecipeBrowser({
       <div className="space-y-5">
         <form role="search" onSubmit={(e) => e.preventDefault()} className="max-w-xl">
           <FloatingInput
-            label="Search dishes, ingredients or cuisines"
+            label={<T en="Search dishes, ingredients or cuisines" ja="料理名・材料・国で検索" />}
             icon={<Search className="size-5" strokeWidth={1.75} />}
             type="search"
             name="q"
@@ -93,8 +97,8 @@ export function RecipeBrowser({
         </form>
 
         <EmojiSpreeChips
-          label="Filter by cuisine"
-          items={cuisines}
+          label={t("Filter by cuisine", "国で絞り込む")}
+          items={chips}
           selected={filters.cuisine}
           onToggle={(id) =>
             apply({
@@ -106,12 +110,12 @@ export function RecipeBrowser({
 
         <div className="flex flex-wrap items-center gap-3">
           <ContinuousTabs
-            label="Difficulty"
+            label={t("Difficulty", "難しさ")}
             tabs={DIFFICULTY}
             value={filters.difficulty}
             onChange={(difficulty) => apply({ ...filters, difficulty })}
           />
-          <ContinuousTabs label="Total time" tabs={TIME} value={filters.time} onChange={(time) => apply({ ...filters, time })} />
+          <ContinuousTabs label={t("Total time", "合計時間")} tabs={TIME} value={filters.time} onChange={(time) => apply({ ...filters, time })} />
           <button
             type="button"
             aria-pressed={filters.vegetarian}
@@ -122,14 +126,25 @@ export function RecipeBrowser({
             )}
           >
             <Leaf className="size-4" strokeWidth={1.75} aria-hidden />
-            Vegetarian
+            <T en="Vegetarian" ja="ベジタリアン" />
           </button>
         </div>
       </div>
 
       <div className="mt-10 mb-6 flex min-h-9 items-center justify-between gap-4">
         <p aria-live="polite" className="text-muted-foreground">
-          <span className="text-foreground font-medium">{recipes.length}</span> {recipes.length === 1 ? "recipe" : "recipes"}
+          <T
+            en={
+              <>
+                <span className="text-foreground font-medium">{recipes.length}</span> {recipes.length === 1 ? "recipe" : "recipes"}
+              </>
+            }
+            ja={
+              <>
+                <span className="text-foreground font-medium">{recipes.length}</span>件のレシピ
+              </>
+            }
+          />
         </p>
         <AnimatePresence>
           {activeCount > 0 && (
@@ -143,7 +158,7 @@ export function RecipeBrowser({
               className="text-accent-ink hover-fine:bg-muted inline-flex min-h-9 items-center gap-1.5 rounded-full px-3 text-sm font-medium"
             >
               <X className="size-4" strokeWidth={1.75} aria-hidden />
-              Clear filters
+              <T en="Clear filters" ja="条件をクリア" />
             </m.button>
           )}
         </AnimatePresence>
@@ -152,10 +167,19 @@ export function RecipeBrowser({
       <div>
         {recipes.length === 0 ? (
           <div className="bg-card rounded-lg border px-6 py-20 text-center">
-            <p className="font-display text-[2.125rem] leading-tight">No dishes match those filters.</p>
-            <p className="text-muted-foreground mt-2">Try another cuisine, a longer cooking time, or clear the filters to see everything.</p>
+            <p className="font-display text-[2.125rem] leading-tight">
+              <T en="No dishes match those filters." ja="条件に合う料理がありません。" />
+            </p>
+            <p className="text-muted-foreground mt-2">
+              <T
+                en="Try another cuisine, a longer cooking time, or clear the filters to see everything."
+                ja="別の国や長めの調理時間を試すか、条件をクリアしてすべて表示してください。"
+              />
+            </p>
             <button type="button" onClick={clear} data-accent="mint" className={flipClass("solid", "mt-6")}>
-              <FlipFace>Show all recipes</FlipFace>
+              <FlipFace>
+                <T en="Show all recipes" ja="すべてのレシピを表示" />
+              </FlipFace>
             </button>
           </div>
         ) : (

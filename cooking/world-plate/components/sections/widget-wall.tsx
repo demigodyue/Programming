@@ -1,11 +1,11 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
+import { Minutes, T } from "@/components/i18n";
+import { LImage } from "@/components/i18n-image";
 import { ScrollMarquee } from "@/components/motion/scroll-marquee";
 import { SectionArt } from "@/components/section-art";
 import type { CuisineSummary } from "@/db/queries/cuisines";
 import type { RecipeCard } from "@/db/queries/recipes";
-import { formatMinutes } from "@/lib/scale";
 import { cn } from "@/lib/utils";
 
 function Widget({ className, children }: { className?: string; children: ReactNode }) {
@@ -18,11 +18,15 @@ function DishWidget({ recipe, className }: { recipe: RecipeCard; className?: str
     <Widget className={cn("tile-press", className)}>
       <Link href={`/recipes/${recipe.slug}`} data-cursor="View recipe" className="flex h-full flex-col overflow-hidden rounded-lg">
         <span className="bg-muted relative block min-h-32 flex-1 overflow-hidden">
-          <Image src={recipe.image} alt={recipe.imageAlt} fill sizes="(min-width: 768px) 25vw, 50vw" className="scroll-zoom object-cover" />
+          <LImage src={recipe.image} alt={recipe.imageAlt} altJa={recipe.ja.imageAlt} fill sizes="(min-width: 768px) 25vw, 50vw" className="scroll-zoom object-cover" />
         </span>
         <span className="flex items-end justify-between gap-3 p-4">
-          <span className="font-display text-lg leading-tight">{recipe.title}</span>
-          <span className="label-caps text-muted-foreground shrink-0">{formatMinutes(recipe.totalMinutes)}</span>
+          <span className="font-display text-lg leading-tight">
+            <T en={recipe.title} ja={recipe.ja.title} />
+          </span>
+          <span className="label-caps text-muted-foreground shrink-0">
+            <Minutes m={recipe.totalMinutes} />
+          </span>
         </span>
       </Link>
     </Widget>
@@ -60,7 +64,7 @@ export function WidgetWall({
   const maxCount = Math.max(...cuisines.map((cu) => cu.recipeCount), 1);
 
   return (
-    <section aria-label="A look inside the collection" className="room relative isolate z-10 overflow-hidden rounded-t-[28px] py-16 md:rounded-t-[40px] md:py-24">
+    <section aria-labelledby="wall-title" className="room relative isolate z-10 overflow-hidden rounded-t-[28px] py-16 md:rounded-t-[40px] md:py-24">
       <SectionArt offset={1800} />
       <div
         data-reveal="intro"
@@ -69,14 +73,16 @@ export function WidgetWall({
       >
         <Widget className="col-span-2 md:col-span-7">
           <div className="flex h-full flex-col justify-between gap-6 overflow-hidden p-5">
-            <span className="label-caps text-muted-foreground">{cuisines.length} kitchens</span>
-            <p className="font-display max-w-[22ch] text-[clamp(1.5rem,2.6vw,2.125rem)] leading-[1.1]">
-              Ramen to croissants, momo to tacos al pastor.
-            </p>
+            <span className="label-caps text-muted-foreground">
+              <T en={`${cuisines.length} kitchens`} ja={`${cuisines.length}の国の台所`} />
+            </span>
+            <h2 id="wall-title" className="font-display max-w-[22ch] text-[clamp(1.5rem,2.6vw,2.125rem)] leading-[1.1]">
+              <T en="Ramen to croissants, pho to paella." ja="ラーメンからクロワッサン、フォーからパエリアまで。" />
+            </h2>
             <ScrollMarquee speed={15} scrollSpeed={0} className="-mx-5">
               {cuisines.map((cu) => (
                 <span key={cu.slug} className="mr-2 rounded-full border px-3 py-1 text-xs whitespace-nowrap">
-                  {cu.name}
+                  <T en={cu.name} ja={cu.ja.name} />
                 </span>
               ))}
             </ScrollMarquee>
@@ -93,14 +99,23 @@ export function WidgetWall({
         {/* Average time with a sparkline. */}
         <Widget className="col-span-2 md:col-span-4">
           <div className="flex h-full flex-col justify-between gap-4 p-5">
-            <span className="label-caps text-muted-foreground">Average time to table</span>
+            <span className="label-caps text-muted-foreground">
+              <T en="Average time to table" ja="食卓までの平均時間" />
+            </span>
             <div className="flex items-end justify-between gap-4">
-              <span className="font-display text-4xl leading-none whitespace-nowrap">{formatMinutes(average)}</span>
+              <span className="font-display text-4xl leading-none whitespace-nowrap">
+                <Minutes m={average} />
+              </span>
               <svg viewBox="0 0 160 48" className="h-12 w-32 shrink-0 sm:w-40" aria-hidden>
                 <path d={linePath(sorted, 160, 44)} transform="translate(0 2)" fill="none" stroke="currentColor" strokeWidth="1.5" />
               </svg>
             </div>
-            <span className="text-muted-foreground text-xs">Across all {allMinutes.length} recipes, quickest to slowest</span>
+            <span className="text-muted-foreground text-xs">
+              <T
+                en={`Across all ${allMinutes.length} recipes, quickest to slowest`}
+                ja={`全${allMinutes.length}レシピを、早い順から遅い順に`}
+              />
+            </span>
           </div>
         </Widget>
 
@@ -109,7 +124,9 @@ export function WidgetWall({
         {/* Recipes per cuisine. */}
         <Widget className="col-span-1 md:col-span-3">
           <div className="flex h-full min-h-64 flex-col gap-4 p-5 md:min-h-72">
-            <span className="label-caps text-muted-foreground">Recipes per cuisine</span>
+            <span className="label-caps text-muted-foreground">
+              <T en="Recipes per cuisine" ja="国ごとのレシピ数" />
+            </span>
             <div className="flex flex-1 items-end gap-1.5">
               {cuisines.map((cu) => (
                 <span key={cu.slug} className="flex h-full flex-1 items-end" title={`${cu.name}: ${cu.recipeCount}`}>
@@ -129,17 +146,25 @@ export function WidgetWall({
         {quickest && (
           <Widget className="col-span-1 md:col-span-3">
             <Link href={`/recipes/${quickest.slug}`} className="group flex h-full min-h-64 flex-col justify-between gap-6 p-5 md:min-h-72">
-              <span className="label-caps text-muted-foreground">Quickest tonight</span>
+              <span className="label-caps text-muted-foreground">
+                <T en="Quickest tonight" ja="今夜いちばん早い一品" />
+              </span>
               <span>
-                <span className="font-display link-group text-2xl leading-tight">{quickest.title}</span>
+                <span className="font-display link-group text-2xl leading-tight">
+                  <T en={quickest.title} ja={quickest.ja.title} />
+                </span>
                 <span className="mt-3 flex flex-wrap gap-1.5">
-                  {[quickest.cuisineName, formatMinutes(quickest.totalMinutes), quickest.vegetarian ? "Vegetarian" : null]
-                    .filter(Boolean)
-                    .map((chip) => (
-                      <span key={chip} className="rounded-full border px-2.5 py-0.5 text-xs">
-                        {chip}
-                      </span>
-                    ))}
+                  <span className="rounded-full border px-2.5 py-0.5 text-xs">
+                    <T en={quickest.cuisineName} ja={quickest.ja.cuisineName} />
+                  </span>
+                  <span className="rounded-full border px-2.5 py-0.5 text-xs">
+                    <Minutes m={quickest.totalMinutes} />
+                  </span>
+                  {quickest.vegetarian && (
+                    <span className="rounded-full border px-2.5 py-0.5 text-xs">
+                      <T en="Vegetarian" ja="ベジタリアン" />
+                    </span>
+                  )}
                 </span>
               </span>
             </Link>

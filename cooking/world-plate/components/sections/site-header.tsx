@@ -4,15 +4,19 @@ import { Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { AccountButton } from "@/components/account/account-button";
+import { T } from "@/components/i18n";
+import { LangToggle } from "@/components/lang-toggle";
 import { LogoMark } from "@/components/logo";
 import { FlipFace, flipClass, type FlipAccent } from "@/components/motion/flip-face";
 import { ThemeIconToggle } from "@/components/theme-switch";
+import { useT } from "@/lib/lang";
 import { cn } from "@/lib/utils";
 
-const NAV: { href: string; label: string; accent: FlipAccent }[] = [
-  { href: "/recipes", label: "Recipes", accent: "yellow" },
-  { href: "/#cuisines", label: "Cuisines", accent: "orange" },
-  { href: "/favorites", label: "Favorites", accent: "mint" },
+const NAV: { href: string; label: string; ja: string; accent: FlipAccent }[] = [
+  { href: "/recipes", label: "Recipes", ja: "レシピ", accent: "yellow" },
+  { href: "/#cuisines", label: "Cuisines", ja: "料理の国", accent: "orange" },
+  { href: "/favorites", label: "Favorites", ja: "お気に入り", accent: "mint" },
 ];
 
 const MOBILE = "(max-width: 991px)";
@@ -24,7 +28,7 @@ function isActive(pathname: string, href: string) {
 
 /**
  * Slush's floating nav: a logo circle on the left; on the right a row of pill links, a plus button,
- * the theme circle and a dark "Search" pill. Every pill flips in 3D on hover.
+ * the language, account and theme circles and a dark "Search" pill. Every pill flips in 3D on hover.
  *
  * - The bar rides lower on the home page until you scroll 50px, then moves up (top, 0.6s elastic).
  * - Desktop: scrolling down flies the pills up out of view, first pill first (0.03s apart, 0.75s
@@ -36,6 +40,7 @@ function isActive(pathname: string, href: string) {
  */
 export function SiteHeader() {
   const pathname = usePathname();
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [pillsHidden, setPillsHidden] = useState(false);
@@ -91,10 +96,10 @@ export function SiteHeader() {
       data-home={pathname === "/" || undefined}
       data-scrolled={scrolled || undefined}
     >
-      <nav aria-label="Main" className="nav-intro container-page flex items-start justify-between gap-3">
+      <nav aria-label={t("Main", "メイン")} className="nav-intro container-page flex items-start justify-between gap-3">
         <Link
           href="/"
-          aria-label="World Plate home"
+          aria-label={t("World Plate home", "World Plate ホーム")}
           onClick={(e) => {
             // Already home: a link to the same page would do nothing, so glide back to the top instead.
             if (pathname !== "/") return;
@@ -128,19 +133,24 @@ export function SiteHeader() {
                   aria-current={isActive(pathname, item.href) ? "page" : undefined}
                   className={flipClass("outline", "text-[0.8125rem]")}
                 >
-                  <FlipFace className="min-h-11">{item.label}</FlipFace>
+                  <FlipFace className="min-h-11">
+                    <T en={item.label} ja={item.ja} />
+                  </FlipFace>
                 </Link>
               </li>
             ))}
           </ul>
 
-          <ThemeIconToggle className="nav-circle bg-dot text-dot-foreground size-[50px]" />
+          <LangToggle className="nav-circle nav-circle--text bg-dot text-dot-foreground size-[50px]" />
+          <AccountButton className="nav-circle nav-circle--text bg-dot text-dot-foreground size-[50px]" />
+          {/* Phones keep the bar on one line without it; the footer has the full theme switch. */}
+          <ThemeIconToggle className="nav-circle bg-dot text-dot-foreground size-[50px] max-sm:hidden" />
 
           <button
             type="button"
             aria-expanded={expanded}
             aria-controls="site-nav"
-            aria-label={mobile ? (open ? "Close menu" : "Open menu") : "Show navigation"}
+            aria-label={mobile ? (open ? t("Close menu", "メニューを閉じる") : t("Open menu", "メニューを開く")) : t("Show navigation", "ナビゲーションを表示")}
             data-open={(mobile && open) || undefined}
             onMouseEnter={() => !window.matchMedia(MOBILE).matches && setPillsHidden(false)}
             onClick={onPlus}
@@ -155,7 +165,7 @@ export function SiteHeader() {
           <Link href="/recipes" data-accent="yellow" className={cn(flipClass("solid"), "text-[0.8125rem]")}>
             <FlipFace>
               <Search className="size-4" strokeWidth={1.75} aria-hidden />
-              Search
+              <T en="Search" ja="検索" />
             </FlipFace>
           </Link>
         </div>

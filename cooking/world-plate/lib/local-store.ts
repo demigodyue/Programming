@@ -4,7 +4,9 @@ import { useSyncExternalStore } from "react";
 
 /**
  * Favorites and ratings live in this browser's localStorage — the site is a static export
- * (served by Live Server / any static host), so there is no server to keep them.
+ * (served by Live Server / any static host), so there is no server to keep them. When someone signs in, the account
+ * store (lib/account/store.ts) syncs this list with their account: it merges it in at sign-in, writes every change
+ * back, and clears it at sign-out.
  * Every read and write is wrapped: storage can be missing (private mode, blocked site data).
  */
 
@@ -63,6 +65,21 @@ export function useFavorites(): string[] | null {
     () => snapshot<string[]>(FAVORITES_KEY, EMPTY_LIST),
     () => null,
   );
+}
+
+/** The saved list right now, for the account sync. */
+export function readFavorites(): string[] {
+  return read<string[]>(FAVORITES_KEY, []);
+}
+
+/** Replace the whole list (the account's copy arriving at sign-in, or empty at sign-out). */
+export function replaceFavorites(slugs: string[]) {
+  write(FAVORITES_KEY, slugs);
+}
+
+/** Calls back after any change to favourites or ratings, from this tab or another. */
+export function onStoreChange(callback: () => void) {
+  return subscribe(callback);
 }
 
 export function setFavorite(slug: string, saved: boolean) {

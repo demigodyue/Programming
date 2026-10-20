@@ -47,3 +47,29 @@ export const seedCuisineSchema = z.object({
 export type SeedIngredient = z.input<typeof seedIngredientSchema>;
 export type SeedRecipe = z.input<typeof seedRecipeSchema>;
 export type SeedCuisine = z.input<typeof seedCuisineSchema>;
+
+/**
+ * A Japanese ingredient line, matched by position to the English one: just the name, or
+ * [name, note?, counter?]. The counter follows a unitless amount (卵 4個, にんにく 2片); it defaults to 個.
+ */
+export type IngredientJa = string | [item: string, note?: string, counter?: string];
+
+/** The Japanese edition of a recipe (data/recipes.ja.ts). Lists line up one-to-one with the English seed. */
+export type RecipeJa = {
+  title: string;
+  origin: string;
+  description: string;
+  imageAlt: string;
+  /** English section heading → Japanese. */
+  sections?: Record<string, string>;
+  ingredients: IngredientJa[];
+  steps: string[];
+  story: string;
+};
+
+export type CuisineJa = {
+  name: string;
+  country: string;
+  intro: string;
+  imageAlt: string;
+};

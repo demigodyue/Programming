@@ -1,6 +1,6 @@
 # World Plate
 
-An animation-rich recipe site with famous dishes from ten cuisines, each with a full recipe: a servings scaler, an ingredient checklist, a step-by-step Cook Mode, favorites and star ratings.
+An animation-rich recipe site with 35 famous dishes from twelve cuisines, each with a full recipe: a servings scaler, an animated ingredient checklist that fills a pot, a method with kitchen timers, a step-by-step Cook Mode, favorites and star ratings. The whole site switches between English and Japanese with one button, and visitors can create an account to keep their favorites on every device.
 
 Built with Next.js 16 (App Router), TypeScript, Tailwind CSS v4, shadcn/ui, [Watermelon UI](https://ui.watermelon.sh), Motion, Lenis, SQLite + Drizzle ORM and Zod.
 
@@ -23,6 +23,24 @@ Production build:
 npm run build   # also migrates and seeds
 npm start
 ```
+
+## English and Japanese
+
+The round **あ / EN** button in the header switches every word on the site instantly, without reloading: menus, headings and buttons, all 35 recipes (titles, descriptions, ingredients, steps, stories, photo descriptions) and the cuisines. The choice is remembered, and a first visit from a Japanese browser starts in Japanese. Quantities are written the Japanese way (小さじ2, 大さじ1½, 250g, 卵 4個). Japanese headlines use Dela Gothic One and body text uses Noto Sans JP; both load only when Japanese is shown. Search works in Japanese too (ラーメン, 鶏肉…).
+
+## Accounts (Firebase)
+
+Visitors can create an account (name, email, password), sign in later and see their saved recipes on any device. Favorites saved before signing in are added to the account. Signing out removes them from that browser; they stay in the account. There is also a "Forgot your password?" email reset.
+
+Accounts use Firebase (Authentication + Firestore), called straight from the browser, so the site stays a static export. To switch them on:
+
+1. Create a free project at https://console.firebase.google.com.
+2. **Authentication → Sign-in method:** enable **Email/Password**.
+3. **Firestore Database → Create database** (production mode), then **Rules:** paste the contents of `firestore.rules` and publish. They let each account read and write only its own `users/{uid}` document.
+4. **Project settings → Your apps → Web (`</>`):** register an app and copy its config into `.env.local` (the `NEXT_PUBLIC_FIREBASE_*` keys listed in `.env.example`).
+5. `npm run build`. The web config is public by design; the security rules protect the data.
+
+Without the config the site works as before: favorites stay in the browser, and the account page says accounts aren't switched on yet. The Firebase SDK is only downloaded on the account page, or for visitors who were signed in last time.
 
 ## Commands
 
@@ -58,10 +76,12 @@ components/ui/           shadcn primitives
 components/watermelon/   Watermelon UI components (adapted — see below)
 components/sections/     page sections: header, hero, carousel, cuisine grid, footer…
 components/motion/       Slush motion: PageSwing, ScrollMotion, SlantText, HeadingReveal, CardReveal, LetterRoll, FlipFace, ScrollMarquee, Cursor; Lenis + Motion providers
-components/recipe/       recipe card, browser/filters, kitchen (servings + checklist + steps), Cook Mode, actions
+components/recipe/       recipe card, browser/filters, kitchen (servings + pot checklist + steps + timers), step icons, Cook Mode, actions
+components/account/      account page panel, header account button, favorites note, account boot
+components/i18n.tsx      <T en ja> (both languages in the page, CSS shows one); i18n-image.tsx (bilingual alt text)
 db/                      schema, client, migrations, typed queries, idempotent seed
-data/                    seed content (15 recipes, 10 cuisines) + Zod schemas
-lib/                     scaling/formatting, validation, session, rate limit, JSON-LD, site config
+data/                    seed content (35 recipes, 12 cuisines), their Japanese editions (*.ja.ts) + Zod schemas
+lib/                     scaling/formatting (English + Japanese), language (lang.ts), accounts (account/), step parsing, JSON-LD, site config
 tests/unit, tests/e2e    Vitest and Playwright
 ```
 
@@ -98,8 +118,9 @@ All motion is modelled on [slush.app](https://slush.app) (the "Slush" style on R
 - **After the About section:** About opens with a "kitchen atlas" pitch, numbers that count up and three endlessly scrolling columns of dish photos. Every section after it has its own scroll effect: Trending dishes opens with a giant headline that slides left to right (an outlined copy slides the other way) while its rows rise out of masks and its photo zooms out; Explore by cuisine starts as a leaning stack of cuisine cards that deals out into a grid as you scroll; Quick meals starts as one full-screen dish photo that shrinks into a grid of four as the others rise in beside it; and the closing "Cook tonight" panel turns on an illustrated stove as you scroll — the knob turns, the flame lights and the pan starts tossing vegetables while steam rises.
 - **Hungry Tiger scroll:** section titles and the about paragraph fill word by word as you scroll (20% → full, scrubbed from "top 90%" to "top center", as on eathungrytiger.com). On the home page a World Plate "House Masala" jar (built in CSS 3D) stays pinned in the middle of the screen and tumbles as you scroll — lid, back label, base, upright again — while three headlines pass behind it; it rises, tilts and finally shrinks away on the curve recorded from their jar.
 - **Floating photos and scroll extras:** dish photos float around the hero all the time, follow the mouse at different depths and rise at different speeds as you scroll. A tomato-red progress bar tracks the page, card photos settle inside their frames while scrolling, and the dish marquee runs as two tilted bands.
+- **Recipe kitchen:** a cartoon pot sits at the top of the ingredient list. Tick an ingredient and its name flies in an arc into the pot, which bobs and splashes as the soup level rises. The pot starts bubbling when half full and steams when everything's in, and a "Start Cook Mode" button appears. The ingredient rows slide in one after another, and each method step rises out of a blur as you reach it. The step you're reading lights up and plays a small drawing of what to do: bubbles rise from a pot, oil spits in a pan, a knife chops, a whisk spins, an oven glows, a clock hand sweeps or a cloche lifts. The rail between step numbers fills in as you read on. Every time a step mentions ("8–10 minutes", "1½ hours") becomes a timer button with a draining ring that chimes and buzzes when done. Cook Mode shows the same drawing, large, with big timer buttons, and a running timer carries over between the page and Cook Mode.
 - **Reduced motion:** no 3D, no travel, no parallax or marquee drift — opacity fades only; the page transition becomes a crossfade. Lenis isn't loaded.
-- **Performance:** Motion is loaded via `LazyMotion` and `m.*` components, with its features fetched asynchronously. Lenis and Cook Mode are loaded on demand. Anton (one weight) is preloaded because the home page's largest element is the Anton wordmark; Barlow Condensed is not. The floats and scroll-linked effects are CSS animations, off the main thread.
+- **Performance:** Motion is loaded via `LazyMotion` and `m.*` components, with its features fetched asynchronously. Lenis and Cook Mode are loaded on demand. Anton (one weight) is preloaded because the home page's largest element is the Anton wordmark. The Japanese fonts are not preloaded and are split by character range, so English visitors never download them. The floats and scroll-linked effects are CSS animations, off the main thread.
 
 ## Look
 
@@ -107,10 +128,10 @@ The Agence Foudre magazine style (from Refero): a butter-yellow canvas, huge con
 
 ## Status (last verified)
 
-- Lint, typecheck, 41 unit tests and the 6 E2E tests (desktop + mobile) pass; the production build succeeds (2026-10-19, after the Cult Eats restyle).
+- Lint, typecheck, 106 unit tests and 18 E2E runs (9 tests × desktop + mobile) pass, and the production build succeeds (2026-10-20, after adding the 20 new dishes, Japanese and accounts). The account flow is tested against a localStorage stand-in for Firebase (`lib/account/demo-backend.ts`); real Firebase sign-in needs the project config above.
 - Lighthouse scores below were measured before the restyle and haven't been re-run since.
 - Lighthouse, mobile preset, against a local production server: **Accessibility 100, Best Practices 100, SEO 100** on every page. **Performance** is 91 on home, 92 on recipes, 93–94 on cuisine pages and 93 on favorites. Recipe detail pages score **88–90**, just under the 90 target. That number is Lighthouse's simulated slow-4G estimate for the large hero photo; the real unthrottled LCP is about 0.1 s.
 - `npm audit --omit=dev`: 0 vulnerabilities. The full audit lists 13 issues, all in dev tooling (shadcn CLI, eslint-config-next, drizzle-kit). The high-severity `braces` advisory has no patched release yet.
 - Security review: no exploitable issues found. See CLAUDE.md for the security rules.
 
-Food photos come from [Unsplash](https://unsplash.com).
+Food photos come from [Unsplash](https://unsplash.com) (free licence), each chosen from a contact sheet of search results.

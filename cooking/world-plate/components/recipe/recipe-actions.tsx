@@ -3,6 +3,8 @@
 import { Heart, Star } from "lucide-react";
 import { m, AnimatePresence, useAnimate, useReducedMotion } from "motion/react";
 import { useState } from "react";
+import { T } from "@/components/i18n";
+import { useT } from "@/lib/lang";
 import { setFavorite, setRating, useFavorites, useRating } from "@/lib/local-store";
 import { cn } from "@/lib/utils";
 
@@ -60,7 +62,7 @@ export function FavoriteButton({ slug }: { slug: string }) {
             )}
           </AnimatePresence>
         </span>
-        {saved ? "Saved" : "Save recipe"}
+        {saved ? <T en="Saved" ja="保存済み" /> : <T en="Save recipe" ja="レシピを保存" />}
       </button>
     </div>
   );
@@ -71,13 +73,14 @@ export function StarRating({ slug }: { slug: string }) {
   const [hover, setHover] = useState<number | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const reduce = useReducedMotion();
+  const t = useT();
   const stored = useRating(slug);
   const rating = stored ?? null;
   const shown = hover ?? rating ?? 0;
 
   const rate = (stars: number) => {
     setRating(slug, stars);
-    setMessage(`Thanks — you rated this ${stars} out of 5.`);
+    setMessage(t(`Thanks — you rated this ${stars} out of 5.`, `ありがとうございます。5段階中${stars}の評価をつけました。`));
   };
 
   return (
@@ -85,7 +88,7 @@ export function StarRating({ slug }: { slug: string }) {
       <div className="flex flex-wrap items-center gap-3">
         <div
           role="radiogroup"
-          aria-label="Rate this recipe"
+          aria-label={t("Rate this recipe", "このレシピを評価")}
           className="flex"
           onMouseLeave={() => setHover(null)}
           onKeyDown={(e) => {
@@ -106,7 +109,7 @@ export function StarRating({ slug }: { slug: string }) {
               type="button"
               role="radio"
               aria-checked={rating === n}
-              aria-label={`${n} ${n === 1 ? "star" : "stars"}`}
+              aria-label={t(`${n} ${n === 1 ? "star" : "stars"}`, `星${n}つ`)}
               tabIndex={rating ? (rating === n ? 0 : -1) : n === 1 ? 0 : -1}
               disabled={stored === undefined}
               onMouseEnter={(e) => window.matchMedia("(hover: hover)").matches && !e.currentTarget.disabled && setHover(n)}
@@ -129,10 +132,10 @@ export function StarRating({ slug }: { slug: string }) {
         <p className="text-muted-foreground text-sm">
           {rating ? (
             <>
-              Your rating: <span className="text-foreground font-medium">{rating} / 5</span>
+              <T en="Your rating:" ja="あなたの評価：" /> <span className="text-foreground font-medium">{rating} / 5</span>
             </>
           ) : (
-            "Tap a star to rate it."
+            <T en="Tap a star to rate it." ja="星をタップして評価" />
           )}
         </p>
       </div>

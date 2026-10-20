@@ -1,6 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import { T } from "@/components/i18n";
+import { LImage } from "@/components/i18n-image";
 import { FlipFace, flipClass, TextLinkLine } from "@/components/motion/flip-face";
 import { LetterRoll } from "@/components/motion/letter-roll";
 import type { CuisineSummary } from "@/db/queries/cuisines";
@@ -64,16 +65,17 @@ export function Hero({
                   style={{ rotate: p.tilt, "--float-dur": p.dur, "--float-delay": p.delay, "--float-y": "12px", "--float-r": "3deg" } as CSSProperties}
                 >
                   <span className="relative block size-full">
-                    <Image
+                    <LImage
                       src={r.image}
                       alt={r.imageAlt}
+                      altJa={r.ja.imageAlt}
                       fill
                       sizes="224px"
                       className="group-hover-fine:scale-105 object-cover saturate-150 transition-[scale] duration-300"
                     />
                   </span>
                   <span className={`label-caps absolute ${p.label} bg-card text-card-foreground rounded-full px-3.5 py-1 text-xs whitespace-nowrap`}>
-                    {r.cuisineName} ▸
+                    <T en={r.cuisineName} ja={r.ja.cuisineName} /> ▸
                   </span>
                 </Link>
               </div>
@@ -83,36 +85,62 @@ export function Hero({
 
         <div className="hero-content relative z-20 flex flex-1 flex-col">
           <div className="container-page label-caps text-muted-foreground flex justify-between pt-28">
-            <span className="load-fade">A kitchen atlas</span>
-            <span className="load-fade">Recipes and their stories</span>
+            <span className="load-fade">
+              <T en="A kitchen atlas" ja="キッチンの世界地図" />
+            </span>
+            <span className="load-fade">
+              <T en="Recipes and their stories" ja="レシピと、その物語" />
+            </span>
           </div>
 
           <div className="hero-exit container-page flex flex-1 flex-col items-center justify-center py-14 text-center">
             <h1 id="hero-title" className="max-w-[16ch] text-[clamp(2.4rem,6vw,3.25rem)] leading-none">
-              <span className="home-sub" style={{ "--i": 0 } as CSSProperties}>
-                Cook the dishes
-              </span>{" "}
-              <span className="home-sub" style={{ "--i": 1 } as CSSProperties}>
-                <em className="font-normal">the</em> world is proud of.
-              </span>
+              <T
+                en={
+                  <>
+                    <span className="home-sub" style={{ "--i": 0 } as CSSProperties}>
+                      Cook the dishes
+                    </span>{" "}
+                    <span className="home-sub" style={{ "--i": 1 } as CSSProperties}>
+                      <em className="font-normal">the</em> world is proud of.
+                    </span>
+                  </>
+                }
+                ja={
+                  <>
+                    <span className="home-sub" style={{ "--i": 0 } as CSSProperties}>
+                      世界が誇る料理を、
+                    </span>
+                    <span className="home-sub" style={{ "--i": 1 } as CSSProperties}>
+                      <em className="font-normal">あなた</em>の台所で。
+                    </span>
+                  </>
+                }
+              />
             </h1>
             <dl className="load-stagger mt-7 flex items-center gap-7 text-base font-medium uppercase" style={{ "--i": 0 } as CSSProperties}>
               <div className="flex gap-1.5">
-                <dt>Recipes:</dt>
+                <dt>
+                  <T en="Recipes:" ja="レシピ：" />
+                </dt>
                 <dd>{recipeCount}</dd>
               </div>
               <span aria-hidden className="load-pop hex-outline" />
               <div className="flex gap-1.5">
-                <dt>Cuisines:</dt>
+                <dt>
+                  <T en="Cuisines:" ja="料理の国：" />
+                </dt>
                 <dd>{cuisineCount}</dd>
               </div>
             </dl>
             <div className="mt-7 flex flex-wrap items-center justify-center gap-5">
               <Link href="/recipes" data-accent="yellow" className={flipClass("solid", "load-stagger")} style={{ "--i": 1 } as CSSProperties}>
-                <FlipFace>Browse recipes</FlipFace>
+                <FlipFace>
+                  <T en="Browse recipes" ja="レシピを見る" />
+                </FlipFace>
               </Link>
               <Link href="#cuisines" className="load-stagger text-link py-3 text-sm" style={{ "--i": 2 } as CSSProperties}>
-                Pick a cuisine
+                <T en="Pick a cuisine" ja="国から選ぶ" />
                 <TextLinkLine />
               </Link>
             </div>

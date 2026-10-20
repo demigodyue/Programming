@@ -9,24 +9,25 @@ import { CardReveal } from "@/components/motion/card-reveal";
 import { SectionArt } from "@/components/section-art";
 
 export interface FooterLink {
-  label: string;
+  label: ReactNode;
   href: string;
 }
 
 export interface FooterLinkGroup {
-  title: string;
+  title: ReactNode;
   links: FooterLink[];
 }
 
 export interface Footer1Props {
   logo: ReactNode;
-  description: string;
+  description: ReactNode;
   aside?: ReactNode;
   linkGroups: FooterLinkGroup[];
-  copyright: string;
+  copyright: ReactNode;
+  credit: ReactNode;
 }
 
-export function Footer1({ logo, description, aside, linkGroups, copyright }: Footer1Props) {
+export function Footer1({ logo, description, aside, linkGroups, copyright, credit }: Footer1Props) {
   return (
     <footer className="bg-chalk relative isolate w-full overflow-hidden border-t">
       <SectionArt offset={3000} />
@@ -39,8 +40,8 @@ export function Footer1({ logo, description, aside, linkGroups, copyright }: Foo
           </div>
 
           <CardReveal as="div" className="grid flex-1 grid-cols-2 gap-8 sm:grid-cols-3 xl:gap-8">
-            {linkGroups.map((group) => (
-              <div key={group.title} className="space-y-5">
+            {linkGroups.map((group, gi) => (
+              <div key={gi} className="space-y-5">
                 <h2 className="label-caps text-muted-foreground">{group.title}</h2>
                 <ul className="space-y-3">
                   {group.links.map((link) => (
@@ -61,12 +62,7 @@ export function Footer1({ logo, description, aside, linkGroups, copyright }: Foo
 
         <div className="rule-draw mt-14 flex flex-col items-center justify-between gap-3 pt-8 sm:flex-row">
           <p className="text-muted-foreground text-xs">{copyright}</p>
-          <p className="text-muted-foreground text-xs">
-            Photos from{" "}
-            <a href="https://unsplash.com" className="hover-fine:text-foreground underline underline-offset-2">
-              Unsplash
-            </a>
-          </p>
+          <p className="text-muted-foreground text-xs">{credit}</p>
         </div>
       </div>
       <p

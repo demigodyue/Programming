@@ -14,7 +14,10 @@ export interface StepperProps {
   min?: number;
   max?: number;
   onChange: (val: number) => void;
-  label: string;
+  label: React.ReactNode;
+  /** Names for the − and + buttons. */
+  fewer?: string;
+  more?: string;
   unit?: (n: number) => string;
 }
 
@@ -24,7 +27,7 @@ const digitVariants = {
   exit: (dir: number) => ({ y: dir > 0 ? -18 : 18, scale: 0.6, opacity: 0 }),
 };
 
-export function Stepper({ value, min = 1, max = 99, onChange, label, unit }: StepperProps) {
+export function Stepper({ value, min = 1, max = 99, onChange, label, fewer = 'Fewer', more = 'More', unit }: StepperProps) {
   const [direction, setDirection] = React.useState(0);
   const digits = value.toString().split('');
   const labelId = React.useId();
@@ -51,7 +54,7 @@ export function Stepper({ value, min = 1, max = 99, onChange, label, unit }: Ste
           transition={{ type: 'spring', stiffness: 400, damping: 22 }}
           onClick={() => step(-1)}
           disabled={value <= min}
-          aria-label={`Fewer ${label.toLowerCase()}`}
+          aria-label={fewer}
           className={buttonClass}
         >
           <Minus className="size-4" strokeWidth={2} aria-hidden />
@@ -87,7 +90,7 @@ export function Stepper({ value, min = 1, max = 99, onChange, label, unit }: Ste
           transition={{ type: 'spring', stiffness: 400, damping: 22 }}
           onClick={() => step(1)}
           disabled={value >= max}
-          aria-label={`More ${label.toLowerCase()}`}
+          aria-label={more}
           className={buttonClass}
         >
           <Plus className="size-4" strokeWidth={2} aria-hidden />

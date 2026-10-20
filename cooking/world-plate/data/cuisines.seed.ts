@@ -104,4 +104,24 @@ export const cuisinesSeed: SeedCuisine[] = [
     image: u("1547058881-aa0edd92aab3"),
     imageAlt: "Falafel balls in a bowl with tomatoes and fresh greens",
   },
+  {
+    slug: "vietnamese",
+    name: "Vietnamese",
+    country: "Vietnam",
+    emoji: "🍜",
+    intro:
+      "Vietnamese food is fresh and fragrant: clear, slow-simmered broths, rice noodles and rice paper, fish sauce and lime, and a basket of raw herbs on every table so each diner seasons their own bowl.",
+    image: u("1533787761082-492a5b83e614"),
+    imageAlt: "Bowl of pho on a wooden table with fresh herbs, bean sprouts and sauces",
+  },
+  {
+    slug: "spanish",
+    name: "Spanish",
+    country: "Spain",
+    emoji: "🥘",
+    intro:
+      "Spanish cooking is built on olive oil, garlic, smoked pimentón and saffron, and on eating together — tapas at the bar, paella from the pan in the middle of the table, churros at dawn.",
+    image: u("1694685367640-05d6624e57f1"),
+    imageAlt: "Large seafood paella with mussels and prawns cooking over an open fire",
+  },
 ];

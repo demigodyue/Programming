@@ -4,9 +4,9 @@ import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, type CSSProperties } from "react";
+import { Minutes, T } from "@/components/i18n";
 import { SlideBand } from "@/components/motion/slide-band";
 import type { RecipeCard } from "@/db/queries/recipes";
-import { formatMinutes } from "@/lib/scale";
 
 /**
  * Trending dishes as a big numbered list beside one large photo, under a sliding headline band. Scrolled in, each
@@ -20,15 +20,19 @@ export function TrendingPanel({ recipes }: { recipes: RecipeCard[] }) {
 
   return (
     <section aria-labelledby="trending-title" className="flex flex-col justify-center overflow-x-clip pb-24 lg:pb-32">
-      <SlideBand text="Trending this week" />
+      <SlideBand text="Trending this week" ja="今週の人気" />
       <div className="container-page grid items-center gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
         <div>
           <div className="label-caps text-muted-foreground flex justify-between border-b pb-3">
-            <span>01 · This week</span>
-            <span>Trending</span>
+            <span>
+              <T en="01 · This week" ja="01 · 今週" />
+            </span>
+            <span>
+              <T en="Trending" ja="人気" />
+            </span>
           </div>
           <h2 id="trending-title" className="sr-only">
-            Trending dishes
+            <T en="Trending dishes" ja="人気の料理" />
           </h2>
           <ol data-progress data-progress-start="top 92%" data-progress-end="top 30%" className="trend-rows mt-6">
             {rows.map((r, i) => (
@@ -41,9 +45,11 @@ export function TrendingPanel({ recipes }: { recipes: RecipeCard[] }) {
                   className="trend-row group flex items-center gap-5 py-3.5"
                 >
                   <span className="label-caps text-muted-foreground w-8 shrink-0">{String(i + 1).padStart(2, "0")}</span>
-                  <span className="font-display trend-row__title flex-1 text-[clamp(1.75rem,3vw,2.75rem)] leading-none uppercase">{r.title}</span>
+                  <span className="font-display trend-row__title flex-1 text-[clamp(1.75rem,3vw,2.75rem)] leading-none uppercase">
+                    <T en={r.title} ja={r.ja.title} />
+                  </span>
                   <span className="label-caps text-muted-foreground hidden shrink-0 sm:block">
-                    {r.cuisineName} · {formatMinutes(r.totalMinutes)}
+                    <T en={r.cuisineName} ja={r.ja.cuisineName} /> · <Minutes m={r.totalMinutes} />
                   </span>
                   <ArrowUpRight aria-hidden strokeWidth={1.5} className="trend-row__arrow size-6 shrink-0" />
                 </Link>
@@ -64,7 +70,7 @@ export function TrendingPanel({ recipes }: { recipes: RecipeCard[] }) {
             ))}
           </span>
           <span className="bg-card text-card-foreground label-caps absolute bottom-4 left-4 rounded-full px-3.5 py-1.5">
-            {rows[active]?.cuisineName}
+            {rows[active] && <T en={rows[active].cuisineName} ja={rows[active].ja.cuisineName} />}
           </span>
         </div>
       </div>

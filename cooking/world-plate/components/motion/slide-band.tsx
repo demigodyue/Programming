@@ -1,5 +1,6 @@
 import { Flame } from "lucide-react";
 import { Fragment } from "react";
+import { T } from "@/components/i18n";
 import { cn } from "@/lib/utils";
 
 /**
@@ -8,12 +9,14 @@ import { cn } from "@/lib/utils";
  * data-parallax-axis="x", xPercent of the line's own width) over the band's whole pass through the viewport.
  * Decorative (the section keeps its real heading). Reduced motion: it stands still.
  */
-export function SlideBand({ text, className }: { text: string; className?: string }) {
+export function SlideBand({ text, ja, className }: { text: string; ja: string; className?: string }) {
   const run = (key: string) => (
     <>
       {[0, 1, 2, 3].map((i) => (
         <Fragment key={`${key}${i}`}>
-          <span>{text}</span>
+          <span>
+            <T en={text} ja={ja} />
+          </span>
           <Flame aria-hidden strokeWidth={1.5} className="slide-band__mark" />
         </Fragment>
       ))}

@@ -22,9 +22,10 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-anton), Impact, "Arial Narrow", sans-serif;
-  --font-ui: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  /* Japanese falls through to Dela Gothic One under Anton and Noto Sans JP under Inter (app/layout.tsx). */
+  --font-sans: var(--font-inter), var(--font-jp), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-anton), var(--font-jp-display), Impact, "Arial Narrow", sans-serif;
+  --font-ui: var(--font-inter), var(--font-jp), ui-sans-serif, system-ui, sans-serif;
   --font-heading: var(--font-display);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   --color-ring: var(--ring);
@@ -181,6 +182,27 @@
   --ring: var(--room-foreground);
   background-color: var(--background);
   color: var(--foreground);
+}
+
+/* ---------- Language ----------
+   Every page carries English and Japanese side by side (<T>, components/i18n.tsx); <html data-lang> picks one.
+   Unlayered and !important so no component style can show the hidden language. The shown one is display:contents,
+   so its wrapper never changes the layout (a flex or grid parent sees the children directly). */
+[data-l] {
+  display: contents;
+}
+:root:not([data-lang="ja"]) [data-l="ja"],
+:root[data-lang="ja"] [data-l="en"] {
+  display: none !important;
+}
+/* Japanese lines break at phrase boundaries where the browser supports it. */
+/* Cuisine names run up to six wide characters ("イタリア料理"): size them to fit the card. */
+:root[data-lang="ja"] .cuisine-card__name {
+  font-size: min(1.2rem, calc(1.15vw + 0.45rem));
+}
+:root[data-lang="ja"] body {
+  line-break: strict;
+  word-break: auto-phrase;
 }
 
 @layer base {
@@ -950,6 +972,10 @@
     }
     .nav-logo:hover {
       transform: rotate(360deg);
+    }
+    /* Letters (あ / EN, the account initial) would read sideways after a quarter turn: these just swell. */
+    .nav-circle--text:hover {
+      transform: scale(1.08);
     }
     .nav-menu:hover .nav-menu__h {
       transform: scaleX(0);
@@ -1846,7 +1872,7 @@
   }
   @media (width >= 64rem) {
     .cuisine-stack__grid {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(6, minmax(0, 1fr));
       gap: 1rem;
     }
   }
@@ -2079,10 +2105,12 @@
   .cuisine-stack__grid {
     flex: 1;
     min-height: 0;
-    grid-template-rows: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(4, minmax(0, 1fr));
   }
   @media (width >= 64rem) {
     .cuisine-stack__grid {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
       grid-template-rows: repeat(2, minmax(0, 1fr));
     }
   }
@@ -2091,9 +2119,10 @@
     aspect-ratio: auto;
     box-shadow: 0 calc((1 - var(--o)) * 18px) calc((1 - var(--o)) * 40px) rgb(0 0 0 / calc((1 - var(--o)) * 0.3));
   }
-  /* --o: this card's way out of the pile (top card first); --dx/--dy: the pile centre from its slot. */
+  /* --o: this card's way out of the pile (top card first, the deal spread over 0.06–0.96 of the scroll whatever
+     the number of cards --n); --dx/--dy: the pile centre from its slot. */
   .cuisine-stack__slot {
-    --o: clamp(0, (var(--p, 1) - 0.06 - var(--k, 0) * 0.065) / 0.3, 1);
+    --o: clamp(0, (var(--p, 1) - 0.06 - var(--k, 0) * 0.6 / max(var(--n, 12) - 1, 1)) / 0.3, 1);
     transform: translate(calc(var(--dx, 0px) * (1 - var(--o))), calc((var(--dy, 0px) + var(--k, 0) * 4px) * (1 - var(--o))))
       rotate(calc(var(--t, 0deg) * (1 - var(--o))));
   }
@@ -2344,5 +2373,308 @@
   }
   .strike::after {
     transition-duration: 0.01ms;
+  }
+}
+
+/* ---------- Recipe kitchen (components/recipe/recipe-kitchen.tsx, step-icon.tsx, step-timer.tsx) ----------
+   Ingredient rows slide in one after another; each method step rises out of a blur as you reach it; the rail
+   between the step numbers fills link by link as you read on; the mise-en-place pot fills as ingredients are ticked off. */
+@keyframes wp-row-in {
+  from {
+    opacity: 0;
+    transform: translateX(-1.25em);
+  }
+}
+@keyframes wp-step-in {
+  from {
+    opacity: 0;
+    transform: translateY(2.5em) scale(0.97);
+    filter: blur(6px);
+  }
+}
+@keyframes wp-wave {
+  to {
+    transform: translateX(-20px);
+  }
+}
+@keyframes wp-bubble {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.6);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-34px) scale(1.1);
+  }
+}
+@keyframes wp-steam {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scaleY(0.8);
+  }
+  40% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px) scaleY(1.15);
+  }
+}
+@keyframes wp-spit {
+  0% {
+    opacity: 0;
+    transform: translate(0, 6px);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--sx, 2px), -10px);
+  }
+}
+@keyframes wp-hop {
+  to {
+    transform: translateY(-3px);
+  }
+}
+@keyframes wp-flicker {
+  50% {
+    opacity: 0.35;
+  }
+}
+@keyframes wp-glow {
+  from {
+    fill-opacity: 0.08;
+  }
+  to {
+    fill-opacity: 0.45;
+  }
+}
+@keyframes wp-chop {
+  to {
+    transform: rotate(-16deg);
+  }
+}
+@keyframes wp-whisk {
+  from {
+    transform: rotate(-18deg);
+  }
+  to {
+    transform: rotate(18deg);
+  }
+}
+@keyframes wp-sweep {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes wp-lift {
+  to {
+    transform: translateY(-7px) rotate(-7deg);
+  }
+}
+@keyframes wp-twinkle {
+  50% {
+    opacity: 0.2;
+    transform: scale(0.7);
+  }
+}
+@keyframes wp-flame {
+  50% {
+    transform: scale(0.92, 1.08) skewX(-3deg);
+  }
+}
+
+@layer components {
+  .reveal-row {
+    animation: wp-row-in 0.6s var(--ease-slush-bounce) both;
+    animation-delay: calc(var(--i, 0) * 45ms);
+  }
+  [data-reveal="step"] {
+    animation: wp-step-in 0.85s var(--ease-slush-bounce) both;
+  }
+  .method-step {
+    transition: background-color 0.4s var(--ease-out);
+  }
+  .method-step[data-active] {
+    background-color: color-mix(in oklab, var(--card) 75%, transparent);
+  }
+  /* The rail: from each step number down to the next (under the numbers), in the headline colour once read. */
+  .method-step:not(:last-child)::before,
+  .method-step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: calc(0.75rem + 2.75rem);
+    bottom: calc(-1.5rem - 0.75rem);
+    left: calc(0.75rem + 21px);
+    width: 2px;
+    border-radius: 1px;
+    background: var(--border);
+  }
+  .method-step:not(:last-child)::after {
+    background: var(--headline);
+    transform-origin: top;
+    scale: 1 0;
+    transition: scale 0.6s var(--ease-out);
+  }
+  .method-step[data-done]::after {
+    scale: 1 1;
+  }
+
+  .mise-pot {
+    width: 7.5rem;
+    flex-shrink: 0;
+    overflow: visible;
+    color: var(--foreground);
+    transform-origin: 50% 85%;
+  }
+  .mise-pot__level {
+    transform: translateY(calc((1 - var(--fill, 0)) * 46px));
+    transition: transform 0.7s var(--ease-slush-bounce);
+  }
+  .mise-pot__soup,
+  .mise-pot__wave {
+    fill: var(--primary);
+  }
+  .mise-pot__wave {
+    animation: wp-wave 1.6s linear infinite;
+  }
+  .mise-pot__splash {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .mise-pot__bubble {
+    fill: var(--primary-foreground);
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .mise-pot[data-bubbling] .mise-pot__bubble {
+    animation: wp-bubble 1.4s ease-in infinite;
+  }
+  .mise-pot__steam path {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: bottom;
+  }
+  .mise-pot[data-full] .mise-pot__steam path {
+    animation: wp-steam 2.2s ease-in-out infinite;
+  }
+  .mise-pot[data-full] .mise-pot__steam path:nth-child(2) {
+    animation-delay: 0.6s;
+  }
+  .mise-pot[data-full] .mise-pot__steam path:nth-child(3) {
+    animation-delay: 1.2s;
+  }
+  /* The ingredient name in flight from its row to the pot (made in RecipeKitchen.flyIntoPot). */
+  .fly-chip {
+    position: fixed;
+    z-index: 60;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font: 500 0.875rem / 1.2 var(--font-ui);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  /* Step drawings: parts move only on the step you're reading. Origins are in the 64-unit drawing. */
+  .step-icon * {
+    transform-box: view-box;
+    animation-play-state: paused;
+  }
+  [data-active] .step-icon * {
+    animation-play-state: running;
+  }
+  .si-bubble {
+    transform-box: fill-box !important;
+    transform-origin: center;
+    animation: wp-bubble 1.2s ease-in infinite;
+  }
+  .si-steam,
+  .si-heat {
+    animation: wp-steam 2s ease-in-out infinite;
+  }
+  .si-spit {
+    animation: wp-spit 0.9s ease-out infinite;
+  }
+  .si-spit:nth-of-type(2) {
+    --sx: -3px;
+  }
+  .si-food {
+    animation: wp-hop 0.35s ease-in-out infinite alternate;
+  }
+  .si-sizzle,
+  .si-bits {
+    animation: wp-flicker 0.5s steps(2) infinite;
+  }
+  .si-glow {
+    fill: currentColor;
+    stroke-opacity: 0.6;
+    animation: wp-glow 1.1s ease-in-out infinite alternate;
+  }
+  .si-knife {
+    transform-origin: 50px 20px;
+    animation: wp-chop 0.32s ease-in infinite alternate;
+  }
+  .si-whisk {
+    transform-origin: 32px 8px;
+    animation: wp-whisk 0.45s ease-in-out infinite alternate;
+  }
+  .si-swirl {
+    animation: wp-flicker 0.9s ease-in-out infinite;
+  }
+  .si-hand {
+    transform-origin: 32px 34px;
+    animation: wp-sweep 2.4s linear infinite;
+  }
+  .si-cloche {
+    transform-origin: 14px 46px;
+    animation: wp-lift 0.9s var(--ease-slush-bounce) infinite alternate;
+  }
+  .si-spark {
+    transform-box: fill-box !important;
+    transform-origin: center;
+    animation: wp-twinkle 1.2s ease-in-out infinite;
+  }
+  .si-flame,
+  .si-flame-in {
+    transform-origin: 32px 46px;
+    animation: wp-flame 0.7s ease-in-out infinite;
+  }
+  .si-flame-in {
+    animation-duration: 0.5s;
+  }
+
+  .step-timer--done > button:first-child {
+    animation: wp-twinkle 0.9s ease-in-out infinite;
+  }
+}
+
+@media (scripting: enabled) {
+  [data-reveal="rows"]:not([data-in]) > .reveal-row,
+  [data-reveal="step"]:not([data-in]) {
+    animation-play-state: paused;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-row,
+  [data-reveal="step"] {
+    animation-name: wp-fade-in;
+    animation-duration: 300ms;
+  }
+  .step-icon *,
+  .mise-pot *,
+  .step-timer--done > button:first-child {
+    animation: none !important;
+  }
+  .mise-pot__level {
+    transition: none;
   }
 }

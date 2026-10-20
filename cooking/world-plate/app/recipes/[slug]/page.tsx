@@ -1,9 +1,10 @@
 import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";
+import { Difficulty, Minutes, T } from "@/components/i18n";
+import { LImage } from "@/components/i18n-image";
 import { CardReveal } from "@/components/motion/card-reveal";
 import { ScrubWords } from "@/components/motion/scrub-words";
 import { SlantText } from "@/components/motion/slant-text";
@@ -15,10 +16,7 @@ import { SectionHeading } from "@/components/sections/section-heading";
 import { db } from "@/db/db";
 import { getRecipeBySlug, listRecipeSlugs, listRelatedRecipes } from "@/db/queries/recipes";
 import { recipeJsonLd, serializeJsonLd } from "@/lib/json-ld";
-import { formatMinutes } from "@/lib/scale";
 import { unsplashSized } from "@/lib/site";
-
-const difficultyLabel = { easy: "Easy", medium: "Medium", hard: "Challenging" } as const;
 
 export async function generateStaticParams() {
   return (await listRecipeSlugs(db)).map(({ slug }) => ({ slug }));
@@ -51,10 +49,10 @@ export default async function RecipePage({ params }: PageProps<"/recipes/[slug]"
   const related = await listRelatedRecipes(db, recipe, 3);
 
   const stats = [
-    { label: "Prep", value: formatMinutes(recipe.prepMinutes) },
-    { label: "Cook", value: formatMinutes(recipe.cookMinutes) },
-    { label: "Serves", value: recipe.servings },
-    { label: "Effort", value: difficultyLabel[recipe.difficulty] },
+    { label: <T en="Prep" ja="下準備" />, value: <Minutes m={recipe.prepMinutes} /> },
+    { label: <T en="Cook" ja="調理" />, value: <Minutes m={recipe.cookMinutes} /> },
+    { label: <T en="Serves" ja="分量" />, value: <T en={String(recipe.servings)} ja={`${recipe.servings}人分`} /> },
+    { label: <T en="Effort" ja="難しさ" />, value: <Difficulty d={recipe.difficulty} /> },
   ];
 
   return (
@@ -70,15 +68,16 @@ export default async function RecipePage({ params }: PageProps<"/recipes/[slug]"
             style={{ "--i": 0 } as CSSProperties}
           >
             <ArrowLeft className="size-3.5" strokeWidth={1.5} aria-hidden />
-            All recipes
+            <T en="All recipes" ja="すべてのレシピ" />
           </Link>
 
           <div className="rule-draw mt-4 grid items-center gap-10 pt-10 lg:grid-cols-2 lg:gap-16">
             <div className="load-fade lg:order-2">
                 <div className="bg-muted relative aspect-[4/3] overflow-hidden rounded-lg lg:aspect-[4/5]">
-                  <Image
+                  <LImage
                     src={recipe.image}
                     alt={recipe.imageAlt}
+                    altJa={recipe.ja.imageAlt}
                     fill
                     loading="eager"
                     fetchPriority="high"
@@ -92,27 +91,29 @@ export default async function RecipePage({ params }: PageProps<"/recipes/[slug]"
                 <p className="load-stagger label-caps text-muted-foreground flex items-center gap-2" style={{ "--i": 1 } as CSSProperties}>
                   <span aria-hidden className="hex-outline text-foreground" />
                   <span>
-                    From {recipe.origin}.{" "}
+                    <T en={`From ${recipe.origin}.`} ja={`発祥：${recipe.ja.origin}。`} />{" "}
                     <Link href={`/cuisine/${recipe.cuisineSlug}`} className="text-foreground underline underline-offset-4">
-                      More {recipe.cuisineName} dishes
+                      <T en={`More ${recipe.cuisineName} dishes`} ja={`${recipe.ja.cuisineName}をもっと見る`} />
                     </Link>
                   </span>
                 </p>
-                <SlantText as="h1" mode="load" text={recipe.title} className="mt-5 block text-[clamp(3rem,8vw,5.875rem)] leading-[0.9]" />
+                <SlantText as="h1" mode="load" text={recipe.title} ja={recipe.ja.title} className="mt-5 block text-[clamp(3rem,8vw,5.875rem)] leading-[0.9]" />
                 <p className="load-stagger text-muted-foreground mt-6 max-w-xl text-base leading-relaxed sm:text-lg" style={{ "--i": 2 } as CSSProperties}>
-                  {recipe.description}
+                  <T en={recipe.description} ja={recipe.ja.description} />
                 </p>
                 <div className="load-stagger" style={{ "--i": 3 } as CSSProperties}>
                   <dl className="mt-8 grid max-w-xl grid-cols-2 border-y sm:grid-cols-4">
-                    {stats.map((s) => (
-                      <div key={s.label} className="py-4 pr-4 sm:not-first:border-l sm:not-first:pl-4">
+                    {stats.map((s, i) => (
+                      <div key={i} className="py-4 pr-4 sm:not-first:border-l sm:not-first:pl-4">
                         <dt className="label-caps text-muted-foreground">{s.label}</dt>
                         <dd className="font-display mt-1 text-2xl font-medium">{s.value}</dd>
                       </div>
                     ))}
                   </dl>
                   {recipe.prepMinutes >= 60 && (
-                    <p className="text-muted-foreground mt-2 text-sm">Prep includes resting, rising or marinating time.</p>
+                    <p className="text-muted-foreground mt-2 text-sm">
+                      <T en="Prep includes resting, rising or marinating time." ja="下準備には、寝かせる・発酵・漬け込みの時間を含みます。" />
+                    </p>
                   )}
                 </div>
                 <div className="load-stagger mt-8" style={{ "--i": 4 } as CSSProperties}>
@@ -127,24 +128,34 @@ export default async function RecipePage({ params }: PageProps<"/recipes/[slug]"
           <RecipeKitchen
             slug={recipe.slug}
             title={recipe.title}
+            titleJa={recipe.ja.title}
             baseServings={recipe.servings}
             ingredients={recipe.ingredients}
+            ingredientsJa={recipe.ja.ingredients}
             steps={recipe.steps}
+            stepsJa={recipe.ja.steps}
           />
         </div>
 
         <section aria-labelledby="story-title" className="room relative isolate overflow-hidden">
           <SectionArt offset={1800} />
           <div className="container-page grid gap-6 py-20 md:grid-cols-[1fr_2fr] md:gap-16 md:py-28">
-            <ScrubWords id="story-title" text="The story of this dish" className="text-[clamp(2.5rem,6vw,3.25rem)] leading-none" />
-            <p className="font-display max-w-[60ch] text-[1.375rem] leading-[1.5] text-pretty sm:text-[1.625rem]">{recipe.story}</p>
+            <ScrubWords id="story-title" text="The story of this dish" ja="この料理の|物語" className="text-[clamp(2.5rem,6vw,3.25rem)] leading-none" />
+            <p className="font-display max-w-[60ch] text-[1.375rem] leading-[1.5] text-pretty sm:text-[1.625rem]">
+              <T en={recipe.story} ja={recipe.ja.story} />
+            </p>
           </div>
         </section>
       </article>
 
       {related.length > 0 && (
         <section aria-labelledby="related-title" className="container-page py-20 md:py-28">
-          <SectionHeading id="related-title" index="More" label={recipe.cuisineName} title="You might also cook" />
+          <SectionHeading
+            id="related-title"
+            index={{ en: "More", ja: "もっと" }}
+            label={{ en: recipe.cuisineName, ja: recipe.ja.cuisineName }}
+            title={{ en: "You might also cook", ja: "こちらも|おすすめ" }}
+          />
           <CardReveal className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((r) => (
               <li key={r.slug}>

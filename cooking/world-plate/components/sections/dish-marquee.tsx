@@ -1,4 +1,5 @@
 import { Flame } from "lucide-react";
+import { T } from "@/components/i18n";
 import { ScrollMarquee } from "@/components/motion/scroll-marquee";
 import { cn } from "@/lib/utils";
 
@@ -8,7 +9,7 @@ import { cn } from "@/lib/utils";
  * 10vw across the screen as you pass it. Two tilted bands: tomato with cream type, sand with tomato
  * type, a flame between names.
  */
-export function DishMarquee({ items }: { items: string[] }) {
+export function DishMarquee({ items }: { items: { en: string; ja: string }[] }) {
   const half = Math.ceil(items.length / 2);
   const rows = [items.slice(0, half), items.slice(half)];
   return (
@@ -23,8 +24,8 @@ export function DishMarquee({ items }: { items: string[] }) {
         >
           <ScrollMarquee direction={r === 0 ? "right" : "left"} speed={20}>
             {row.map((name) => (
-              <span key={name} className="font-display flex items-center gap-6 pr-6 text-4xl leading-none tracking-[0.03em] whitespace-nowrap md:text-6xl">
-                {name}
+              <span key={name.en} className="font-display flex items-center gap-6 pr-6 text-4xl leading-none tracking-[0.03em] whitespace-nowrap md:text-6xl">
+                <T {...name} />
                 <Flame aria-hidden strokeWidth={1.5} className={cn("size-7 shrink-0 md:size-9", r === 0 ? "text-background" : "text-headline")} />
               </span>
             ))}

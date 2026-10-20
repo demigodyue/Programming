@@ -26,7 +26,7 @@ export default async function HomePage() {
         allMinutes={all.map((r) => r.totalMinutes)}
         cuisines={cuisines}
       />
-      <DishMarquee items={all.map((r) => r.title)} />
+      <DishMarquee items={all.map((r) => ({ en: r.title, ja: r.ja.title }))} />
       <DishStage href="/recipes/butter-chicken" />
       <AboutPanel recipes={all} cuisineCount={cuisines.length} />
       {/* After About each section has its own scroll motion: sliding headline, card stack, photo zoom-out, stove. */}

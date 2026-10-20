@@ -1,6 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import { T } from "@/components/i18n";
+import { LImage } from "@/components/i18n-image";
 import { CountUp } from "@/components/motion/count-up";
 import { FlipFace, flipClass } from "@/components/motion/flip-face";
 import { ScrubWords } from "@/components/motion/scrub-words";
@@ -27,26 +28,43 @@ export function AboutPanel({ recipes, cuisineCount }: { recipes: RecipeCard[]; c
       <div className="container-page grid h-full items-center gap-10 lg:grid-cols-[1fr_1.05fr] lg:gap-14">
         <div className="relative z-10 lg:py-16">
           <div className="label-caps text-muted-foreground flex justify-between border-b pb-3">
-            <span>[ About ]</span>
+            <span>
+              <T en="[ About ]" ja="［ について ］" />
+            </span>
             <span>World Plate</span>
           </div>
           <h2 id="about-title" className="text-display mt-6">
-            A kitchen <em>atlas</em>
+            <T
+              en={
+                <>
+                  A kitchen <em>atlas</em>
+                </>
+              }
+              ja={
+                <>
+                  キッチンの<em>世界地図</em>
+                </>
+              }
+            />
           </h2>
           <ScrubWords
             as="p"
             text="Famous dishes from Japan to Nepal to Rome — ramen, momo, carbonara — each written up properly, with real ingredients, honest timings and the story behind the plate."
             em={["ramen", "momo", "carbonara", "story"]}
+            ja="日本から|ネパール、|ローマまで——|ラーメン、|モモ、|カルボナーラ——|世界の名物料理を、|本物の材料と|正直な時間、|そして一皿の|物語とともに|きちんと|紹介します。"
+            emJa={["ラーメン、", "モモ、", "カルボナーラ——", "物語とともに"]}
             className="font-display mt-6 max-w-[34ch] text-[clamp(1.25rem,1.9vw,1.75rem)] leading-[1.15]"
           />
           <dl className="mt-9 grid max-w-md grid-cols-3 gap-4 border-t pt-5">
             {[
-              { n: recipes.length, label: "Famous dishes" },
-              { n: cuisineCount, label: "Cuisines" },
-              { n: averageHours, label: "Avg. hours", decimals: 1 },
+              { n: recipes.length, label: "Famous dishes", ja: "名物料理" },
+              { n: cuisineCount, label: "Cuisines", ja: "料理の国" },
+              { n: averageHours, label: "Avg. hours", ja: "平均時間", decimals: 1 },
             ].map((s) => (
               <div key={s.label} className="flex flex-col">
-                <dt className="label-caps text-muted-foreground order-last mt-1 text-[0.6875rem]">{s.label}</dt>
+                <dt className="label-caps text-muted-foreground order-last mt-1 text-[0.6875rem]">
+                  <T en={s.label} ja={s.ja} />
+                </dt>
                 <dd className="font-display text-headline text-[clamp(2.75rem,5vw,4.5rem)] leading-none">
                   <CountUp value={s.n} decimals={"decimals" in s ? s.decimals : 0} />
                 </dd>
@@ -54,11 +72,13 @@ export function AboutPanel({ recipes, cuisineCount }: { recipes: RecipeCard[]; c
             ))}
           </dl>
           <Link href="/recipes" data-accent="yellow" className={flipClass("solid", "mt-8")}>
-            <FlipFace>Browse all recipes</FlipFace>
+            <FlipFace>
+              <T en="Browse all recipes" ja="すべてのレシピを見る" />
+            </FlipFace>
           </Link>
         </div>
 
-        <div aria-label="Dishes on World Plate" className="about-cols h-[60svh] lg:h-full">
+        <div className="about-cols h-[60svh] lg:h-full">
           {columns.map((col, c) => (
             <div key={c} className="about-col" style={{ "--speed": `${[46, 38, 54][c]}s` } as CSSProperties}>
               <ul className={`about-col__track ${c === 1 ? "about-col__track--down" : ""}`}>
@@ -70,10 +90,14 @@ export function AboutPanel({ recipes, cuisineCount }: { recipes: RecipeCard[]; c
                       data-cursor="View recipe"
                       className="about-shot group"
                     >
-                      <Image src={r.image} alt={i >= col.length ? "" : r.imageAlt} fill sizes="(min-width: 1024px) 15vw, 30vw" className="object-cover" />
+                      <LImage src={r.image} alt={i >= col.length ? "" : r.imageAlt} altJa={r.ja.imageAlt} fill sizes="(min-width: 1024px) 15vw, 30vw" className="object-cover" />
                       <span className="bg-card text-card-foreground absolute inset-x-2 bottom-2 rounded-full px-3 py-1">
-                        <span className="font-display block truncate text-xs uppercase">{r.title}</span>
-                        <span className="label-caps block truncate text-[0.625rem]">{r.cuisineName}</span>
+                        <span className="font-display block truncate text-xs uppercase">
+                          <T en={r.title} ja={r.ja.title} />
+                        </span>
+                        <span className="label-caps block truncate text-[0.625rem]">
+                          <T en={r.cuisineName} ja={r.ja.cuisineName} />
+                        </span>
                       </span>
                     </Link>
                   </li>
@@ -104,25 +128,38 @@ export function CtaPanel() {
       <SectionArt offset={600} />
       <div className="cta-stove__stage container-page">
         <div className="label-caps flex justify-between border-b border-current pb-3">
-          <span>04 · Tonight</span>
-          <span>Pick a dish</span>
+          <span>
+            <T en="04 · Tonight" ja="04 · 今夜" />
+          </span>
+          <span>
+            <T en="Pick a dish" ja="一品を選ぶ" />
+          </span>
         </div>
         <div className="cta-stove__body">
           <div>
             <h2 id="cta-title" className="cta-stove__title font-display">
               <span className="cta-stove__line" style={{ "--l": 0 } as CSSProperties}>
-                <span>Cook</span>
+                <span>
+                  <T en="Cook" ja="今夜は" />
+                </span>
               </span>
               <span className="cta-stove__line" style={{ "--l": 1 } as CSSProperties}>
-                <span>tonight</span>
+                <span>
+                  <T en="tonight" ja="料理しよう" />
+                </span>
               </span>
             </h2>
             <div className="cta-stove__foot mt-6 flex flex-col items-start gap-5">
               <p className="max-w-sm text-[0.9375rem] leading-relaxed">
-                Real ingredients, honest timings and a step-by-step Cook Mode that keeps your screen awake.
+                <T
+                  en="Real ingredients, honest timings and a step-by-step Cook Mode that keeps your screen awake."
+                  ja="本物の材料、正直な時間、そして画面を消さずに一歩ずつ進める「クックモード」。"
+                />
               </p>
               <Link href="/recipes" data-accent="yellow" className={flipClass()}>
-                <FlipFace>Browse recipes</FlipFace>
+                <FlipFace>
+                  <T en="Browse recipes" ja="レシピを見る" />
+                </FlipFace>
               </Link>
             </div>
           </div>

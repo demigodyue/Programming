@@ -7,7 +7,7 @@ import { useId, useState, type InputHTMLAttributes, type ReactNode } from "react
 import { cn } from "@/lib/utils";
 
 interface FloatingInputProps extends InputHTMLAttributes<HTMLInputElement> {
-  label: string;
+  label: ReactNode;
   icon?: ReactNode;
 }
 

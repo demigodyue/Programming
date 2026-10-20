@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Anton, Inter } from "next/font/google";
+import { Anton, Dela_Gothic_One, Inter, Noto_Sans_JP } from "next/font/google";
 import { preconnect } from "react-dom";
+import { AccountBoot } from "@/components/account/account-boot";
+import { T } from "@/components/i18n";
 import { Cursor } from "@/components/motion/cursor";
 import { IntroCurtain } from "@/components/motion/intro-curtain";
 import { LenisProvider } from "@/components/motion/lenis-provider";
@@ -30,6 +32,22 @@ const inter = Inter({
   display: "swap",
 });
 
+// Japanese, split by unicode-range so a page only downloads the glyphs it uses, and not preloaded — English visitors
+// never fetch it. Dela Gothic One, a heavy poster face, stands under Anton; Noto Sans JP under Inter.
+const jpDisplay = Dela_Gothic_One({
+  variable: "--font-jp-display",
+  weight: "400",
+  display: "swap",
+  preload: false,
+});
+
+const jp = Noto_Sans_JP({
+  variable: "--font-jp",
+  weight: ["400", "500", "700"],
+  display: "swap",
+  preload: false,
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: { default: `${site.name} — famous dishes from around the world`, template: `%s · ${site.name}` },
@@ -51,14 +69,18 @@ export const viewport: Viewport = {
 const HOME = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/`;
 const INTRO_SKIP = `try{var p=location.pathname,h=${JSON.stringify(HOME)};if(!(p===h||p===h+"index.html"||p+"/"===h)||localStorage.getItem("wp-intro-skip")||matchMedia("(prefers-reduced-motion: reduce)").matches){var d=document.documentElement;d.removeAttribute("data-intro");d.removeAttribute("data-intro-lock")}}catch(e){}`;
 
+// Pick the language before first paint: the visitor's saved choice, else Japanese for a Japanese browser.
+const LANG_INIT = `try{var l=localStorage.getItem("wp:lang");if(!l&&/^ja(-|$)/i.test(navigator.language||""))l="ja";if(l==="ja"){var r=document.documentElement;r.dataset.lang="ja";r.lang="ja"}}catch(e){}`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   // Every page leads with an Unsplash photo — open the connection before the <img> is parsed.
   preconnect("https://images.unsplash.com");
   return (
-    <html lang="en" suppressHydrationWarning data-intro="" data-intro-lock="" className={`${anton.variable} ${inter.variable}`}>
+    <html lang="en" suppressHydrationWarning data-intro="" data-intro-lock="" className={`${anton.variable} ${inter.variable} ${jpDisplay.variable} ${jp.variable}`}>
       <head>
         {/* Decide about the intro before first paint (see INTRO_SKIP). */}
         <script dangerouslySetInnerHTML={{ __html: INTRO_SKIP }} />
+        <script dangerouslySetInnerHTML={{ __html: LANG_INIT }} />
       </head>
       <body className="relative isolate flex min-h-dvh flex-col">
         <PageArt />
@@ -68,7 +90,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             href="#main"
             className="bg-primary text-primary-foreground sr-only z-50 rounded-full px-5 py-3 font-medium focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
           >
-            Skip to content
+            <T en="Skip to content" ja="本文へスキップ" />
           </a>
           <IntroCurtain />
           <div aria-hidden className="scroll-progress" />
@@ -77,6 +99,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <MouseDepth />
           <PageSwing />
           <Cursor />
+          <AccountBoot />
           <SiteHeader />
           <main id="main" className="flex-1">
             {children}

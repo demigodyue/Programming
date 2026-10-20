@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 
 export interface ChipItem {
   id: string;
-  label: string;
+  label: React.ReactNode;
   emoji: string;
 }
 

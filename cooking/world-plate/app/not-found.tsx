@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { FlipFace, flipClass } from "@/components/motion/flip-face";
+import { T } from "@/components/i18n";
 import { SlantText } from "@/components/motion/slant-text";
 
 export default function NotFound() {
@@ -10,12 +11,17 @@ export default function NotFound() {
         <span aria-hidden className="hex-outline text-foreground" />
         404
       </p>
-      <SlantText as="h1" mode="load" text="This plate is empty." className="mt-6 block max-w-[12ch] text-[clamp(3.5rem,11vw,5.875rem)] leading-[0.92]" />
+      <SlantText as="h1" mode="load" text="This plate is empty." ja="このお皿は|空っぽです。" className="mt-6 block max-w-[12ch] text-[clamp(3.5rem,11vw,5.875rem)] leading-[0.92]" />
       <p className="load-stagger text-muted-foreground mt-6 max-w-md text-base" style={{ "--i": 1 } as CSSProperties}>
-        The page you were looking for doesn&apos;t exist or has moved. The recipes are all still here.
+        <T
+          en="The page you were looking for doesn't exist or has moved. The recipes are all still here."
+          ja="お探しのページは存在しないか、移動しました。レシピはすべてここにあります。"
+        />
       </p>
       <Link href="/recipes" data-accent="yellow" className={flipClass("solid", "load-stagger mt-8")} style={{ "--i": 2 } as CSSProperties}>
-        <FlipFace>Browse recipes</FlipFace>
+        <FlipFace>
+          <T en="Browse recipes" ja="レシピを見る" />
+        </FlipFace>
       </Link>
     </div>
   );

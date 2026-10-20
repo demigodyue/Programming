@@ -5,13 +5,13 @@
 // - radiogroup semantics with arrow-key navigation; per-instance layoutId so several can coexist
 // - saffron active pill; reduced motion snaps instead of sliding
 
-import { useId, useRef, type FC, type KeyboardEvent } from 'react';
+import { useId, useRef, type FC, type KeyboardEvent, type ReactNode } from 'react';
 import { m, LayoutGroup, useReducedMotion } from 'motion/react';
 import { cn } from '@/lib/utils';
 
 export interface TabItem {
   id: string;
-  label: string;
+  label: ReactNode;
 }
 
 interface ContinuousTabsProps {
