@@ -18,19 +18,13 @@ export function LenisProvider() {
       lenisRef.current = null;
       if (media.matches) return;
       const { default: LenisCtor } = await import("lenis");
-      if (cancelled) return;
-      lenisRef.current = new LenisCtor({ autoRaf: true, lerp: 0.12, anchors: true });
-      // The intro owns the wheel until it has opened (IntroCurtain).
-      if (document.documentElement.hasAttribute("data-intro-lock")) lenisRef.current.stop();
+      if (!cancelled) lenisRef.current = new LenisCtor({ autoRaf: true, lerp: 0.12, anchors: true });
     };
-    const resume = () => lenisRef.current?.start();
     void start();
     media.addEventListener("change", start);
-    window.addEventListener("wp:intro-done", resume);
     return () => {
       cancelled = true;
       media.removeEventListener("change", start);
-      window.removeEventListener("wp:intro-done", resume);
       lenisRef.current?.destroy();
       lenisRef.current = null;
     };

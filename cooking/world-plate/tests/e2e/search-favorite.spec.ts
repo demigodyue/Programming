@@ -1,10 +1,5 @@
 import { expect, test } from "@playwright/test";
 
-// These flows are about the site itself; the first-visit intro has its own spec.
-test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => sessionStorage.setItem("wp-intro", "seen"));
-});
-
 test("search for a dish, open it and save it to favorites", async ({ page }) => {
   await page.goto("/recipes");
   await expect(page.getByRole("heading", { level: 1, name: "All recipes" })).toBeVisible();

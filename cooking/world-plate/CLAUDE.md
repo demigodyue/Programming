@@ -215,18 +215,13 @@ tests/unit, tests/e2e    Vitest and Playwright
     the flame is up. "Cook tonight" rises out of a mask line by line, then the line and button. Reduced motion: lit
     and still.
   The hero exit and footer .foot-rise letters are unchanged.
-- Intro (2026-10-20; replaces the kervangida-style fill + slats at the user's request: "something animated and
-  scroll kinda thing"): `IntroCurtain` (components/motion/intro-curtain.tsx, `.wp-intro` in globals.css), once per
-  browser session (sessionStorage "wp-intro"). Entirely scroll-driven — the user rejected an auto-playing version
-  ("it should have scroll animation not auto animation"), so nothing in it has a duration and it never opens by
-  itself. The wheel / swipe / arrow, space and page keys drive --q (0 → 1 over ~2.2 screens of wheel, eased in JS,
-  reversible). A full-screen `--dot` panel of mixed-up letters: over q 0 → 0.54 each letter's slot reel spins through
-  six letters onto WORLD PLATE (2.2% later per letter), the two outlined bands of dish names slide opposite ways the
-  whole time, the tagline rises at 0.45 → 0.55, and from 0.58 the scene — drawn twice, clipped to top and bottom
-  halves — splits ±55vh while the wordmark scales up. Click / Enter / Escape / Tab skip to open. <html> starts with
-  `data-intro` (pauses every page animation until the split starts at q 0.58) and `data-intro-lock` (overflow hidden; LenisProvider stops Lenis until "wp:intro-done"). An inline
-  head script in app/layout.tsx drops both before first paint when already seen or motion is reduced; no JS: hidden.
-  E2E specs other than tests/e2e/intro.spec.ts preset the sessionStorage flag.
+- Intro curtain (2026-10-19, recorded from kervangida.com; that site has no route transition, its transition is
+  this first-load preloader): `IntroCurtain` (components/motion/intro-curtain.tsx, `.wp-intro` in globals.css). A
+  full-screen `--dot` panel; the WORLD PLATE wordmark fills left to right over its outline (2s linear, from 0.1s), holds,
+  then the panel — cut into five slats — peels up from the centre outward (0.75s each, easeInOutSine, 70ms apart, from
+  2.4s) while the wordmark lifts away; done at 3.3s. The container never takes pointer events. Pure CSS, plays on every full load. `data-intro` on
+  <html> moves the Slush load clock to 3.3s / 3.4s until the first client navigation (IntroCurtain drops it; a
+  `data-load` swing clock always wins). Reduced motion: no intro.
 - Hungry Tiger scroll (2026-10-19, recorded from eathungrytiger.com via the user's Refero link): GSAP ScrollTrigger
   word scrub — each `.word` goes 0.2 → 1 opacity (0.2 long, 0.4 apart, power1.out), scrubbed "top 90%" → "top center".
   Ported into ScrollMotion as `[data-scrub="words"]` (`ScrubWords`, components/motion/scrub-words.tsx); it replaces the
