@@ -186,18 +186,16 @@ tests/unit, tests/e2e    Vitest and Playwright
   `Cursor` label over `[data-cursor="…"]` (text = attribute value; ≥768px, fine pointers).
 - Nav: pills hide upward on scroll down (desktop), slide in from the right via the plus (≤991px); 10px direction threshold.
 - Tabs (TrendingDishes): Flip pill 0.5s; text/photo swap 0.65s on "slush"; auto-advance to tab 2 at "center 75%".
-- Scroll-scrubbed sections (2026-10-19, user: "after the about section the animations are plain… something should move
-  with scroll, like the pickle jar"): hero exit (.hero-scroll view timeline: .hero-exit sinks/fades the headline block,
-  .hero-fan fans the wordmark letters); TrendingDishes pins on large screens (data-pinned, 60svh per dish, scroll picks
-  the tab, frame turns/swells, progress bar; tabs scroll to their dish); cuisines are a stack of flash cards (CuisineDeck,
-  components/sections/cuisine-deck.tsx, redone 2026-10-19 after the user disliked the face-down deal): face-up stack,
-  pinned, 42svh of scroll per card — the top card shows its photo, flips to its back (country, count, link), then flies
-  off left as the next comes up; a side panel names the top card; Previous/Next everywhere (unpinned: eased steps,
-  hover flips the top card); QuickMeals is the user's card fan carousel
-  (components/ui/card-fan-carousel.tsx — GSAP, the one place GSAP is used, because the user supplied it that way;
-  entrance waits for the fan to scroll into view, sizes in .fan-layout / .fan-card); CTA .scrub-iris circle;
-  footer .foot-rise letters. Pins need (min-width:1024px) and (min-height:760px) and motion; otherwise cards swing in
-  per view timeline. All CSS ones are in the "Scroll-scrubbed sections" block of globals.css.
+- Home from the About section down (2026-10-20, user: "redo from this point", chose stacking full-screen panels and
+  "start fresh"): StackPanels (components/motion/stack-panels.tsx) wraps AboutPanel, TrendingPanel, CuisinePanel,
+  QuickPanel and CtaPanel (components/sections/home-panels.tsx, trending-panel.tsx). Large screens (≥1024px wide and
+  ≥700px tall): each panel is a sticky 100svh card with a 40svh spacer after it; the next card slides up over it (28px
+  top corners) and the covered card sinks back (scale 0.92, -2%, darkens to 55% scrim), scrubbed by the next card's
+  distance from the top. Smaller screens: ordinary sections. Trending: numbered rows, hover/focus wipes that dish's
+  photo up into the frame. Cuisines (#cuisines): ten strips, the hovered/focused one widens (flex-grow) to show name,
+  country, count; small screens a 2-column tile grid. Quick meals: 2×2 photo tiles. CTA: full tomato panel.
+  The hero exit (.hero-scroll / .hero-exit / .hero-fan) and footer .foot-rise letters are unchanged.
+  Removed with this: the pinned Trending tabs, the flash-card deck, the GSAP card fan (GSAP uninstalled), the CTA iris.
 - Intro curtain (2026-10-19, recorded from kervangida.com; that site has no route transition, its transition is
   this first-load preloader): `IntroCurtain` (components/motion/intro-curtain.tsx, `.wp-intro` in globals.css). A
   full-screen `--dot` panel; the WORLD PLATE wordmark fills left to right over its outline (2s linear, from 0.1s), holds,

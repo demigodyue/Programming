@@ -1417,10 +1417,8 @@
 /* ---------- Scroll-scrubbed sections (2026-10-19) ----------
    Everything here moves with the scroll position, like the jar stage, instead of playing once:
    - hero: as it scrolls away the headline block sinks back and fades, and the WORLD PLATE letters fan apart
-   - trending: the section pins and scrolling steps through the dishes (TrendingDishes sets data-pinned)
-   - cuisines: a pinned stack of flash cards — each flips to its back and flies off (CuisineDeck sets data-pinned)
-   - quick meals: a card fan carousel (components/ui/card-fan-carousel.tsx, GSAP; sizes below)
-   - CTA: the forest panel opens out of a small circle
+   - About and below: stacking full-screen panels (StackPanels, components/motion/stack-panels.tsx) — each panel
+     slides up over the last, which sinks back and darkens with the scroll; styles below
    - footer: the wordmark letters rise one after another
    The CSS ones use scroll-driven animations (off the main thread); browsers without them show the end state. */
 @keyframes wp-hero-exit {
@@ -1435,14 +1433,6 @@
     rotate: calc((var(--li) - 4.5) * 5deg);
   }
 }
-@keyframes wp-iris {
-  from {
-    clip-path: circle(9% at 50% 55%);
-  }
-  to {
-    clip-path: circle(120% at 50% 50%);
-  }
-}
 @keyframes wp-foot-rise {
   from {
     translate: 0 85%;
@@ -1451,165 +1441,171 @@
 }
 
 @layer components {
-  /* Trending: pinned track, one dish per 60svh of scroll. */
-  .trend-track[data-pinned] {
-    height: calc(100svh + var(--n, 5) * 60svh);
+  /* Stacking panels. Large screens: every panel is a sticky full-height card; a 40svh spacer after each one is the
+     pause before the next card arrives. StackPanels sinks and darkens the covered card. */
+  .stack-card {
+    position: relative;
   }
-  .trend-track[data-pinned] > .trend-pin {
-    position: sticky;
-    top: 0;
-    display: flex;
-    min-height: 100svh;
-    flex-direction: column;
-    justify-content: center;
-    padding-block: 6rem 2rem;
+  .stack-dim {
+    position: absolute;
+    inset: 0;
+    background: var(--scrim);
+    opacity: 0;
+    pointer-events: none;
   }
-  .trend-track[data-pinned] .tab-frame {
-    width: min(100%, 58svh);
-  }
-  .trend-progress {
-    height: 2px;
-    background: var(--headline);
-    transform: scaleX(0);
-    transform-origin: left center;
+  @media (width >= 1024px) and (height >= 700px) {
+    .stack-panel {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+    }
+    .stack-card {
+      height: 100%;
+      overflow: hidden;
+      transform-origin: 50% 0;
+      will-change: transform;
+    }
+    .stack-panel:not(:first-child) > .stack-card {
+      border-radius: 28px 28px 0 0;
+    }
+    .stack-spacer {
+      height: 40svh;
+      pointer-events: none;
+    }
   }
 
-  /* Card fan carousel: heights match getHeightMultiplier's ideal layout heights; cards are 4:7. GSAP moves them. */
-  .fan-layout {
-    --fw: 9rem;
-    height: 22rem;
+  /* Trending: the active row slides right in the headline colour; its photo wipes up over the last one. */
+  .trend-row__title {
+    transition:
+      color 0.3s var(--ease-out),
+      translate 0.4s var(--ease-out);
   }
-  @media (width >= 480px) {
-    .fan-layout {
-      --fw: 11rem;
-      height: 26rem;
-    }
+  .trend-row[data-active] .trend-row__title {
+    color: var(--headline);
+    translate: 0.5rem 0;
   }
-  @media (width >= 640px) {
-    .fan-layout {
-      --fw: 12rem;
-      height: 28rem;
-    }
+  .trend-row__arrow {
+    opacity: 0;
+    translate: -6px 6px;
+    transition:
+      opacity 0.3s var(--ease-out),
+      translate 0.4s var(--ease-out);
   }
-  @media (width >= 768px) {
-    .fan-layout {
-      --fw: 15rem;
-      height: 34rem;
-    }
+  .trend-row[data-active] .trend-row__arrow {
+    opacity: 1;
+    translate: 0 0;
+  }
+  .trend-shot {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    clip-path: inset(100% 0 0 0);
+    /* The old photo stays until the new one has covered it. */
+    transition: clip-path 0s linear 0.7s;
+  }
+  .trend-shot[data-on] {
+    z-index: 2;
+    clip-path: inset(0 0 0 0);
+    transition: clip-path 0.7s var(--ease-in-out);
+  }
+
+  /* Cuisines: tall strips; the pointed-at (or focused) one widens. Small screens: a two-column grid. */
+  .cuisine-strips {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+  .cuisine-strip {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .cuisine-strip__label {
+    display: none;
+  }
+  .cuisine-strip__meta {
+    position: absolute;
+    inset: auto 0.5rem 0.5rem 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 12px;
+    background: var(--card);
+    color: var(--card-foreground);
   }
   @media (width >= 1024px) {
-    .fan-layout {
-      --fw: 18rem;
-      height: 38rem;
+    .cuisine-strips {
+      display: flex;
+      height: min(52svh, 30rem);
+      gap: 0.5rem;
     }
-  }
-  .fan-card {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: var(--fw);
-    aspect-ratio: 4 / 7;
-    margin-top: calc(var(--fw) * -0.875);
-    margin-left: calc(var(--fw) / -2);
-    overflow: hidden;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--muted);
-    will-change: transform;
+    .cuisine-strips > li {
+      flex: 1 1 0;
+      min-width: 0;
+      transition: flex-grow 0.6s var(--ease-out);
+    }
+    .cuisine-strips > li:is(:hover, :focus-within),
+    .cuisine-strips:not(:hover, :focus-within) > li:first-child {
+      flex-grow: 6;
+    }
+    .cuisine-strip {
+      height: 100%;
+      aspect-ratio: auto;
+    }
+    .cuisine-strip__label {
+      position: absolute;
+      bottom: 0.75rem;
+      left: 50%;
+      display: block;
+      padding: 0.75rem 0.4rem;
+      border-radius: 9999px;
+      background: var(--card);
+      color: var(--card-foreground);
+      font-size: 1rem;
+      line-height: 1;
+      text-transform: uppercase;
+      writing-mode: vertical-rl;
+      translate: -50% 0;
+      rotate: 180deg;
+      transition: opacity 0.25s var(--ease-out);
+    }
+    .cuisine-strip__meta {
+      inset: auto 0.75rem 0.75rem 0.75rem;
+      padding: 0.75rem 1rem;
+      opacity: 0;
+      translate: 0 1rem;
+      transition:
+        opacity 0.3s var(--ease-out),
+        translate 0.4s var(--ease-out);
+    }
+    .cuisine-strips > li:is(:hover, :focus-within) .cuisine-strip__meta,
+    .cuisine-strips:not(:hover, :focus-within) > li:first-child .cuisine-strip__meta {
+      opacity: 1;
+      translate: 0 0;
+      transition-delay: 0.15s;
+    }
+    .cuisine-strips > li:is(:hover, :focus-within) .cuisine-strip__label,
+    .cuisine-strips:not(:hover, :focus-within) > li:first-child .cuisine-strip__label {
+      opacity: 0;
+    }
   }
 
-  /* Cuisines: a stack of flash cards (CuisineDeck). Pinned: SEG svh of scroll per card. */
-  .fc-track[data-pinned] {
-    height: calc(100svh + (var(--n, 10) - 0.4) * var(--seg, 42svh));
-  }
-  .fc-track[data-pinned] > .fc-pin {
-    position: sticky;
-    top: 0;
-    display: flex;
-    height: 100svh;
-    flex-direction: column;
-    justify-content: center;
-    padding-block: 5rem 2rem;
-  }
-  .fc-stack {
+  /* Quick meals: photo tiles. */
+  .quick-tile {
     position: relative;
-    width: min(100%, 26rem, 52svh);
-    aspect-ratio: 3 / 4;
-    margin-inline: auto;
-    /* Room for the cards peeking out underneath (up to three, 5% of a card each). */
-    margin-block-end: 18%;
-    perspective: 1400px;
-  }
-  .fc {
-    position: absolute;
-    inset: 0;
-    transform-origin: 50% 90%;
-    will-change: transform;
-  }
-  /* Stepping mode (buttons): the stack eases between places. Scrubbed mode follows the scroll exactly. */
-  .fc-track:not([data-pinned]) .fc {
-    transition:
-      transform 0.6s var(--ease-out),
-      opacity 0.4s var(--ease-out);
-  }
-  .fc__inner {
-    position: absolute;
-    inset: 0;
     display: block;
-    transform-style: preserve-3d;
-  }
-  .fc-track:not([data-pinned]) .fc__inner {
-    transition: transform 0.7s var(--ease-slush);
-  }
-  .fc__face {
-    position: absolute;
-    inset: 0;
+    aspect-ratio: 4 / 3;
     overflow: hidden;
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    backface-visibility: hidden;
   }
-  .fc__front {
-    background: var(--muted);
-  }
-  .fc__back {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 1.75rem;
-    background: var(--primary);
-    color: var(--primary-foreground);
-    transform: rotateY(180deg);
+  .quick-tile img {
+    transition: scale 0.6s var(--ease-out);
   }
   @media (hover: hover) and (pointer: fine) {
-    .fc-track:not([data-pinned]) .fc__inner:hover {
-      transform: rotateY(180deg);
-    }
-  }
-  .fc-track:not([data-pinned]) .fc__inner:focus-visible {
-    transform: rotateY(180deg);
-  }
-  .fc-btn {
-    display: grid;
-    place-items: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    border: 1px solid var(--foreground);
-    border-radius: 9999px;
-    color: var(--foreground);
-    transition:
-      background-color 0.2s var(--ease-color),
-      color 0.2s var(--ease-color),
-      opacity 0.2s;
-  }
-  .fc-btn:disabled {
-    opacity: 0.35;
-    cursor: default;
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .fc-btn:not(:disabled):hover {
-      background: var(--foreground);
-      color: var(--background);
+    .quick-tile:hover img {
+      scale: 1.06;
     }
   }
 }
@@ -1629,11 +1625,6 @@
       animation-timeline: --hero;
       animation-range: exit 0% exit 90%;
     }
-    .scrub-iris {
-      animation: wp-iris linear both;
-      animation-timeline: view();
-      animation-range: entry 0% cover 45%;
-    }
     .foot-rise > span {
       display: inline-block;
       animation: wp-foot-rise linear both;
@@ -1643,9 +1634,15 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .fc,
-  .fc__inner {
+  .trend-row__title,
+  .trend-row__arrow,
+  .trend-shot,
+  .trend-shot[data-on],
+  .cuisine-strips > li,
+  .cuisine-strip__meta,
+  .quick-tile img {
     transition-duration: 0.01ms;
+    transition-delay: 0s;
   }
 }
 
