@@ -1325,11 +1325,14 @@
   }
 }
 
-/* ---------- Intro curtain (kervangida.com's preloader, recorded 2026-10-19) ----------
-   IntroCurtain (components/motion/intro-curtain.tsx). Their timeline: the logo fills left to right in 2s
-   (linear), holds ~0.3s, then the panel slides up 100% in ~0.75s, ease-in-out (easeInOutSine fits their
-   samples). Here the panel is five slats that peel up from the centre, 70ms apart, from 2.4s, while the
-   wordmark lifts away; the last slat is gone at 3.29s and the Slush load clock waits for it. */
+/* ---------- Intro (kervangida.com's preloader, recorded 2026-10-19, plus a boiling pot) ----------
+   IntroCurtain (components/motion/intro-curtain.tsx), every full load of the home page. The picture is the
+   recorded one: the logo fills left to right over its outline in 2s (linear, from 0.1s). Under it an original pot
+   boils on a loop. Then nothing happens until the visitor scrolls: --q (0 → 1, the scroll, eased in JS) runs
+   - 0 → 0.3    the lid blows off and the steam puffs up (--lid)
+   - 0.2 → 0.6  the wordmark and pot lift away and fade (--rise; the recorded lift: -28vh, scale 0.9)
+   - 0.35 → 1   the five slats peel up from the centre outward (--w, 0.08 apart per step from the centre)
+   data-intro pauses every page animation until the slats start (q 0.4); data-intro-lock holds the page still. */
 @keyframes wp-intro-fill {
   from {
     clip-path: inset(0 100% 0 0);
@@ -1338,28 +1341,87 @@
     clip-path: inset(0 0 0 0);
   }
 }
-@keyframes wp-intro-wipe {
-  to {
-    transform: translateY(-100%);
-    visibility: hidden;
-  }
-}
-@keyframes wp-intro-lift {
-  to {
-    transform: translateY(-28vh) scale(0.9);
+@keyframes wp-intro-in {
+  from {
+    translate: 0 1rem;
     opacity: 0;
   }
 }
-/* Held only after the delay (fill: forwards): a lone "to" keyframe left Chrome reporting the panel visible. */
-@keyframes wp-intro-done {
+@keyframes wp-pot-flicker {
+  from {
+    scale: 1 0.85;
+  }
+  to {
+    scale: 0.92 1.12;
+  }
+}
+@keyframes wp-pot-rattle {
   0%,
+  40%,
   100% {
-    visibility: hidden;
+    rotate: 0deg;
+    translate: 0 0;
+  }
+  10% {
+    rotate: -3deg;
+    translate: 0 -4px;
+  }
+  20% {
+    rotate: 2deg;
+    translate: 0 -1px;
+  }
+  30% {
+    rotate: -1deg;
+    translate: 0 -3px;
+  }
+}
+@keyframes wp-pot-bubble {
+  0% {
+    scale: 0;
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  70% {
+    scale: 1;
+    opacity: 0.9;
+  }
+  100% {
+    scale: 1.3;
+    opacity: 0;
+  }
+}
+@keyframes wp-pot-steam {
+  0% {
+    translate: 0 16px;
+    opacity: 0;
+  }
+  35% {
+    opacity: 0.75;
+  }
+  100% {
+    translate: 0 -36px;
+    opacity: 0;
+  }
+}
+@keyframes wp-intro-wheel {
+  0% {
+    translate: 0 0;
+    opacity: 1;
+  }
+  70%,
+  100% {
+    translate: 0 10px;
+    opacity: 0;
   }
 }
 
 @layer components {
   .wp-intro {
+    --q: 0;
+    --lid: clamp(0, var(--q) / 0.3, 1);
+    --rise: clamp(0, (var(--q) - 0.2) / 0.4, 1);
     position: fixed;
     inset: 0;
     z-index: 80;
@@ -1367,24 +1429,29 @@
     place-items: center;
     overflow: hidden;
     color: var(--dot-foreground);
-    /* Never catches clicks: once the slats have gone nothing may sit invisibly over the page. */
-    pointer-events: none;
-    animation: wp-intro-done 0.01s linear 3.3s forwards;
+    cursor: pointer;
+    touch-action: none;
   }
   .wp-intro__slat {
+    --w: clamp(0, (var(--q) - 0.35 - var(--d) * 0.08) / 0.45, 1);
     position: absolute;
     top: 0;
     bottom: 0;
     left: calc(var(--s) * 20%);
     width: 20.4%;
     background: var(--dot);
-    animation: wp-intro-wipe 0.75s cubic-bezier(0.37, 0, 0.63, 1) both;
-    animation-delay: calc(2.4s + var(--d) * 70ms);
+    translate: 0 calc(var(--w) * -100%);
+  }
+  /* The wordmark stays exactly centred; the pot hangs below it. */
+  .wp-intro__stack {
+    position: relative;
+    z-index: 1;
+    translate: 0 calc(var(--rise) * -28vh);
+    scale: calc(1 - var(--rise) * 0.1);
+    opacity: calc(1 - var(--rise));
   }
   .wp-intro__mark {
     position: relative;
-    z-index: 1;
-    animation: wp-intro-lift 0.6s cubic-bezier(0.37, 0, 0.63, 1) 2.4s both;
     display: inline-block;
     font: 400 clamp(2.75rem, 8vw, 6.5rem) / 0.92 var(--font-display);
     text-transform: uppercase;
@@ -1399,16 +1466,110 @@
     inset: 0;
     animation: wp-intro-fill 2s linear 0.1s both;
   }
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  /* The page-load clock starts as the last slat leaves (3.3s); a client navigation (data-load) wins. */
-  :root[data-intro]:not([data-load]) {
-    --load-start: 3.3s;
-    --load-delay: 3.4s;
+  /* The pot. Colours: the site palette plus cookware darks. */
+  .wp-pot {
+    position: absolute;
+    top: calc(100% + clamp(1rem, 4svh, 2.5rem));
+    left: 50%;
+    width: clamp(120px, 15vw, 200px);
+    overflow: visible;
+    transform: translateX(-50%);
+    animation: wp-intro-in 0.7s var(--ease-out) 0.5s both;
+  }
+  .wp-pot__body {
+    fill: #00522d;
+  }
+  .wp-pot__band {
+    fill: #f4b942;
+  }
+  .wp-pot__handle,
+  .wp-pot__lid {
+    fill: #0b3b23;
+  }
+  .wp-pot__burner {
+    fill: #10251a;
+  }
+  .wp-pot__flame {
+    fill: #f4b942;
+    animation: wp-pot-flicker 0.45s ease-in-out calc(var(--f, 0) * -0.13s) infinite alternate;
+  }
+  .wp-pot__flame:nth-child(even) {
+    fill: #e0603f;
+  }
+  .wp-pot__bubbles circle {
+    fill: #fff8ec;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: wp-pot-bubble 1.2s ease-out calc(var(--b, 0) * 0.3s) infinite;
+  }
+  /* The rattle loops; the scroll blows the lid up and off on top of it. */
+  .wp-pot__lid {
+    transform-origin: 120px 86px;
+    transform: translate(calc(var(--lid) * 30px), calc(var(--lid) * -90px)) rotate(calc(var(--lid) * 28deg));
+    animation: wp-pot-rattle 1.1s ease-in-out infinite;
+  }
+  .wp-pot__steam {
+    transform-origin: 120px 64px;
+    transform: scale(calc(1 + var(--lid) * 1.8));
+  }
+  .wp-pot__steam path {
+    fill: none;
+    stroke: #fff8ec;
+    stroke-linecap: round;
+    stroke-width: 5;
+    animation: wp-pot-steam 2.4s ease-out calc(var(--s, 0) * -0.8s) infinite;
+  }
+
+  .wp-intro__cue {
+    position: absolute;
+    bottom: clamp(1.5rem, 5svh, 3rem);
+    left: 50%;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    translate: -50% 0;
+    opacity: clamp(0, 1 - var(--q) * 5, 1);
+  }
+  .wp-intro__cue > * {
+    animation: wp-intro-in 0.6s var(--ease-out) 2.1s both;
+  }
+  .wp-intro__mouse {
+    display: flex;
+    justify-content: center;
+    width: 22px;
+    height: 34px;
+    padding-top: 6px;
+    border: 2px solid currentColor;
+    border-radius: 12px;
+  }
+  .wp-intro__mouse > span {
+    width: 4px;
+    height: 7px;
+    border-radius: 2px;
+    background: currentColor;
+    animation: wp-intro-wheel 1.4s ease-out infinite;
   }
 }
-@media (prefers-reduced-motion: reduce) {
+
+/* Only with JS and motion: hold the page while the intro is up and pause its animations, so the hero's entrance
+   plays as the slats lift. Off the home page, without JS or with reduced motion the panel is not shown at all. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  :root[data-intro-lock] {
+    overflow: hidden;
+  }
+  :root[data-intro] body :not(.wp-intro, .wp-intro *),
+  :root[data-intro] body :not(.wp-intro, .wp-intro *)::before,
+  :root[data-intro] body :not(.wp-intro, .wp-intro *)::after {
+    animation-play-state: paused !important;
+  }
+}
+:root:not([data-intro-lock]) .wp-intro {
+  display: none;
+}
+@media (scripting: none), (prefers-reduced-motion: reduce) {
   .wp-intro {
     display: none;
   }

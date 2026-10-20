@@ -217,11 +217,17 @@ tests/unit, tests/e2e    Vitest and Playwright
   The hero exit and footer .foot-rise letters are unchanged.
 - Intro curtain (2026-10-19, recorded from kervangida.com; that site has no route transition, its transition is
   this first-load preloader): `IntroCurtain` (components/motion/intro-curtain.tsx, `.wp-intro` in globals.css). A
-  full-screen `--dot` panel; the WORLD PLATE wordmark fills left to right over its outline (2s linear, from 0.1s), holds,
-  then the panel — cut into five slats — peels up from the centre outward (0.75s each, easeInOutSine, 70ms apart, from
-  2.4s) while the wordmark lifts away; done at 3.3s. The container never takes pointer events. Pure CSS, plays on every full load. `data-intro` on
-  <html> moves the Slush load clock to 3.3s / 3.4s until the first client navigation (IntroCurtain drops it; a
-  `data-load` swing clock always wins). Reduced motion: no intro.
+  full-screen `--dot` panel; the WORLD PLATE wordmark fills left to right over its outline (2s linear, from 0.1s) —
+  the user wants that picture kept as is. 2026-10-20 additions (user: "add some animation like the cooking stove …
+  waits for user to scroll … scroll animation and transition"; a slot-reel / split version was tried and reverted):
+  an original boiling pot under the wordmark (flicker, lid rattle, bubbles, steam on loop), a "Scroll to start
+  cooking" cue, and no automatic exit. The wheel / swipe / arrow, space and page keys drive --q (eased in JS,
+  reversible): lid blows off + steam puffs (q 0 → 0.3), wordmark and pot lift -28vh / scale 0.9 / fade (0.2 → 0.6),
+  the five slats peel up from the centre outward (0.35 → 1, 0.08 apart). Click / Enter / Escape / Tab skip to open.
+  Shown on every full load of the home page only: <html> starts with `data-intro` (pauses all page animation until
+  q 0.4, so the hero's entrance plays as the slats lift) and `data-intro-lock` (overflow hidden; LenisProvider stops
+  Lenis until "wp:intro-done"); the INTRO_SKIP head script in app/layout.tsx drops both before first paint off the
+  home page, for reduced motion, or when localStorage "wp-intro-skip" is set (the page-swing spec sets it).
 - Hungry Tiger scroll (2026-10-19, recorded from eathungrytiger.com via the user's Refero link): GSAP ScrollTrigger
   word scrub — each `.word` goes 0.2 → 1 opacity (0.2 long, 0.4 apart, power1.out), scrubbed "top 90%" → "top center".
   Ported into ScrollMotion as `[data-scrub="words"]` (`ScrubWords`, components/motion/scrub-words.tsx); it replaces the

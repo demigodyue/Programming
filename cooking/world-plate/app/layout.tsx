@@ -45,11 +45,20 @@ export const viewport: Viewport = {
   ],
 };
 
+// The intro greets every full load of the home page only. Before first paint, drop it anywhere else, for reduced
+// motion, or when the "wp-intro-skip" flag is set (the E2E specs set it; see tests/e2e/intro.spec.ts).
+const HOME = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/`;
+const INTRO_SKIP = `try{var p=location.pathname,h=${JSON.stringify(HOME)};if(!(p===h||p===h+"index.html"||p+"/"===h)||localStorage.getItem("wp-intro-skip")||matchMedia("(prefers-reduced-motion: reduce)").matches){var d=document.documentElement;d.removeAttribute("data-intro");d.removeAttribute("data-intro-lock")}}catch(e){}`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   // Every page leads with an Unsplash photo — open the connection before the <img> is parsed.
   preconnect("https://images.unsplash.com");
   return (
-    <html lang="en" suppressHydrationWarning data-intro="" className={`${anton.variable} ${inter.variable}`}>
+    <html lang="en" suppressHydrationWarning data-intro="" data-intro-lock="" className={`${anton.variable} ${inter.variable}`}>
+      <head>
+        {/* Decide about the intro before first paint (see INTRO_SKIP). */}
+        <script dangerouslySetInnerHTML={{ __html: INTRO_SKIP }} />
+      </head>
       <body className="flex min-h-dvh flex-col">
         <ThemeProvider>
           <MotionProvider>

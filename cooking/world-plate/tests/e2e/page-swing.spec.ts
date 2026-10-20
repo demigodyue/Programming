@@ -1,5 +1,10 @@
 import { expect, test } from "@playwright/test";
 
+// These flows start on the home page; the intro that greets it has its own spec.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("wp-intro-skip", "1"));
+});
+
 test("internal links swing to the next page with a client-side view transition", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1, name: /Cook the dishes/ })).toBeVisible();
