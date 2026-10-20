@@ -198,18 +198,22 @@ tests/unit, tests/e2e    Vitest and Playwright
     copy slides the other way (data-parallax with data-parallax-axis="x", xPercent -38 → -4; the h2 is sr-only). Each
     row's rule draws across and its title rises out of a mask, staggered by --k; the photo window opens (clip inset)
     and zooms out. Hover/focus still wipes that dish's photo in.
-  - Cuisines (#cuisines, client component): pinned horizontal gallery — the section is 100svh + n × 36svh tall, its
-    stage is sticky, and the card track translates by --p × (100vw − 100%); photos drift inside their cards and a bar
-    fills. Focusing a card scrolls the page to where it is in view. Fallback: a normal sideways-scrolling row.
+  - Cuisines (#cuisines, client component): pinned card stack (280svh; user: "change it to card stack and open with
+    scroll" — the sideways gallery was dropped). All ten cards start piled in the middle of the grid, each leaning
+    (TILT), and deal out top card first to a 5 × 2 grid (2 × 5 on phones): each li translates by its measured
+    --dx/--dy (pile centre minus slot) × (1 − --o) and rotates by --t × (1 − --o). Focusing a card while the stack is
+    closed scrolls to the open grid. Fallback: the open grid.
   Everything after Cuisines was redone again on request ("redo after this"; the circle wipe / 3D tiles / growing
   window were dropped):
   - Quick meals (client component): pinned zoom-out (260svh). The first dish starts as a full-screen photo under a
     giant "Dinner in 30 minutes" and shrinks into its grid slot — uniform scale + translate from --dx/--dy/--s, which
     the component measures (stage centre vs. slot, scale to cover); the other three rise in, the heading slides down.
-  - CTA: pinned zoom-through (240svh). "Cook tonight" is filled with a dish photo (background-clip: text) and scales
-    from pow(18, 1 − z) down to 1; the photo is counter-scaled (background-size 130% / S, centred on the zoom
-    origin) so it stays sharp and still while the letters close in; the line and button rise in last. The photo is
-    the first trending dish (page.tsx passes it).
+  - CTA: pinned stove (220svh; user asked for "animation of stove and cooking" instead of the photo-filled text).
+    StoveScene (components/sections/stove-scene.tsx) is an original inline SVG: hob, two knobs, a pan on the front
+    burner. --lit (from --p) turns the live knob and scales the flames up; the cooking loop (flame flicker, pan toss,
+    food arcing out and back, steam, spitting oil) has its amplitudes / opacity tied to --lit so nothing moves until
+    the flame is up. "Cook tonight" rises out of a mask line by line, then the line and button. Reduced motion: lit
+    and still.
   The hero exit and footer .foot-rise letters are unchanged.
 - Intro curtain (2026-10-19, recorded from kervangida.com; that site has no route transition, its transition is
   this first-load preloader): `IntroCurtain` (components/motion/intro-curtain.tsx, `.wp-intro` in globals.css). A

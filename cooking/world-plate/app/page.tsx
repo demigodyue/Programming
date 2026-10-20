@@ -29,11 +29,11 @@ export default async function HomePage() {
       <DishMarquee items={all.map((r) => r.title)} />
       <DishStage href="/recipes/butter-chicken" />
       <AboutPanel recipes={all} cuisineCount={cuisines.length} />
-      {/* After About each section has its own scroll motion: sliding headline, pinned sideways pan, photo zoom-out, zoom-through text. */}
+      {/* After About each section has its own scroll motion: sliding headline, card stack, photo zoom-out, stove. */}
       <TrendingPanel recipes={trending} />
       <CuisinePanel cuisines={cuisines} />
       <QuickPanel recipes={quick} />
-      <CtaPanel image={trending[0]?.image ?? all[0]?.image ?? ""} />
+      <CtaPanel />
     </>
   );
 }

@@ -4,12 +4,13 @@ import type { CSSProperties } from "react";
 import { CountUp } from "@/components/motion/count-up";
 import { FlipFace, flipClass } from "@/components/motion/flip-face";
 import { ScrubWords } from "@/components/motion/scrub-words";
+import { StoveScene } from "@/components/sections/stove-scene";
 import type { RecipeCard } from "@/db/queries/recipes";
 
 // The home page from the About section down. After About every section moves its own way with the scroll:
-// Trending slides its headline sideways (trending-panel.tsx), Cuisines pins and pans sideways (cuisine-panel.tsx),
-// Quick meals zooms a full-screen photo down into a grid (quick-panel.tsx), and the call to action zooms through a
-// photo-filled "Cook tonight".
+// Trending slides its headline sideways (trending-panel.tsx), Cuisines deals a card stack out into a grid
+// (cuisine-panel.tsx), Quick meals zooms a full-screen photo down into a grid (quick-panel.tsx), and the call to
+// action turns on an illustrated stove (stove-scene.tsx).
 
 /**
  * About: the pitch and three numbers on the left (they count up as the panel arrives); on the right, three tall
@@ -84,41 +85,45 @@ export function AboutPanel({ recipes, cuisineCount }: { recipes: RecipeCard[]; c
   );
 }
 
-/** A large Unsplash rendition for a CSS background (next/image's loader only runs for <Image>). */
-const fillUrl = (src: string) =>
-  src.startsWith("https://images.unsplash.com/") ? `${src}?w=1600&q=60&auto=format&fit=crop` : src;
-
 /**
- * The closing call to action as a zoom-through: the section pins and "Cook tonight" starts so large that the screen
- * is one letter filled with a dish photo (background-clip: text), then shrinks exponentially until both words sit
- * in the frame, the photo panning inside the letters; the line and button below rise in last. Scrubbed by --p.
- * Reduced motion / no JS: the finished panel.
+ * The closing call to action: the panel pins, and scrolling turns on the stove — the knob turns, the flame grows
+ * under the pan and the cooking starts (StoveScene) — while "Cook tonight" rises line by line out of a mask and the
+ * line and button follow. Scrubbed by --p. Reduced motion / no JS: the finished panel with the stove lit.
  */
-export function CtaPanel({ image }: { image: string }) {
+export function CtaPanel() {
   return (
     <section
       aria-labelledby="cta-title"
       data-progress
       data-progress-start="top top"
       data-progress-end="bottom bottom"
-      className="cta-zoom bg-headline text-background"
+      className="cta-stove bg-headline text-background"
     >
-      <div className="cta-zoom__stage container-page">
+      <div className="cta-stove__stage container-page">
         <div className="label-caps flex justify-between border-b border-current pb-3">
           <span>04 · Tonight</span>
           <span>Pick a dish</span>
         </div>
-        <h2 id="cta-title" className="cta-zoom__word font-display" style={{ "--fill": `url("${fillUrl(image)}")` } as CSSProperties}>
-          <span>Cook</span>
-          <span>tonight</span>
-        </h2>
-        <div className="cta-zoom__foot flex flex-wrap items-end justify-between gap-6">
-          <p className="max-w-md text-[0.9375rem] leading-relaxed">
-            Real ingredients, honest timings and a step-by-step Cook Mode that keeps your screen awake.
-          </p>
-          <Link href="/recipes" data-accent="yellow" className={flipClass()}>
-            <FlipFace>Browse recipes</FlipFace>
-          </Link>
+        <div className="cta-stove__body">
+          <div>
+            <h2 id="cta-title" className="cta-stove__title font-display">
+              <span className="cta-stove__line" style={{ "--l": 0 } as CSSProperties}>
+                <span>Cook</span>
+              </span>
+              <span className="cta-stove__line" style={{ "--l": 1 } as CSSProperties}>
+                <span>tonight</span>
+              </span>
+            </h2>
+            <div className="cta-stove__foot mt-6 flex flex-col items-start gap-5">
+              <p className="max-w-sm text-[0.9375rem] leading-relaxed">
+                Real ingredients, honest timings and a step-by-step Cook Mode that keeps your screen awake.
+              </p>
+              <Link href="/recipes" data-accent="yellow" className={flipClass()}>
+                <FlipFace>Browse recipes</FlipFace>
+              </Link>
+            </div>
+          </div>
+          <StoveScene />
         </div>
       </div>
     </section>
