@@ -200,6 +200,41 @@
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "ss01", "cv11";
   }
+
+  /* The background artwork (PageArt): the blob tile, with the line-art tile masked over it in the text colour.
+     Desktop shows the whole 1440-wide tile (its drawings sit in the outer bands); narrower screens show its middle
+     at 150% of the width, so the drawings stay a readable size. */
+  .page-art {
+    --art-w: max(100%, 1200px);
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .page-art::before,
+  .page-art::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+  .page-art::before {
+    background: var(--art-blobs) top center / var(--art-w) auto repeat-y;
+  }
+  /* On the dark forest canvas the pastel blobs turn muddy at full strength; keep them a soft glow. */
+  .dark .page-art::before {
+    opacity: 0.4;
+  }
+  .page-art::after {
+    background: color-mix(in srgb, var(--foreground) 34%, transparent);
+    -webkit-mask: var(--art-lines) top center / var(--art-w) auto repeat-y;
+    mask: var(--art-lines) top center / var(--art-w) auto repeat-y;
+  }
+  @media (width < 48rem) {
+    .page-art {
+      --art-w: 150%;
+    }
+  }
   /* Anton (for Beni 900), uppercase, normal tracking. */
   h1,
   h2,

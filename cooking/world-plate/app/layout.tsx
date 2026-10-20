@@ -5,6 +5,7 @@ import { Cursor } from "@/components/motion/cursor";
 import { IntroCurtain } from "@/components/motion/intro-curtain";
 import { LenisProvider } from "@/components/motion/lenis-provider";
 import { MouseDepth } from "@/components/motion/mouse-depth";
+import { PageArt } from "@/components/page-art";
 import { MotionProvider } from "@/components/motion/motion-provider";
 import { PageSwing } from "@/components/motion/page-swing";
 import { ScrollMotion } from "@/components/motion/scroll-motion";
@@ -59,7 +60,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {/* Decide about the intro before first paint (see INTRO_SKIP). */}
         <script dangerouslySetInnerHTML={{ __html: INTRO_SKIP }} />
       </head>
-      <body className="flex min-h-dvh flex-col">
+      <body className="relative isolate flex min-h-dvh flex-col">
+        <PageArt />
         <ThemeProvider>
           <MotionProvider>
           <a

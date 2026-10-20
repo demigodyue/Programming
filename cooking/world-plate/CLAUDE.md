@@ -218,6 +218,13 @@ tests/unit, tests/e2e    Vitest and Playwright
     the flame is up. "Cook tonight" rises out of a mask line by line, then the line and button. Reduced motion: lit
     and still.
   The hero exit and footer .foot-rise letters are unchanged.
+- Background artwork (2026-10-20; idea from the Pa'lais Refero style the user shared — "one image which goes from
+  top to bottom", drawings our own): PageArt (components/page-art.tsx) is the first child of <body> (relative,
+  isolate), absolute behind everything at z -1. It paints one 1440 × 3600 tile repeating down the page: public/art/
+  blobs.svg (palette blobs + paprika brush strokes, ::before; 40% in dark mode) and public/art/lines.svg (monoline
+  food drawings, used as a mask on ::after filled with 34% of --foreground, so it follows the theme). Drawings stay
+  in the outer bands; below 48rem the tile is 150% wide (centre crop). Regenerate with node scripts/make-page-art.mjs.
+  Sections with their own colour cover it; the Trending panel dropped its bg-background so the art shows through.
 - Intro curtain (2026-10-19, recorded from kervangida.com; that site has no route transition, its transition is
   this first-load preloader): `IntroCurtain` (components/motion/intro-curtain.tsx, `.wp-intro` in globals.css). A
   full-screen `--dot` panel; the WORLD PLATE wordmark fills left to right over its outline (2s linear, from 0.1s) —

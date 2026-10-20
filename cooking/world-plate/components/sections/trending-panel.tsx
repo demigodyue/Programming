@@ -19,7 +19,7 @@ export function TrendingPanel({ recipes }: { recipes: RecipeCard[] }) {
   const [active, setActive] = useState(0);
 
   return (
-    <section aria-labelledby="trending-title" className="bg-background flex flex-col justify-center overflow-x-clip pb-24 lg:pb-32">
+    <section aria-labelledby="trending-title" className="flex flex-col justify-center overflow-x-clip pb-24 lg:pb-32">
       <SlideBand text="Trending this week" />
       <div className="container-page grid items-center gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
         <div>
