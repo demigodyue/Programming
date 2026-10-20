@@ -1502,9 +1502,6 @@
   .wp-pot__water {
     fill: #062a18;
   }
-  .wp-pot__body {
-    fill: #00522d;
-  }
   .wp-pot__band {
     fill: #f4b942;
   }
@@ -1512,15 +1509,14 @@
   .wp-pot__lid {
     fill: #0b3b23;
   }
-  .wp-pot__burner {
-    fill: #10251a;
+  /* Gas jets flicker from their base (the inner group's origin); a soft blue glow licks the pot bottom. */
+  .wp-pot__jet {
+    transform-origin: 0 0;
+    animation: wp-pot-flicker 0.28s ease-in-out calc(var(--f, 0) * -0.07s) infinite alternate;
   }
-  .wp-pot__flame {
-    fill: #f4b942;
-    animation: wp-pot-flicker 0.45s ease-in-out calc(var(--f, 0) * -0.13s) infinite alternate;
-  }
-  .wp-pot__flame:nth-child(even) {
-    fill: #e0603f;
+  .wp-pot__glow {
+    opacity: 0.3;
+    filter: blur(6px);
   }
   .wp-pot__bubbles circle {
     fill: #fff8ec;
