@@ -6,8 +6,14 @@ test("the intro holds the page until it is opened, then stays away for the sessi
   await expect(html).toHaveAttribute("data-intro-lock", "");
   await expect(page.locator(".wp-intro")).toBeVisible();
 
-  // Scrolling opens it (the keyboard stands in for the wheel so this runs on the mobile project too).
-  await page.keyboard.press("ArrowDown");
+  // It only moves with the scroll: left alone it stays shut.
+  await page.waitForTimeout(1500);
+  await expect(html).toHaveAttribute("data-intro-lock", "");
+  // Scrolling steps it open (the keys stand in for the wheel so this runs on the mobile project too).
+  await page.keyboard.press("PageDown");
+  await expect(page.locator(".wp-intro")).not.toHaveCSS("--q", "0");
+  await expect(html).toHaveAttribute("data-intro-lock", "");
+  for (let i = 0; i < 3; i++) await page.keyboard.press("PageDown");
   await expect(html).not.toHaveAttribute("data-intro-lock");
   await expect(page.locator(".wp-intro")).toBeHidden();
   await expect(page.getByRole("heading", { level: 1, name: /Cook the dishes/ })).toBeVisible();

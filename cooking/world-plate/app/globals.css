@@ -1326,46 +1326,19 @@
 }
 
 /* ---------- Intro (IntroCurtain, components/motion/intro-curtain.tsx) ----------
-   Once per session. WORLD PLATE spins into place letter by letter (slot reels: each strip runs up through six
-   letters to its own, 1.3s, staggered 70ms) between two bands of dish names scrolling opposite ways; at 1.9s the
-   tagline and the "Scroll to open" cue arrive. Scrolling then drives --q (0 → 1, eased in JS): the picture is drawn
-   twice, clipped to its top and bottom halves, and the halves slide apart (the wordmark split through the middle)
-   to reveal the page. data-intro pauses every page animation until the halves part; data-intro-lock holds the
-   page still. Both live on <html>. */
-@keyframes wp-reel-spin {
-  from {
-    translate: 0 0;
-  }
-  to {
-    translate: 0 calc(-100% + 1em);
-  }
-}
-@keyframes wp-intro-band {
-  to {
-    translate: -50% 0;
-  }
-}
-@keyframes wp-intro-rise {
-  from {
-    translate: 0 1rem;
-    opacity: 0;
-  }
-}
-@keyframes wp-intro-wheel {
-  0% {
-    translate: 0 0;
-    opacity: 1;
-  }
-  70%,
-  100% {
-    translate: 0 10px;
-    opacity: 0;
-  }
-}
-
+   Once per session, and entirely scroll-driven: nothing here has a duration. --q (0 → 1) is the visitor's scroll,
+   eased in JS. The steps, as slices of --q:
+   - 0 → 0.54  each letter's reel spins up through six letters and lands on its own (--r; 2.2% later per letter)
+   - 0 → 1     the two bands of dish names slide sideways, opposite ways
+   - 0.45 → 0.55  the tagline comes up
+   - 0.58 → 1  the split (--s): the picture is drawn twice, clipped to its top and bottom halves, which slide apart
+               ±55vh while the wordmark grows, revealing the page
+   data-intro pauses every page animation until the split starts; data-intro-lock holds the page still. Both live
+   on <html>. */
 @layer components {
   .wp-intro {
     --q: 0;
+    --s: clamp(0, (var(--q) - 0.58) / 0.42, 1);
     position: fixed;
     inset: 0;
     z-index: 80;
@@ -1380,12 +1353,12 @@
     will-change: translate;
   }
   .wp-intro__half--top {
-    clip-path: inset(0 0 50% 0);
-    translate: 0 calc(var(--q) * -55vh);
+    clip-path: inset(0 0 calc(50% - 1px) 0);
+    translate: 0 calc(var(--s) * -55vh);
   }
   .wp-intro__half--bottom {
-    clip-path: inset(50% 0 0 0);
-    translate: 0 calc(var(--q) * 55vh);
+    clip-path: inset(calc(50% - 1px) 0 0 0);
+    translate: 0 calc(var(--s) * 55vh);
   }
   .wp-intro__scene {
     position: absolute;
@@ -1407,29 +1380,30 @@
     white-space: nowrap;
     color: transparent;
     -webkit-text-stroke: 1px color-mix(in srgb, var(--dot-foreground) 45%, transparent);
-    animation: wp-intro-band 26s linear infinite;
   }
   .wp-intro__band > span {
     padding-right: 0.4em;
   }
   .wp-intro__band--top {
     top: 12%;
+    translate: calc(var(--q) * -30%) 0;
   }
   .wp-intro__band--bottom {
     bottom: 12%;
-    animation-direction: reverse;
+    translate: calc(-30% + var(--q) * 30%) 0;
   }
   .wp-intro__mark {
     display: flex;
     font: 400 clamp(3.25rem, 13vw, 12rem) / 1 var(--font-display);
     text-transform: uppercase;
-    scale: calc(1 + var(--q) * 0.3);
+    scale: calc(1 + var(--s) * 0.3);
   }
   .wp-intro__gap {
     width: 0.25em;
   }
   /* The ghost letter sets the width; the strip spins over it and is clipped top and bottom only. */
   .wp-reel {
+    --r: clamp(0, (var(--q) - var(--i) * 0.022) / 0.32, 1);
     position: relative;
     display: inline-block;
     height: 1em;
@@ -1446,14 +1420,14 @@
     flex-direction: column;
     align-items: center;
     transform: translateX(-50%);
-    animation: wp-reel-spin 1.3s cubic-bezier(0.2, 0.75, 0.15, 1) calc(0.15s + var(--i) * 70ms) both;
+    translate: 0 calc(var(--r) * (-100% + 1em));
   }
   .wp-reel__strip > span {
     height: 1em;
   }
   .wp-intro__tag {
-    opacity: 0.85;
-    animation: wp-intro-rise 0.6s var(--ease-out) 1.9s both;
+    opacity: calc(clamp(0, (var(--q) - 0.45) / 0.1, 1) * 0.85);
+    translate: 0 calc((1 - clamp(0, (var(--q) - 0.45) / 0.1, 1)) * 1rem);
   }
   .wp-intro__cue {
     position: absolute;
@@ -1464,8 +1438,7 @@
     align-items: center;
     gap: 0.6rem;
     translate: -50% 0;
-    opacity: calc(1 - var(--q) * 4);
-    animation: wp-intro-rise 0.6s var(--ease-out) 2s both;
+    opacity: clamp(0, 1 - (var(--q) - 0.5) * 6, 1);
   }
   .wp-intro__mouse {
     display: flex;
@@ -1476,12 +1449,13 @@
     border: 2px solid currentColor;
     border-radius: 12px;
   }
+  /* The wheel moves with the scroll too. */
   .wp-intro__mouse > span {
     width: 4px;
     height: 7px;
     border-radius: 2px;
     background: currentColor;
-    animation: wp-intro-wheel 1.4s ease-out infinite;
+    translate: 0 calc(var(--q) * 12px);
   }
   .wp-intro__bar {
     width: 7rem;

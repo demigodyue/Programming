@@ -217,13 +217,14 @@ tests/unit, tests/e2e    Vitest and Playwright
   The hero exit and footer .foot-rise letters are unchanged.
 - Intro (2026-10-20; replaces the kervangida-style fill + slats at the user's request: "something animated and
   scroll kinda thing"): `IntroCurtain` (components/motion/intro-curtain.tsx, `.wp-intro` in globals.css), once per
-  browser session (sessionStorage "wp-intro"). A full-screen `--dot` panel: WORLD PLATE spins in as slot reels (each
-  letter's strip runs through six letters, 1.3s, 70ms stagger) between two outlined bands of dish names scrolling
-  opposite ways; tagline and a "Scroll to open" cue at ~2s. The visitor's wheel / swipe / arrow keys drive --q (eased
-  in JS, reversible); the scene is drawn twice, clipped to top and bottom halves, which slide apart ±55vh while the
-  wordmark scales up. Click / Enter / Escape / Tab open it outright; it opens by itself after 5.2s idle (1.4s after a
-  partial scroll). <html> starts with `data-intro` (pauses every page animation — the hero's entrance starts on the
-  first input) and `data-intro-lock` (overflow hidden; LenisProvider stops Lenis until "wp:intro-done"). An inline
+  browser session (sessionStorage "wp-intro"). Entirely scroll-driven — the user rejected an auto-playing version
+  ("it should have scroll animation not auto animation"), so nothing in it has a duration and it never opens by
+  itself. The wheel / swipe / arrow, space and page keys drive --q (0 → 1 over ~2.2 screens of wheel, eased in JS,
+  reversible). A full-screen `--dot` panel of mixed-up letters: over q 0 → 0.54 each letter's slot reel spins through
+  six letters onto WORLD PLATE (2.2% later per letter), the two outlined bands of dish names slide opposite ways the
+  whole time, the tagline rises at 0.45 → 0.55, and from 0.58 the scene — drawn twice, clipped to top and bottom
+  halves — splits ±55vh while the wordmark scales up. Click / Enter / Escape / Tab skip to open. <html> starts with
+  `data-intro` (pauses every page animation until the split starts at q 0.58) and `data-intro-lock` (overflow hidden; LenisProvider stops Lenis until "wp:intro-done"). An inline
   head script in app/layout.tsx drops both before first paint when already seen or motion is reduced; no JS: hidden.
   E2E specs other than tests/e2e/intro.spec.ts preset the sessionStorage flag.
 - Hungry Tiger scroll (2026-10-19, recorded from eathungrytiger.com via the user's Refero link): GSAP ScrollTrigger

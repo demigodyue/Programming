@@ -42,14 +42,15 @@ function Scene() {
 }
 
 /**
- * The first-load intro, once per browser session: a full-screen panel where WORLD PLATE spins into place letter by
- * letter like slot-machine reels while dish names scroll past above and below. Then it waits for the visitor:
- * scrolling (wheel, swipe or the arrow / space keys) opens it — the picture splits through the middle and the halves
- * slide apart as you scroll, so you can scroll it back a little too — and a click or Enter opens it straight away.
- * If nobody touches it, it opens by itself after a few seconds.
+ * The first-load intro, once per browser session, and every bit of it runs on the visitor's scroll (wheel, swipe,
+ * arrow / space / page keys) — nothing plays by itself. It opens on a full-screen panel of mixed-up letters; as you
+ * scroll, each letter's reel spins through and lands on WORLD PLATE (one after another), the two bands of dish names
+ * slide sideways in opposite directions and the tagline comes up; scroll on and the picture splits through the
+ * middle, the halves sliding apart to reveal the page. Scrolling back runs it backwards. A click, Enter or Escape
+ * skips straight to open. Progress is --q (0 → 1, eased here); the CSS turns it into each step.
  *
  * While it is up <html> carries `data-intro-lock` (no page scroll, Lenis stopped) and `data-intro` (every page
- * animation paused until the visitor starts opening, so the hero's entrance plays as the halves part). An inline script in the layout drops both
+ * animation paused until the halves start to part, so the hero's entrance plays as they open). An inline script in the layout drops both
  * before first paint when the intro was already seen this session or motion is reduced; CSS hides the panel then.
  */
 export function IntroCurtain() {
@@ -68,9 +69,6 @@ export function IntroCurtain() {
     const clamp = (v: number) => Math.min(1, Math.max(0, v));
     const nudge = (d: number) => {
       target = clamp(target + d);
-      // The page starts its own entrance as soon as the visitor starts opening, so it is under way as the halves part.
-      if (target > 0) html.removeAttribute("data-intro");
-      restartIdle();
       if (!frame) frame = requestAnimationFrame(tick);
     };
     const open = () => nudge(1);
@@ -90,36 +88,32 @@ export function IntroCurtain() {
       q += (target - q) * 0.12;
       if (Math.abs(target - q) < 0.0005) q = target;
       el.style.setProperty("--q", q.toFixed(4));
+      // The page starts its own entrance as the halves begin to part.
+      if (q > 0.58) html.removeAttribute("data-intro");
       if (q >= 0.999) return finish();
       if (q !== target) frame = requestAnimationFrame(tick);
-    };
-
-    // Open by itself if left alone; after a partial scroll, finish the move a moment later.
-    let idle = window.setTimeout(open, 5200);
-    const restartIdle = () => {
-      window.clearTimeout(idle);
-      idle = window.setTimeout(open, target > 0 ? 1400 : 5200);
     };
 
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
       const px = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * window.innerHeight : e.deltaY;
-      nudge(px / (window.innerHeight * 1.1));
+      nudge(px / (window.innerHeight * 2.2));
     };
     const onTouchStart = (e: TouchEvent) => (lastY = e.touches[0]?.clientY ?? 0);
     const onTouchMove = (e: TouchEvent) => {
       e.preventDefault();
       const y = e.touches[0]?.clientY ?? lastY;
-      nudge((lastY - y) / (window.innerHeight * 0.7));
+      nudge((lastY - y) / (window.innerHeight * 1.6));
       lastY = y;
     };
     const onKey = (e: KeyboardEvent) => {
-      if (["ArrowDown", "PageDown", " ", "Enter", "Escape", "Tab"].includes(e.key)) {
+      const step = { ArrowDown: 0.12, PageDown: 0.35, " ": 0.35, ArrowUp: -0.12, PageUp: -0.35 }[e.key];
+      if (step) {
+        e.preventDefault();
+        nudge(step);
+      } else if (["Enter", "Escape", "Tab"].includes(e.key)) {
         if (e.key !== "Tab") e.preventDefault();
         open();
-      } else if (["ArrowUp", "PageUp"].includes(e.key)) {
-        e.preventDefault();
-        nudge(-0.25);
       }
     };
 
@@ -129,7 +123,6 @@ export function IntroCurtain() {
     window.addEventListener("keydown", onKey);
     el.addEventListener("click", open);
     const cleanup = () => {
-      window.clearTimeout(idle);
       cancelAnimationFrame(frame);
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
