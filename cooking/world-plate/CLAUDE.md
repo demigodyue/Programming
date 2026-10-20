@@ -209,8 +209,11 @@ tests/unit, tests/e2e    Vitest and Playwright
     giant "Dinner in 30 minutes" and shrinks into its grid slot — uniform scale + translate from --dx/--dy/--s, which
     the component measures (stage centre vs. slot, scale to cover); the other three rise in, the heading slides down.
   - CTA: pinned stove (220svh; user asked for "animation of stove and cooking" instead of the photo-filled text).
-    StoveScene (components/sections/stove-scene.tsx) is an original inline SVG: hob, two knobs, a pan on the front
-    burner. --lit (from --p) turns the live knob and scales the flames up; the cooking loop (flame flicker, pan toss,
+    StoveScene (components/sections/stove-scene.tsx) is an original inline SVG, made realistic on request: a gas
+    range — black hob, stainless front with four chrome knobs, oven door with handle and glass — with two GasBurners
+    (components/motion/gas-burner.tsx, shared with the intro pot: drip bowl, metal crown, cast-iron grate, 16 blue
+    jets) and a shaded skillet with a wooden handle and an oil sheen. --lit (from --p) turns the live knob and grows
+    the front burner's jets (.stove .gas-burner__jets); the cooking loop (flame flicker, pan toss,
     food arcing out and back, steam, spitting oil) has its amplitudes / opacity tied to --lit so nothing moves until
     the flame is up. "Cook tonight" rises out of a mask line by line, then the line and button. Reduced motion: lit
     and still.

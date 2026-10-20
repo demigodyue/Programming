@@ -1502,21 +1502,27 @@
   .wp-pot__water {
     fill: #062a18;
   }
-  .wp-pot__band {
-    fill: #f4b942;
-  }
-  .wp-pot__handle,
   .wp-pot__lid {
     fill: #0b3b23;
   }
-  /* Gas jets flicker from their base (the inner group's origin); a soft blue glow licks the pot bottom. */
-  .wp-pot__jet {
-    transform-origin: 0 0;
-    animation: wp-pot-flicker 0.28s ease-in-out calc(var(--f, 0) * -0.07s) infinite alternate;
+  .wp-pot__shadow {
+    opacity: 0.35;
+    filter: blur(3px);
   }
-  .wp-pot__glow {
+  /* Gas jets flicker from their base (the inner group's origin); a soft blue glow licks the pot bottom. */
+  /* Gas jets (GasBurner, shared with the closing panel's stove) flicker from their base; a soft blue glow licks the
+     pan above them. */
+  .gas-jet {
+    transform-origin: 0 0;
+  }
+  .gas-burner__glow {
     opacity: 0.3;
     filter: blur(6px);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .gas-jet {
+      animation: wp-pot-flicker 0.28s ease-in-out calc(var(--f, 0) * -0.07s) infinite alternate;
+    }
   }
   .wp-pot__bubbles circle {
     fill: #fff8ec;
@@ -1910,53 +1916,25 @@
     opacity: calc(var(--lit) * 0.3);
     filter: blur(28px);
   }
-  .stove__top {
-    fill: #0b3b23;
-  }
-  .stove__body {
-    fill: #00522d;
-  }
-  .stove__window {
-    fill: #062a18;
-  }
-  .stove__knob circle {
-    fill: #f3e6d4;
-  }
-  .stove__knob rect {
-    fill: #00522d;
-  }
+  /* The range's own colours are gradients on the svg; here: the knob turning on, the gas jets (GasBurner) growing
+     up from the crown with --lit, and the pan's tilt point. */
   .stove__knob--live {
     rotate: calc(var(--lit) * -135deg);
   }
-  .stove__burner {
-    fill: #10251a;
-  }
-  .stove__flames {
-    transform-origin: 300px 312px;
+  .stove .gas-burner__jets {
+    transform-origin: 0 0;
     scale: 1 var(--lit);
     opacity: clamp(0, var(--lit) * 3, 1);
   }
-  .stove__flame {
-    fill: #f4b942;
-  }
-  .stove__flame:nth-child(even) {
-    fill: #e0603f;
+  .stove .gas-burner__glow {
+    opacity: calc(var(--lit) * 0.35);
   }
   .stove__pan {
-    transform-origin: 300px 290px;
+    transform-origin: 300px 300px;
   }
-  .stove__pan-handle {
-    fill: #5a3b24;
-  }
-  .stove__pan-body {
-    fill: #1f2a24;
-  }
-  .stove__pan-rim {
-    fill: #34433a;
-  }
-  .stove__pan-oil {
-    fill: #c99a2e;
-    opacity: 0.8;
+  .stove__veg {
+    stroke: rgb(0 0 0 / 0.18);
+    stroke-width: 1.2;
   }
   .stove__veg--tomato {
     fill: #e0603f;
@@ -2144,9 +2122,6 @@
     }
   }
   /* The cooking loop; amplitudes scale with --lit, so the pan only moves once the flame is up. */
-  .stove__flame {
-    animation: wp-flicker 0.45s ease-in-out calc(var(--f, 0) * -0.13s) infinite alternate;
-  }
   .stove__pan {
     animation: wp-pan-toss 1.8s ease-in-out infinite;
   }
@@ -2161,14 +2136,6 @@
   }
 }
 
-@keyframes wp-flicker {
-  from {
-    scale: 1 0.88;
-  }
-  to {
-    scale: 0.92 1.12;
-  }
-}
 @keyframes wp-pan-toss {
   0%,
   100%,
