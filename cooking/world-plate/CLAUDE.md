@@ -191,7 +191,10 @@ tests/unit, tests/e2e    Vitest and Playwright
   QuickPanel and CtaPanel (components/sections/home-panels.tsx, trending-panel.tsx). Large screens (≥1024px wide and
   ≥700px tall): each panel is a sticky 100svh card with a 40svh spacer after it; the next card slides up over it (28px
   top corners) and the covered card sinks back (scale 0.92, -2%, darkens to 55% scrim), scrubbed by the next card's
-  distance from the top. Smaller screens: ordinary sections. Trending: numbered rows, hover/focus wipes that dish's
+  distance from the top. Smaller screens: ordinary sections. About (redone 2026-10-20, user: "too plain, only text"):
+  "A kitchen atlas" headline, a short ScrubWords pitch, three CountUp stats (dishes, cuisines, avg. hours) and a
+  button on the left; three columns of dish photos running endlessly on the right (.about-cols, middle column
+  reversed, own speeds, paused on hover/focus, still for reduced motion), each photo a recipe link. Trending: numbered rows, hover/focus wipes that dish's
   photo up into the frame. Cuisines (#cuisines): ten strips, the hovered/focused one widens (flex-grow) to show name,
   country, count; small screens a 2-column tile grid. Quick meals: 2×2 photo tiles. CTA: full tomato panel.
   The hero exit (.hero-scroll / .hero-exit / .hero-fan) and footer .foot-rise letters are unchanged.

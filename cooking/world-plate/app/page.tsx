@@ -29,7 +29,7 @@ export default async function HomePage() {
       <DishStage href="/recipes/butter-chicken" />
       {/* From the About section down: full-screen panels that slide up over one another. */}
       <StackPanels>
-        <AboutPanel recipeCount={all.length} cuisineCount={cuisines.length} />
+        <AboutPanel recipes={all} cuisineCount={cuisines.length} />
         <TrendingPanel recipes={trending} />
         <CuisinePanel cuisines={cuisines} />
         <QuickPanel recipes={quick} />
