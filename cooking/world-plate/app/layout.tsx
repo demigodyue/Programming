@@ -45,11 +45,17 @@ export const viewport: Viewport = {
   ],
 };
 
+const INTRO_SKIP = `try{if(sessionStorage.getItem("wp-intro")||matchMedia("(prefers-reduced-motion: reduce)").matches){var d=document.documentElement;d.removeAttribute("data-intro");d.removeAttribute("data-intro-lock")}}catch(e){}`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   // Every page leads with an Unsplash photo — open the connection before the <img> is parsed.
   preconnect("https://images.unsplash.com");
   return (
-    <html lang="en" suppressHydrationWarning data-intro="" className={`${anton.variable} ${inter.variable}`}>
+    <html lang="en" suppressHydrationWarning data-intro="" data-intro-lock="" className={`${anton.variable} ${inter.variable}`}>
+      <head>
+        {/* Skip the intro before first paint if it was already seen this session or motion is reduced. */}
+        <script dangerouslySetInnerHTML={{ __html: INTRO_SKIP }} />
+      </head>
       <body className="flex min-h-dvh flex-col">
         <ThemeProvider>
           <MotionProvider>

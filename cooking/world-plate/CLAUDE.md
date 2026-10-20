@@ -215,13 +215,17 @@ tests/unit, tests/e2e    Vitest and Playwright
     the flame is up. "Cook tonight" rises out of a mask line by line, then the line and button. Reduced motion: lit
     and still.
   The hero exit and footer .foot-rise letters are unchanged.
-- Intro curtain (2026-10-19, recorded from kervangida.com; that site has no route transition, its transition is
-  this first-load preloader): `IntroCurtain` (components/motion/intro-curtain.tsx, `.wp-intro` in globals.css). A
-  full-screen `--dot` panel; the WORLD PLATE wordmark fills left to right over its outline (2s linear, from 0.1s), holds,
-  then the panel — cut into five slats — peels up from the centre outward (0.75s each, easeInOutSine, 70ms apart, from
-  2.4s) while the wordmark lifts away; done at 3.3s. The container never takes pointer events. Pure CSS, plays on every full load. `data-intro` on
-  <html> moves the Slush load clock to 3.3s / 3.4s until the first client navigation (IntroCurtain drops it; a
-  `data-load` swing clock always wins). Reduced motion: no intro.
+- Intro (2026-10-20; replaces the kervangida-style fill + slats at the user's request: "something animated and
+  scroll kinda thing"): `IntroCurtain` (components/motion/intro-curtain.tsx, `.wp-intro` in globals.css), once per
+  browser session (sessionStorage "wp-intro"). A full-screen `--dot` panel: WORLD PLATE spins in as slot reels (each
+  letter's strip runs through six letters, 1.3s, 70ms stagger) between two outlined bands of dish names scrolling
+  opposite ways; tagline and a "Scroll to open" cue at ~2s. The visitor's wheel / swipe / arrow keys drive --q (eased
+  in JS, reversible); the scene is drawn twice, clipped to top and bottom halves, which slide apart ±55vh while the
+  wordmark scales up. Click / Enter / Escape / Tab open it outright; it opens by itself after 5.2s idle (1.4s after a
+  partial scroll). <html> starts with `data-intro` (pauses every page animation — the hero's entrance starts on the
+  first input) and `data-intro-lock` (overflow hidden; LenisProvider stops Lenis until "wp:intro-done"). An inline
+  head script in app/layout.tsx drops both before first paint when already seen or motion is reduced; no JS: hidden.
+  E2E specs other than tests/e2e/intro.spec.ts preset the sessionStorage flag.
 - Hungry Tiger scroll (2026-10-19, recorded from eathungrytiger.com via the user's Refero link): GSAP ScrollTrigger
   word scrub — each `.word` goes 0.2 → 1 opacity (0.2 long, 0.4 apart, power1.out), scrubbed "top 90%" → "top center".
   Ported into ScrollMotion as `[data-scrub="words"]` (`ScrubWords`, components/motion/scrub-words.tsx); it replaces the
