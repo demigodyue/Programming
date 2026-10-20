@@ -28,6 +28,7 @@ function BoilingPot() {
       <rect className="wp-pot__handle" x="22" y="104" width="26" height="12" rx="6" />
       <rect className="wp-pot__handle" x="192" y="104" width="26" height="12" rx="6" />
       <path className="wp-pot__body" d="M40 86h160v70c0 16-12 26-28 26H68c-16 0-28-10-28-26z" />
+      <ellipse className="wp-pot__water" cx="120" cy="86" rx="80" ry="7" />
       <rect className="wp-pot__band" x="40" y="120" width="160" height="10" />
       <g className="wp-pot__bubbles">
         {[64, 98, 142, 176].map((x, i) => (
@@ -46,9 +47,10 @@ function BoilingPot() {
  * The intro on every full load of the home page. kervangida.com's preloader, recorded 2026-10-19: a brand-colour
  * panel holds the logo while a mask fills it left to right (2s, linear) — kept exactly as it was. Under it a pot
  * boils (flames, a rattling lid, bubbles, steam) on a loop. It then waits for the visitor: the scroll (wheel, swipe,
- * arrow / space / page keys) drives --q (0 → 1, eased here, reversible). The lid blows off in a puff of steam, the
- * wordmark and pot lift away, and the panel — five slats — peels up from the centre outward, all scrubbed by the
- * scroll. A click, Enter or Escape skips straight to open.
+ * arrow / space / page keys) drives --q (0 → 1, eased here, reversible). The lid blows off in a puff of steam and the
+ * wordmark lifts away, then the pot travels to the middle of the screen and grows bigger and bigger until it fills
+ * it, and fades through to the page — all scrubbed by the scroll. (--pdx / --pdy, measured here, are the pot's way
+ * to the centre.) A click, Enter or Escape skips straight to open.
  *
  * While it is up <html> carries `data-intro-lock` (no page scroll, Lenis stopped) and `data-intro` (every page
  * animation paused until the slats start to lift, so the hero's entrance plays as they go). The inline script in
@@ -69,8 +71,21 @@ export function IntroCurtain() {
     let finished = false;
     const clamp = (v: number) => Math.min(1, Math.max(0, v));
 
+    // How far the pot travels to sit in the middle of the screen as it grows (measured while it is at rest).
+    const pot = el.querySelector<HTMLElement>(".wp-pot-zoom");
+    const measure = () => {
+      if (!pot || q > 0) return;
+      const r = pot.getBoundingClientRect();
+      el.style.setProperty("--pdx", `${(window.innerWidth / 2 - (r.left + r.width / 2)).toFixed(1)}px`);
+      // The zoom point is low on the pot's body (transform-origin 50% 72% in globals.css), so the pot covers the screen.
+      el.style.setProperty("--pdy", `${(window.innerHeight / 2 - (r.top + r.height * 0.72)).toFixed(1)}px`);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+
     const cleanup = () => {
       cancelAnimationFrame(frame);
+      window.removeEventListener("resize", measure);
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
@@ -89,8 +104,8 @@ export function IntroCurtain() {
       q += (target - q) * 0.12;
       if (Math.abs(target - q) < 0.0005) q = target;
       el.style.setProperty("--q", q.toFixed(4));
-      // The page starts its own entrance as the slats begin to lift.
-      if (q > 0.4) html.removeAttribute("data-intro");
+      // The page starts its own entrance just before the pot fades through to it.
+      if (q > 0.72) html.removeAttribute("data-intro");
       if (q >= 0.999) return finish();
       if (q !== target) frame = requestAnimationFrame(tick);
     };
@@ -144,7 +159,9 @@ export function IntroCurtain() {
           <span className="wp-intro__outline">World Plate</span>
           <span className="wp-intro__fill">World Plate</span>
         </span>
-        <BoilingPot />
+        <span className="wp-pot-zoom">
+          <BoilingPot />
+        </span>
       </div>
       <div className="wp-intro__cue">
         <span className="wp-intro__mouse">

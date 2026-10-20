@@ -1,8 +1,8 @@
-:HL["/Programming/cooking/site/_next/static/chunks/2nvpn1xc6oit8.css","style"]
+:HL["/Programming/cooking/site/_next/static/chunks/07jwb9j2b38jy.css","style"]
 :HL["/Programming/cooking/site/_next/static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/Programming/cooking/site/_next/static/media/9e9f04e3c37952ab-s.p.0pan85mumqyf3.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HC"https://images.unsplash.com"
 3:[["children",{"s":"__PAGE__","h":160}]]
 2:[["children",{"s":{"n":"slug","t":"d","k":"tacos-al-pastor","s":[]},"h":65632,"c":"$Q3"}]]
 1:[["children",{"s":"recipes","h":131136,"c":"$Q2"}]]
-0:{"b":"KAVJ_JdVPB2biL8x_Oufu","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}
+0:{"b":"t8JCPb6RS3N4fmdVBQD6Y","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}

@@ -1329,10 +1329,13 @@
    IntroCurtain (components/motion/intro-curtain.tsx), every full load of the home page. The picture is the
    recorded one: the logo fills left to right over its outline in 2s (linear, from 0.1s). Under it an original pot
    boils on a loop. Then nothing happens until the visitor scrolls: --q (0 → 1, the scroll, eased in JS) runs
-   - 0 → 0.3    the lid blows off and the steam puffs up (--lid)
-   - 0.2 → 0.6  the wordmark and pot lift away and fade (--rise; the recorded lift: -28vh, scale 0.9)
-   - 0.35 → 1   the five slats peel up from the centre outward (--w, 0.08 apart per step from the centre)
-   data-intro pauses every page animation until the slats start (q 0.4); data-intro-lock holds the page still. */
+   - 0 → 0.25     the lid blows off and the steam puffs up (--lid)
+   - 0.05 → 0.35  the wordmark lifts away and fades (--rise; the recorded lift: -28vh, scale 0.9)
+   - 0.08 → 0.82  the pot travels to the centre and grows exponentially, ×1 → ×40 (×70 on phones), zooming on a
+                  point low on its body; it covers the screen from about q 0.65 (--t)
+   - 0.7 → 0.82   behind it, the five slats lift away (centre first)
+   - 0.84 → 1     the pot fades through to the page (--fade)
+   data-intro pauses every page animation until q 0.72; data-intro-lock holds the page still. */
 @keyframes wp-intro-fill {
   from {
     clip-path: inset(0 100% 0 0);
@@ -1420,8 +1423,10 @@
 @layer components {
   .wp-intro {
     --q: 0;
-    --lid: clamp(0, var(--q) / 0.3, 1);
-    --rise: clamp(0, (var(--q) - 0.2) / 0.4, 1);
+    --lid: clamp(0, var(--q) / 0.25, 1);
+    --rise: clamp(0, (var(--q) - 0.05) / 0.3, 1);
+    --t: clamp(0, (var(--q) - 0.08) / 0.74, 1);
+    --fade: clamp(0, (var(--q) - 0.84) / 0.16, 1);
     position: fixed;
     inset: 0;
     z-index: 80;
@@ -1433,7 +1438,7 @@
     touch-action: none;
   }
   .wp-intro__slat {
-    --w: clamp(0, (var(--q) - 0.35 - var(--d) * 0.08) / 0.45, 1);
+    --w: clamp(0, (var(--q) - 0.7 - var(--d) * 0.02) / 0.08, 1);
     position: absolute;
     top: 0;
     bottom: 0;
@@ -1446,13 +1451,13 @@
   .wp-intro__stack {
     position: relative;
     z-index: 1;
-    translate: 0 calc(var(--rise) * -28vh);
-    scale: calc(1 - var(--rise) * 0.1);
-    opacity: calc(1 - var(--rise));
   }
   .wp-intro__mark {
     position: relative;
     display: inline-block;
+    translate: 0 calc(var(--rise) * -28vh);
+    scale: calc(1 - var(--rise) * 0.1);
+    opacity: calc(1 - var(--rise));
     font: 400 clamp(2.75rem, 8vw, 6.5rem) / 0.92 var(--font-display);
     text-transform: uppercase;
     white-space: nowrap;
@@ -1468,14 +1473,32 @@
   }
 
   /* The pot. Colours: the site palette plus cookware darks. */
-  .wp-pot {
+  /* The zoom: the wrapper travels to the screen centre and scales; the svg inside only does its entrance. */
+  .wp-pot-zoom {
     position: absolute;
     top: calc(100% + clamp(1rem, 4svh, 2.5rem));
-    left: 50%;
+    left: calc(50% - clamp(60px, 7.5vw, 100px));
+    display: block;
     width: clamp(120px, 15vw, 200px);
+    --zmax: 40;
+    transform-origin: 50% 72%;
+    translate: calc(var(--pdx, 0px) * var(--t)) calc(var(--pdy, 0px) * var(--t));
+    scale: pow(var(--zmax), var(--t));
+    opacity: calc(1 - var(--fade));
+  }
+  @media (width < 40rem) {
+    .wp-pot-zoom {
+      --zmax: 70;
+    }
+  }
+  .wp-pot {
+    display: block;
+    width: 100%;
     overflow: visible;
-    transform: translateX(-50%);
     animation: wp-intro-in 0.7s var(--ease-out) 0.5s both;
+  }
+  .wp-pot__water {
+    fill: #062a18;
   }
   .wp-pot__body {
     fill: #00522d;
