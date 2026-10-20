@@ -7,7 +7,7 @@ import { LenisProvider } from "@/components/motion/lenis-provider";
 import { MouseDepth } from "@/components/motion/mouse-depth";
 import { PageArt } from "@/components/page-art";
 import { MotionProvider } from "@/components/motion/motion-provider";
-import { PageTurn } from "@/components/motion/page-turn";
+import { PageSwing } from "@/components/motion/page-swing";
 import { ScrollMotion } from "@/components/motion/scroll-motion";
 import { SiteFooter } from "@/components/sections/site-footer";
 import { SiteHeader } from "@/components/sections/site-header";
@@ -75,7 +75,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <LenisProvider />
           <ScrollMotion />
           <MouseDepth />
-          <PageTurn />
+          <PageSwing />
           <Cursor />
           <SiteHeader />
           <main id="main" className="flex-1">
