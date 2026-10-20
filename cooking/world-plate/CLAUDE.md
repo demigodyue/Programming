@@ -228,7 +228,8 @@ tests/unit, tests/e2e    Vitest and Playwright
   trimmed, ≤900px) and composed by scripts/make-page-art.mjs into a 2× 2880 × 7200 tile (webp, ~0.7 MB) down the outer
   bands. Used as a mask on ::after filled with 34% of --foreground, so it follows the theme. Coloured sections get the
   same engravings via SectionArt (components/section-art.tsx; the section is `relative isolate`, the layer z -1):
-  About, Cuisines, Quick meals, Cook tonight, the hero's widget wall, the recipe story and the footer, ink = the
+  the intro panel (z 0 over its slats), About, Cuisines, Quick meals, Cook tonight, the hero's widget wall, the recipe
+  story and the footer, ink = the
   section's currentColor at 26%, each starting at a different tile offset. Below 48rem the tile is shown at 100%
   width. To swap a drawing: drop a PNG/JPG in art-src (it is cleaned on the next run) and edit `place`. Drawings stay
   in the outer bands; below 48rem the tile is 150% wide (centre crop). Regenerate with node scripts/make-page-art.mjs.

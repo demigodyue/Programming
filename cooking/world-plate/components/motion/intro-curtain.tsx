@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type CSSProperties } from "react";
 import { GasBurner } from "@/components/motion/gas-burner";
+import { SectionArt } from "@/components/section-art";
 
 // Five slats; the middle one lifts first and the outer ones follow (0, 1, 2 steps from the centre).
 const SLATS = [2, 1, 0, 1, 2];
@@ -255,6 +256,8 @@ export function IntroCurtain() {
           style={{ "--s": i, "--d": d } as CSSProperties}
         />
       ))}
+      {/* The site's engravings on the panel too, in its cream ink, behind the wordmark and pot. */}
+      <SectionArt offset={0} />
       <div className="wp-intro__stack">
         <span className="wp-intro__mark">
           <span className="wp-intro__outline">World Plate</span>
