@@ -221,8 +221,11 @@ tests/unit, tests/e2e    Vitest and Playwright
 - Background artwork (2026-10-20; idea from the Pa'lais Refero style the user shared — "one image which goes from
   top to bottom", drawings our own): PageArt (components/page-art.tsx) is the first child of <body> (relative,
   isolate), absolute behind everything at z -1. It paints one 1440 × 3600 tile repeating down the page: public/art/
-  blobs.svg (palette blobs + paprika brush strokes, ::before; 40% in dark mode) and public/art/lines.svg (monoline
-  food drawings, used as a mask on ::after filled with 34% of --foreground, so it follows the theme). Drawings stay
+  blobs.svg (palette blobs + paprika brush strokes) under public/art/grain.svg (faint feTurbulence paper fibres),
+  both on ::before (40% in dark mode), and public/art/lines.svg (engraved-style food drawings — "make it more
+  realistic": outlines, fine detail lines, stippling and graded hatching clipped to each shadow side, cross-hatched in
+  the darkest parts — used as a mask on ::after filled with 34% of --foreground, so it follows the theme). Avoid
+  little arcs/dot pairs on rounded shapes: at this size they read as faces. Drawings stay
   in the outer bands; below 48rem the tile is 150% wide (centre crop). Regenerate with node scripts/make-page-art.mjs.
   Sections with their own colour cover it; the Trending panel dropped its bg-background so the art shows through.
 - Intro curtain (2026-10-19, recorded from kervangida.com; that site has no route transition, its transition is
