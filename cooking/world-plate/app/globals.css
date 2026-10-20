@@ -1559,9 +1559,6 @@
     overflow: visible;
     animation: wp-intro-in 0.7s var(--ease-out) 0.5s both;
   }
-  .wp-pot__water {
-    fill: #062a18;
-  }
   .wp-pot__lid {
     fill: #0b3b23;
   }
@@ -1996,17 +1993,18 @@
     stroke: rgb(0 0 0 / 0.18);
     stroke-width: 1.2;
   }
+  /* Shaded round (gradients defined in StoveScene). */
   .stove__veg--tomato {
-    fill: #e0603f;
+    fill: url(#stove-tomato);
   }
   .stove__veg--pepper {
-    fill: #3f8f4f;
+    fill: url(#stove-pepper);
   }
   .stove__veg--corn {
-    fill: #f4b942;
+    fill: url(#stove-corn);
   }
   .stove__veg--leaf {
-    fill: #b7cdb0;
+    fill: url(#stove-leaf);
   }
   .stove__bit {
     transform-box: fill-box;
@@ -2017,8 +2015,8 @@
     fill: none;
     stroke: #fff8ec;
     stroke-linecap: round;
-    stroke-width: 6;
-    opacity: 0.35;
+    stroke-width: 8;
+    opacity: 0.4;
   }
   .stove__spit circle {
     fill: #f4b942;

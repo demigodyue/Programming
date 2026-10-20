@@ -253,7 +253,12 @@ tests/unit, tests/e2e    Vitest and Playwright
   full-screen `--dot` panel; the WORLD PLATE wordmark fills left to right over its outline (2s linear, from 0.1s) —
   the user wants that picture kept as is. 2026-10-20 additions (user: "add some animation like the cooking stove …
   waits for user to scroll … scroll animation and transition"; a slot-reel / split version was tried and reverted):
-  an original boiling pot under the wordmark (lid rattle, bubbles, steam on loop) — made more realistic on request: a
+  an original boiling pot under the wordmark (lid rattle, bubbles, steam on loop) — made realistic in two rounds
+  (the second, 2026-10-20: cylinder shading with key light / specular streak / reflected light, polished-steel
+  handles and lid rim, glossy black knob on a steel collar, water sheen, blurred vapour, a black-glass hob with the
+  pot's reflection; GasBurner got graded translucent jets with a hot inner cone and glow, a ported aluminium crown
+  and lit cast-iron grates; StoveScene got a cast-iron skillet, shimmering oil, round-shaded vegetables via CSS
+  url(#stove-*) gradients, brushed stainless, knurled chrome knobs and tinted oven glass) — first round: a
   shaded enamel body, a domed enamel lid with a sheen, lip and turned metal knob, and a gas hob drawn below the
   240 × 210 box (overflow visible, so the zoom maths keyed to the box stay put): black top with knobs, cast-iron
   grate, metal burner crown and a ring of 16 blue gas jets (pale cores, orange tips) flickering, plus a blue glow — a "Scroll to start
