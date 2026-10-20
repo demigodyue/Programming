@@ -181,7 +181,9 @@ tests/unit, tests/e2e    Vitest and Playwright
   animations"), so Slush's swing stays with World Plate changes: the tracks gained rz (tilt, deg) and y (drop, vh) —
   the old card lifts -3vh / tilts -2.5° while shrinking, then is tossed down-left (rz -14°, y 14vh); the new card
   tilts in (rz 12°, y 12vh → 0); the panels arc and tilt too and carry SectionArt engravings (forest ink on the light
-  panel colours, cream on the strong ones); ::view-transition-group(root) has a soft drop shadow. The update callback
+  panel colours, cream on the strong ones). Then "smooth and a bit fast": the timeline plays 1.6× faster (~1.3s;
+  load clock 0.95s / 1.05s) on a smooth in-out ease instead of slush-bounce, and the drop shadow was dropped (a full-
+  screen blur every frame). The update callback
   waits for the URL and for <main>'s content to be swapped before the swing starts.
 - Scroll (ScrollTrigger "top 80%", once): `SlantText` (display titles), `HeadingReveal` (lines tip in from rotateY -45°,
   0.15s apart, 0.85s), `CardReveal` (x 5em, z 20em, rotateY -30°, scale .75, row spread 0.2s, perspective 1000px),

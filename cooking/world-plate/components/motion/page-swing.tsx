@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { SectionArt } from "@/components/section-art";
-import { slush, slushBounce } from "./slush-ease";
+import { slush } from "./slush-ease";
 
 /**
  * Slush's page transition (their Barba `runTransition`), rebuilt on the View Transitions API.
@@ -16,10 +16,11 @@ import { slush, slushBounce } from "./slush-ease";
  *         (rotateY -45° → 0, x 200% → 0); the panels sweep past behind both (1.25s, slush-bounce)
  *   1.30  the new page comes forward to z 0 and its corners square off (0.8s, slush)
  *   1.65  the new page's own entrance starts (the `data-load="swing"` clock in globals.css)
- * World Plate's changes to Slush's swing (2026-10-20, "change some animations in the previous one"): the cards
+ * World Plate's changes to Slush's swing (2026-10-20, "change some animations in the previous one", then "smooth
+ * and a bit fast" — the timeline plays 1.6× faster, on a smooth in-out ease instead of slush-bounce): the cards
  * travel on an arc with a tilt — the old page lifts a little as it shrinks, then is tossed out down-left with a
  * spin (rotateZ) like a flicked recipe card; the new page tilts in from the right and straightens as it lands; the
- * panels arc and tilt too and carry the site's food engravings; the cards throw a soft shadow.
+ * panels arc and tilt too and carry the site's food engravings.
  * The header has its own view-transition name and stays put. Reduced motion: Slush's
  * `runReducedTransition` — the old page fades out (0.525s) while the new one fades in (1s).
  * Browser back/forward and browsers without view transitions navigate without the swing.
@@ -32,6 +33,10 @@ type Track = { from: Record<Prop, number>; tweens: Tween[] };
 const C = 0.8;
 const D = 1.25;
 const END = 2.1; // the new page is flat and full-screen; the panels finish behind it
+// The whole timeline plays at this speed: 2.1s of Slush's timeline in ~1.3s ("smooth and a bit fast").
+const SPEED = 1 / 0.62;
+// A smooth in-out instead of Slush's slush-bounce, which overshoots and wobbles.
+const smooth = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
 const OLD_GONE = 1.8; // Slush removes the old page here
 const FPS = 60;
 
@@ -39,14 +44,14 @@ const FPS = 60;
 const OLD: Track = {
   from: { xp: 0, z: 0, ry: 0, r: 2, rz: 0, y: 0 },
   tweens: [
-    { at: 0, dur: C, ease: slushBounce, to: { z: -100, rz: -2.5, y: -3 } },
-    { at: 0.55, dur: D, ease: slushBounce, to: { ry: 45, xp: -200, z: -50, rz: -14, y: 14 } },
+    { at: 0, dur: C, ease: smooth, to: { z: -100, rz: -2.5, y: -3 } },
+    { at: 0.55, dur: D, ease: smooth, to: { ry: 45, xp: -200, z: -50, rz: -14, y: 14 } },
   ],
 };
 const NEW: Track = {
   from: { xp: 200, z: -50, ry: -45, r: 2, rz: 12, y: 12 },
   tweens: [
-    { at: 0.55, dur: D, ease: slushBounce, to: { ry: 0, xp: 0, z: -100, rz: 0, y: 0 } },
+    { at: 0.55, dur: D, ease: smooth, to: { ry: 0, xp: 0, z: -100, rz: 0, y: 0 } },
     { at: 1.3, dur: C, ease: slush, to: { z: 0, r: 0 } },
   ],
 };
@@ -54,23 +59,23 @@ const PANELS: Track[] = [
   {
     from: { xp: -200, z: -50, ry: 45, r: 2, rz: -10, y: 10 },
     tweens: [
-      { at: 0, dur: C, ease: slushBounce, to: { xp: -100, ry: 22.5, z: -85, rz: -5, y: 4 } },
-      { at: 0.55, dur: D, ease: slushBounce, to: { xp: -300, ry: 67.5, z: -25, rz: -16, y: 16 } },
+      { at: 0, dur: C, ease: smooth, to: { xp: -100, ry: 22.5, z: -85, rz: -5, y: 4 } },
+      { at: 0.55, dur: D, ease: smooth, to: { xp: -300, ry: 67.5, z: -25, rz: -16, y: 16 } },
     ],
   },
   {
     from: { xp: 200, z: -50, ry: -45, r: 2, rz: 10, y: 10 },
     tweens: [
-      { at: 0, dur: C, ease: slushBounce, to: { xp: 100, ry: -22.5, z: -85, rz: 5, y: 4 } },
-      { at: 0.55, dur: D, ease: slushBounce, to: { xp: -100, ry: 22.5, z: -85, rz: -5, y: -4 } },
-      { at: 1.5, dur: 1.875, ease: slushBounce, to: { xp: -200, ry: 45, z: -25, rz: -12, y: 10 } },
+      { at: 0, dur: C, ease: smooth, to: { xp: 100, ry: -22.5, z: -85, rz: 5, y: 4 } },
+      { at: 0.55, dur: D, ease: smooth, to: { xp: -100, ry: 22.5, z: -85, rz: -5, y: -4 } },
+      { at: 1.5, dur: 1.875, ease: smooth, to: { xp: -200, ry: 45, z: -25, rz: -12, y: 10 } },
     ],
   },
   {
     from: { xp: 200, z: -25, ry: -45, r: 2, rz: 14, y: 14 },
     tweens: [
-      { at: 0.55, dur: D, ease: slushBounce, to: { xp: 100, ry: -22.5, z: -85, rz: 5, y: -4 } },
-      { at: 1.5, dur: 1.875, ease: slushBounce, to: { xp: 200, ry: -45, z: -25, rz: 12, y: 10 } },
+      { at: 0.55, dur: D, ease: smooth, to: { xp: 100, ry: -22.5, z: -85, rz: 5, y: -4 } },
+      { at: 1.5, dur: 1.875, ease: smooth, to: { xp: 200, ry: -45, z: -25, rz: 12, y: 10 } },
     ],
   },
 ];
@@ -179,7 +184,7 @@ export function PageSwing() {
 
       transition.ready
         .then(() => {
-          const opts = { duration: END * 1000, easing: "linear", fill: "both" } as const;
+          const opts = { duration: (END * 1000) / SPEED, easing: "linear", fill: "both" } as const;
           if (reduce) {
             const ease = "cubic-bezier(0.65, 0.05, 0, 1)";
             root.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 525, easing: ease, fill: "both", pseudoElement: "::view-transition-old(root)" });

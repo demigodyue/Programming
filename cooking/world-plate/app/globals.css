@@ -363,10 +363,10 @@
   --slush-ink: #000000;
   --slush-paper: #ffffff;
 }
-/* runTransition fires the new page's load at 1.5s, with a 0.15s delay. */
+/* runTransition fires the new page's load at 1.5s of its timeline, with a 0.15s delay; the swing plays 1.6× faster. */
 :root[data-load="swing"] {
-  --load-start: 1.5s;
-  --load-delay: 1.65s;
+  --load-start: 0.95s;
+  --load-delay: 1.05s;
 }
 /* runReducedTransition: the new page fades in and loads at 0.15s. */
 :root[data-load="fade"] {
@@ -386,8 +386,6 @@
 ::view-transition-group(root) {
   animation: none;
   z-index: 1;
-  /* The page cards throw a soft shadow as they fly. */
-  filter: drop-shadow(0 28px 50px rgb(0 0 0 / 0.35));
 }
 ::view-transition-old(root),
 ::view-transition-new(root) {
