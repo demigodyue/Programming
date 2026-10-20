@@ -363,10 +363,10 @@
   --slush-ink: #000000;
   --slush-paper: #ffffff;
 }
-/* runTransition fires the new page's load at 1.5s of its timeline, with a 0.15s delay; the swing plays 1.6× faster. */
+/* The card shuffle: the new page's entrance starts as its card arrives in the middle. */
 :root[data-load="swing"] {
-  --load-start: 0.95s;
-  --load-delay: 1.05s;
+  --load-start: 0.85s;
+  --load-delay: 0.95s;
 }
 /* runReducedTransition: the new page fades in and loads at 0.15s. */
 :root[data-load="fade"] {
@@ -392,12 +392,13 @@
   animation: none;
   mix-blend-mode: normal;
 }
+/* The new card drops onto the pile, so it is drawn over the old one. */
 ::view-transition-old(root) {
-  z-index: 2;
+  z-index: 1;
   clip-path: inset(0 round 2rem);
 }
 ::view-transition-new(root) {
-  z-index: 1;
+  z-index: 2;
 }
 ::view-transition-group(wp-panel-0),
 ::view-transition-group(wp-panel-1),

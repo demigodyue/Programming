@@ -6,81 +6,65 @@ import { SectionArt } from "@/components/section-art";
 import { slush } from "./slush-ease";
 
 /**
- * Slush's page transition (their Barba `runTransition`), rebuilt on the View Transitions API.
+ * The page transition: Slush's card style (their Barba `runTransition` — the page becomes a rounded card in 3D, with
+ * candy-coloured panels), rebuilt on the View Transitions API, now moving as a card shuffle (timeline below).
  *
- * Internal link clicks are taken over: Next's navigation runs inside `document.startViewTransition`,
- * then the old page, the new page and three candy-coloured panels are animated with keyframes sampled
- * from Slush's GSAP timeline (below — times in seconds, z in vw, x in % of the viewport width):
- *   0.00  the old page becomes a card with 2rem corners and sinks to z -100vw (0.8s, slush-bounce)
- *   0.55  it swings out left (rotateY 45°, x -200%) as the new page swings in from the right
- *         (rotateY -45° → 0, x 200% → 0); the panels sweep past behind both (1.25s, slush-bounce)
- *   1.30  the new page comes forward to z 0 and its corners square off (0.8s, slush)
- *   1.65  the new page's own entrance starts (the `data-load="swing"` clock in globals.css)
- * World Plate's changes to Slush's swing (2026-10-20, "change some animations in the previous one", then "smooth
- * and a bit fast" — the timeline plays 1.6× faster, on a smooth in-out ease instead of slush-bounce): the cards
- * travel on an arc with a tilt — the old page lifts a little as it shrinks, then is tossed out down-left with a
- * spin (rotateZ) like a flicked recipe card; the new page tilts in from the right and straightens as it lands; the
- * panels arc and tilt too and carry the site's food engravings.
+ * Internal link clicks are taken over: Next's navigation runs inside `document.startViewTransition`, then the old
+ * page, the new page and three panels (each carrying the site's engravings) are animated with keyframes sampled
+ * per frame from the tracks below. The old card tips back and falls away down the screen, the panels tumble down past
+ * the middle, and the new card drops in from the top, straightens and comes forward to full screen; the new page's own
+ * entrance starts as it lands (the `data-load="swing"` clock in globals.css).
  * The header has its own view-transition name and stays put. Reduced motion: Slush's
  * `runReducedTransition` — the old page fades out (0.525s) while the new one fades in (1s).
- * Browser back/forward and browsers without view transitions navigate without the swing.
+ * Browser back/forward and browsers without view transitions navigate without it.
  */
 
-type Prop = "xp" | "z" | "ry" | "r" | "rz" | "y";
+type Prop = "xp" | "z" | "ry" | "r" | "rz" | "y" | "rx";
 type Tween = { at: number; dur: number; ease: (t: number) => number; to: Partial<Record<Prop, number>> };
 type Track = { from: Record<Prop, number>; tweens: Tween[] };
 
-const C = 0.8;
-const D = 1.25;
-const END = 2.1; // the new page is flat and full-screen; the panels finish behind it
-// The whole timeline plays at this speed: 2.1s of Slush's timeline in ~1.3s ("smooth and a bit fast").
-const SPEED = 1 / 0.62;
-// A smooth in-out instead of Slush's slush-bounce, which overshoots and wobbles.
-const smooth = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
-const OLD_GONE = 1.8; // Slush removes the old page here
+// The card cascade (2026-10-20, "same style, different animation"), in real seconds — everything flows downward,
+// so no two cards ever cross:
+//   0.00  the old page becomes a card (z -100, corners 2rem)
+//   0.20  it tips back (rotateX) and falls away out of the bottom, tilting (gone by 0.72)
+//   0.15+ the three engraved panels tumble down past the middle behind it, 0.08s apart, each tilted its own way
+//   0.52  the new page drops in from the top, tilted, on top of everything, and straightens into the middle
+//   1.00  it comes forward to full screen and its corners square off
+const END = 1.35;
+const SPEED = 1;
+const OLD_GONE = 0.75; // the old card has fallen off the bottom by now
 const FPS = 60;
+// Smooth in-out; cubic in (things falling away) and out (things arriving).
+const smooth = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+const easeIn = (t: number) => t * t;
+const easeOut = (t: number) => 1 - (1 - t) ** 3;
+const at0 = { xp: 0, z: 0, ry: 0, r: 2, rz: 0, y: 0, rx: 0 };
+// y is applied in 3D, far back (z -100vw), where perspective shrinks it to ~40% on screen — so "off-screen" is
+// ~260vh for the cards and ~280vh for the panels (further back still).
+const OFF = 260;
 
-// rz: tilt (deg); y: drop (vh). Slush's x / z / rotateY timings are kept; the arc and tilt ride on them.
 const OLD: Track = {
-  from: { xp: 0, z: 0, ry: 0, r: 2, rz: 0, y: 0 },
+  from: at0,
   tweens: [
-    { at: 0, dur: C, ease: smooth, to: { z: -100, rz: -2.5, y: -3 } },
-    { at: 0.55, dur: D, ease: smooth, to: { ry: 45, xp: -200, z: -50, rz: -14, y: 14 } },
+    { at: 0, dur: 0.45, ease: smooth, to: { z: -100 } },
+    { at: 0.2, dur: 0.52, ease: easeIn, to: { y: OFF, rx: 24, rz: -7 } },
   ],
 };
 const NEW: Track = {
-  from: { xp: 200, z: -50, ry: -45, r: 2, rz: 12, y: 12 },
+  from: { ...at0, z: -100, y: -OFF, rx: -20, rz: -6 },
   tweens: [
-    { at: 0.55, dur: D, ease: smooth, to: { ry: 0, xp: 0, z: -100, rz: 0, y: 0 } },
-    { at: 1.3, dur: C, ease: slush, to: { z: 0, r: 0 } },
+    { at: 0.52, dur: 0.5, ease: easeOut, to: { y: 0, rx: 0, rz: 0 } },
+    { at: 1.0, dur: 0.35, ease: slush, to: { z: 0, r: 0 } },
   ],
 };
-const PANELS: Track[] = [
-  {
-    from: { xp: -200, z: -50, ry: 45, r: 2, rz: -10, y: 10 },
-    tweens: [
-      { at: 0, dur: C, ease: smooth, to: { xp: -100, ry: 22.5, z: -85, rz: -5, y: 4 } },
-      { at: 0.55, dur: D, ease: smooth, to: { xp: -300, ry: 67.5, z: -25, rz: -16, y: 16 } },
-    ],
-  },
-  {
-    from: { xp: 200, z: -50, ry: -45, r: 2, rz: 10, y: 10 },
-    tweens: [
-      { at: 0, dur: C, ease: smooth, to: { xp: 100, ry: -22.5, z: -85, rz: 5, y: 4 } },
-      { at: 0.55, dur: D, ease: smooth, to: { xp: -100, ry: 22.5, z: -85, rz: -5, y: -4 } },
-      { at: 1.5, dur: 1.875, ease: smooth, to: { xp: -200, ry: 45, z: -25, rz: -12, y: 10 } },
-    ],
-  },
-  {
-    from: { xp: 200, z: -25, ry: -45, r: 2, rz: 14, y: 14 },
-    tweens: [
-      { at: 0.55, dur: D, ease: smooth, to: { xp: 100, ry: -22.5, z: -85, rz: 5, y: -4 } },
-      { at: 1.5, dur: 1.875, ease: smooth, to: { xp: 200, ry: -45, z: -25, rz: 12, y: 10 } },
-    ],
-  },
-];
+// Each panel falls from above the screen to below it, passing the middle behind the cards.
+const PANELS: Track[] = [-9, 6, -4].map((tilt, i) => ({
+  from: { ...at0, z: -130, y: -OFF - 20, rx: 14, rz: -tilt },
+  tweens: [{ at: 0.15 + i * 0.08, dur: 0.72, ease: smooth, to: { y: OFF + 20, rx: -14, rz: tilt } }],
+}));
 
-const COLOURS = ["--slush-blue", "--slush-yellow", "--slush-lavender", "--slush-mint", "--slush-orange", "--slush-violet"];
+// Forest (--slush-violet) is left out: a forest panel would vanish into the forest backdrop.
+const COLOURS = ["--slush-blue", "--slush-yellow", "--slush-lavender", "--slush-mint", "--slush-orange"];
 const LIGHT = new Set(["--slush-yellow", "--slush-lavender", "--slush-mint"]);
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
@@ -104,9 +88,9 @@ function keyframes(track: Track, vw: number, opts: { radius?: boolean; goneAt?: 
   const steps = Math.round(END * FPS);
   for (let s = 0; s <= steps; s++) {
     const t = (s / steps) * END;
-    const [xp, z, ry, rz, y] = (["xp", "z", "ry", "rz", "y"] as const).map((p) => valueAt(track, p, t));
+    const [xp, z, ry, rz, y, rx] = (["xp", "z", "ry", "rz", "y", "rx"] as const).map((p) => valueAt(track, p, t));
     const frame: Keyframe = {
-      transform: `perspective(1000px) translateX(${xp.toFixed(3)}%) translateY(${y.toFixed(3)}vh) translateZ(${(z * vw).toFixed(2)}px) rotateY(${ry.toFixed(3)}deg) rotateZ(${rz.toFixed(3)}deg)`,
+      transform: `perspective(1000px) translateX(${xp.toFixed(3)}%) translateY(${y.toFixed(3)}vh) translateZ(${(z * vw).toFixed(2)}px) rotateX(${rx.toFixed(3)}deg) rotateY(${ry.toFixed(3)}deg) rotateZ(${rz.toFixed(3)}deg)`,
     };
     if (opts.radius) frame.clipPath = `inset(0 round ${valueAt(track, "r", t).toFixed(4)}rem)`;
     if (opts.goneAt !== undefined) frame.opacity = t >= opts.goneAt ? 0 : 1;

@@ -185,6 +185,12 @@ tests/unit, tests/e2e    Vitest and Playwright
   load clock 0.95s / 1.05s) on a smooth in-out ease instead of slush-bounce, and the drop shadow was dropped (a full-
   screen blur every frame). The update callback
   waits for the URL and for <main>'s content to be swapped before the swing starts.
+  Then "same style, different animation": the sideways swing became a **card cascade** (same cards, panels and
+  colours; tracks also gained rx): the old card falls out of the bottom tipping back, the three engraved panels tumble
+  down past the middle 0.08s apart, the new card drops in from the top (drawn over the old one — new(root) z 2) and
+  comes forward to full screen; 1.35s, no slush-bounce. Everything flows downward so no two cards cross. y offsets
+  are applied far back in 3D (z -100vw → ~40% on screen), so "off-screen" is OFF = 260vh. The forest panel colour
+  is never used (it would vanish into the forest backdrop). Load clock 0.85s / 0.95s.
 - Scroll (ScrollTrigger "top 80%", once): `SlantText` (display titles), `HeadingReveal` (lines tip in from rotateY -45°,
   0.15s apart, 0.85s), `CardReveal` (x 5em, z 20em, rotateY -30°, scale .75, row spread 0.2s, perspective 1000px),
   `data-reveal="intro"` (showcase: y 40%, scale .75, 1.2s, at 50%). Parallax via `data-parallax` attributes (ScrollMotion).
