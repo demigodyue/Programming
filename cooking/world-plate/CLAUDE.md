@@ -223,11 +223,12 @@ tests/unit, tests/e2e    Vitest and Playwright
   an original boiling pot under the wordmark (flicker, lid rattle, bubbles, steam on loop), a "Scroll to start
   cooking" cue, and no automatic exit. The wheel / swipe / arrow, space and page keys drive --q (eased in JS,
   reversible): lid blows off + steam puffs (q 0 → 0.25), the wordmark lifts -28vh / scale 0.9 / fades (0.05 → 0.35),
-  then (user: "the pot should get bigger and bigger and go to the next") the pot travels to the screen centre and
-  grows exponentially to ×40 (×70 below 40rem) on a point 72% down its box (q 0.08 → 0.82, --pdx/--pdy measured in
-  JS), covering the screen from ~q 0.65; the slats lift behind it (0.7 → 0.82) and the pot fades through to the page
-  (0.84 → 1). Click / Enter / Escape / Tab skip to open. Shown on every full load of the home page only: <html> starts
-  with `data-intro` (pauses all page animation until q 0.72, so the hero's entrance plays as the pot fades) and `data-intro-lock` (overflow hidden; LenisProvider stops
+  the pot travels to the screen centre and grows ×4 on a point 72% down its box (q 0.06 → 0.45, --pdx/--pdy measured
+  in JS) — the user approved the motion up to this frame. Then the lid flies off screen (0.45 → 0.65) and the page
+  opens out of the pot's mouth (0.5 → 1): a radial mask hole on .wp-intro, centred on the mouth, fills it exactly and
+  widens exponentially until the page covers the screen (a version that zoomed the pot to fill the screen in green and
+  faded was replaced). Click / Enter / Escape / Tab skip to open. Shown on every full load of the home page only:
+  <html> starts with `data-intro` (pauses all page animation until q 0.5, so the hero's entrance plays as it opens) and `data-intro-lock` (overflow hidden; LenisProvider stops
   Lenis until "wp:intro-done"); the INTRO_SKIP head script in app/layout.tsx drops both before first paint off the
   home page, for reduced motion, or when localStorage "wp-intro-skip" is set (the page-swing spec sets it).
 - Hungry Tiger scroll (2026-10-19, recorded from eathungrytiger.com via the user's Refero link): GSAP ScrollTrigger

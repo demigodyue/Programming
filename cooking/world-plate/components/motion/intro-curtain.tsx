@@ -48,9 +48,9 @@ function BoilingPot() {
  * panel holds the logo while a mask fills it left to right (2s, linear) — kept exactly as it was. Under it a pot
  * boils (flames, a rattling lid, bubbles, steam) on a loop. It then waits for the visitor: the scroll (wheel, swipe,
  * arrow / space / page keys) drives --q (0 → 1, eased here, reversible). The lid blows off in a puff of steam and the
- * wordmark lifts away, then the pot travels to the middle of the screen and grows bigger and bigger until it fills
- * it, and fades through to the page — all scrubbed by the scroll. (--pdx / --pdy, measured here, are the pot's way
- * to the centre.) A click, Enter or Escape skips straight to open.
+ * wordmark lifts away, the pot travels to the middle of the screen and grows; then the lid flies off and the page
+ * opens out of the pot's mouth — all scrubbed by the scroll. (--pdx / --pdy, measured here, are the pot's way to
+ * the centre.) A click, Enter or Escape skips straight to open.
  *
  * While it is up <html> carries `data-intro-lock` (no page scroll, Lenis stopped) and `data-intro` (every page
  * animation paused until the slats start to lift, so the hero's entrance plays as they go). The inline script in
@@ -104,8 +104,8 @@ export function IntroCurtain() {
       q += (target - q) * 0.12;
       if (Math.abs(target - q) < 0.0005) q = target;
       el.style.setProperty("--q", q.toFixed(4));
-      // The page starts its own entrance just before the pot fades through to it.
-      if (q > 0.72) html.removeAttribute("data-intro");
+      // The page starts its own entrance as it begins to open out of the pot.
+      if (q > 0.5) html.removeAttribute("data-intro");
       if (q >= 0.999) return finish();
       if (q !== target) frame = requestAnimationFrame(tick);
     };
