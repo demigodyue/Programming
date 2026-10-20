@@ -31,7 +31,8 @@ type Track = { from: Record<Prop, number>; tweens: Tween[] };
 //   0.52  the new page drops in from the top, tilted, on top of everything, and straightens into the middle
 //   1.00  it comes forward to full screen and its corners square off
 const END = 1.35;
-const SPEED = 1;
+// Played 1.3× faster than the timeline above ("a bit more fast"): ~1.04s in all.
+const SPEED = 1.3;
 const OLD_GONE = 0.75; // the old card has fallen off the bottom by now
 const FPS = 60;
 // Smooth in-out; cubic in (things falling away) and out (things arriving).

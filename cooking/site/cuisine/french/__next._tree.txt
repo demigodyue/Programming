@@ -1,8 +1,8 @@
-:HL["/Programming/cooking/site/_next/static/chunks/0ibqeusvi2cl7.css","style"]
+:HL["/Programming/cooking/site/_next/static/chunks/1j3ja_f6t94ii.css","style"]
 :HL["/Programming/cooking/site/_next/static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/Programming/cooking/site/_next/static/media/9e9f04e3c37952ab-s.p.0pan85mumqyf3.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HC"https://images.unsplash.com"
 3:[["children",{"s":"__PAGE__","h":160}]]
 2:[["children",{"s":{"n":"name","t":"d","k":"french","s":[]},"h":65632,"c":"$Q3"}]]
 1:[["children",{"s":"cuisine","h":131136,"c":"$Q2"}]]
-0:{"b":"f572mEDT2QrSTU8aGSdR1","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}
+0:{"b":"howmkImd0ntxpGKehqM2H","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}
