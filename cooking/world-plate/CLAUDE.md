@@ -37,9 +37,10 @@ Decisions made with the user where skills conflicted with the brief:
 - Navbar: ~~minimal flat bar (monogram + text links)~~ — superseded 2026-10-19 by Slush's pill nav (below).
 - Icons: Lucide (shadcn default), 1.5 stroke.
 - Motion (2026-10-19): the user asked for slush.app's exact animations, transitions and mobile behaviour. Slush's six
-  candy colours are allowed **only in motion moments** (page-swing panels, button back faces, tab frame behind a
+  candy colours are allowed **only in motion moments** (button back faces, tab frame behind a
   sliding photo) — the user chose this over neutral tones. Slush's timings win over "no animation delays content
-  >1s" (the home tagline rises at 1.5s; a new page's entrance waits ~1.65s for the swing). The header became Slush's
+  >1s" (the home tagline rises at 1.5s). The Slush page swing was replaced on 2026-10-20 by the cookbook page turn
+  (user: "I don't like this page switching style, make it new and be creative"). The header became Slush's
   pill nav (logo circle, flip pills, plus/minus, dark "Search" pill) because its motion needs discrete pills.
 - Look (2026-10-19, latest): the user asked for the **Agence Foudre** style from Refero (styles.refero.design/style/c1534c74…)
   on every page, with the **cream canvas** (replacing the orange they had asked to keep) and **all current motion kept**.
@@ -54,10 +55,15 @@ Note on the senior-* skills (senior-security, senior-backend, senior-frontend): 
 docs are unfilled templates. The final security review used the built-in `security-review` skill instead.
 
 ## Technical decisions (keep these unless there's a reason to revisit)
-- **Page transitions are a hand-run view transition, not React `<ViewTransition>`.** `components/motion/page-swing.tsx`
+- **Page transitions are a hand-run view transition, not React `<ViewTransition>`.** `components/motion/page-turn.tsx`
   takes over internal link clicks in the capture phase (`preventDefault` makes next/link skip its own navigation),
-  calls `router.push` inside `document.startViewTransition` and animates the root old/new snapshots and three panel
-  groups with WAAPI keyframes sampled from Slush's GSAP timeline. Don't add React `<ViewTransition>` boundaries —
+  calls `router.push` inside `document.startViewTransition` and turns the old page like a cookbook leaf with WAAPI
+  keyframes computed per frame: a slanted fold sweeps right → left (1.15s, ease in-out); the old snapshot is clipped
+  to the unturned side; the leaf back (.wp-leaf, plain lighter paper + faint SectionArt) is clipped to the turned
+  side and mirrored across the fold with a reflection matrix; a 2×-wide gradient band (.wp-crease) shades the new page
+  along the fold and the same band, mirrored with the leaf (.wp-leaf-shade), gives the curl its shade and sheen. The
+  update callback waits for the URL *and* for <main>'s content to be swapped, so the new page is under the leaf from
+  the first frame. Don't add React `<ViewTransition>` boundaries —
   React would start competing transitions. The update callback polls the URL with `setTimeout` (rAF doesn't fire
   while a view transition captures). `data-load` on `<html>` shifts the new page's CSS load clock (`--load-start`,
   `--load-delay`). `layoutId` is still used for in-page shared elements (filter pills).
@@ -124,7 +130,7 @@ app/                     routes (Server Components by default)
 components/ui/           shadcn primitives
 components/watermelon/   Watermelon registry components (adapted, see README)
 components/sections/     page sections (hero, carousel, grids, footer…)
-components/motion/       Slush motion (PageSwing, ScrollMotion, SlantText, HeadingReveal, CardReveal, LetterRoll, FlipFace, ScrollMarquee, Cursor), Cult Eats MouseDepth + Lenis/Motion providers
+components/motion/       Slush motion (PageTurn, ScrollMotion, SlantText, HeadingReveal, CardReveal, LetterRoll, FlipFace, ScrollMarquee, Cursor), Cult Eats MouseDepth + Lenis/Motion providers
 components/recipe/       recipe-detail client widgets
 db/                      schema.ts, client.ts, migrations/, queries/, seed.ts
 data/                    recipes.seed.ts (source of truth for seed content), cuisines
@@ -176,7 +182,8 @@ tests/unit, tests/e2e    Vitest and Playwright
 - Page load (runPageLoad): `.hero-content` fades in at `--load-delay` (0.1s); `SlantText mode="load"` chars slide from
   -0.25em, last character first, 15ms apart, 0.65s; `.load-stagger` blocks rise 3em, +0.5s, 0.1s apart, 1s; `.load-fade`;
   `.load-pop` (sticker pop). Home only: `LetterRoll` wordmark (1.25s slices, 0.15s apart) and `.home-sub` (2em, 1.5s, 0.3s apart).
-- Page swing (runTransition): see Technical decisions. Reduced motion: crossfade (0.525s out / 1s in).
+- Page turn: see Technical decisions. `data-load="turn"` starts the new page's entrance at 0.55s / 0.7s. Reduced
+  motion: crossfade (0.525s out / 1s in).
 - Scroll (ScrollTrigger "top 80%", once): `SlantText` (display titles), `HeadingReveal` (lines tip in from rotateY -45°,
   0.15s apart, 0.85s), `CardReveal` (x 5em, z 20em, rotateY -30°, scale .75, row spread 0.2s, perspective 1000px),
   `data-reveal="intro"` (showcase: y 40%, scale .75, 1.2s, at 50%). Parallax via `data-parallax` attributes (ScrollMotion).
@@ -252,7 +259,7 @@ tests/unit, tests/e2e    Vitest and Playwright
   faded was replaced). Click / Enter / Escape / Tab skip to open. Shown on every full load of the home page only:
   <html> starts with `data-intro` (pauses all page animation until q 0.5, so the hero's entrance plays as it opens) and `data-intro-lock` (overflow hidden; LenisProvider stops
   Lenis until "wp:intro-done"); the INTRO_SKIP head script in app/layout.tsx drops both before first paint off the
-  home page, for reduced motion, or when localStorage "wp-intro-skip" is set (the page-swing spec sets it).
+  home page, for reduced motion, or when localStorage "wp-intro-skip" is set (the page-turn spec sets it).
 - Hungry Tiger scroll (2026-10-19, recorded from eathungrytiger.com via the user's Refero link): GSAP ScrollTrigger
   word scrub — each `.word` goes 0.2 → 1 opacity (0.2 long, 0.4 apart, power1.out), scrubbed "top 90%" → "top center".
   Ported into ScrollMotion as `[data-scrub="words"]` (`ScrubWords`, components/motion/scrub-words.tsx); it replaces the
@@ -270,7 +277,7 @@ tests/unit, tests/e2e    Vitest and Playwright
   The dish marquee is two tilted bands (red / burgundy). The tab highlight is a solid red pill behind the labels.
 - Reduced motion: opacity fades only — no 3D, travel, parallax, marquee, letter roll, floating, mouse depth or scroll-linked
   zoom/clip/progress. Hover flips become colour swaps.
-- Hover motion gated behind `(hover: hover)`. Never `transition: all`. Animate transform/opacity (+ clip-path for the swing).
+- Hover motion gated behind `(hover: hover)`. Never `transition: all`. Animate transform/opacity (+ clip-path for the page turn).
 
 ## Database rules
 - Schema in `db/schema.ts`; every change goes through `npm run db:generate` → committed migration in `db/migrations/`.

@@ -57,7 +57,7 @@ app/                     routes (Server Components by default), server actions, 
 components/ui/           shadcn primitives
 components/watermelon/   Watermelon UI components (adapted — see below)
 components/sections/     page sections: header, hero, carousel, cuisine grid, footer…
-components/motion/       Slush motion: PageSwing, ScrollMotion, SlantText, HeadingReveal, CardReveal, LetterRoll, FlipFace, ScrollMarquee, Cursor; Lenis + Motion providers
+components/motion/       Slush motion: PageTurn, ScrollMotion, SlantText, HeadingReveal, CardReveal, LetterRoll, FlipFace, ScrollMarquee, Cursor; Lenis + Motion providers
 components/recipe/       recipe card, browser/filters, kitchen (servings + checklist + steps), Cook Mode, actions
 db/                      schema, client, migrations, typed queries, idempotent seed
 data/                    seed content (15 recipes, 10 cuisines) + Zod schemas
@@ -87,8 +87,8 @@ Each one was checked against the registry index (`https://registry.watermelon.sh
 
 All motion is modelled on [slush.app](https://slush.app) (the "Slush" style on Refero), recorded from the live site's own GSAP scripts and CSS on 2026-10-19. Values are copied exactly: the `slush` ease `cubic-bezier(.65,.05,0,1)`, the elastic `slush-bounce` (as a CSS `linear()` with Slush's own points), and their durations and staggers.
 
-- **Page transition:** the old page shrinks into a rounded card, sinks back in 3D and swings out left while three panels in Slush's colours sweep past; the new page swings in from the right and settles flat (~2.1s). Built on the View Transitions API (`components/motion/page-swing.tsx`) with keyframes sampled from Slush's GSAP timeline. The header stays put. Back/forward and browsers without view transitions navigate without it.
-- **Page load:** the title's characters slide in from the last one, then blocks rise 3em 0.1s apart; on a client navigation this waits until the swing has landed. On the home page the "World Plate" wordmark rolls up letter by letter and the tagline rises at 1.5s.
+- **Page transition:** like turning a page in a cookbook — the current page peels over from the bottom-right corner along a slanted fold, showing the back of the leaf (plain paper with faint engravings, a shade and sheen where it curls) and casting a soft shadow on the new page underneath (~1.15s). Built on the View Transitions API (`components/motion/page-turn.tsx`) with keyframes computed per frame. The header stays put. Back/forward and browsers without view transitions navigate without it.
+- **Page load:** the title's characters slide in from the last one, then blocks rise 3em 0.1s apart; on a client navigation it starts as the page turn passes the middle. On the home page the "World Plate" wordmark rolls up letter by letter and the tagline rises at 1.5s.
 - **Scroll:** display titles slide in by character, smaller headings tip in line by line in 3D, card rows fly in from the right in 3D, the home showcase rises and grows, marquees reverse with your scroll direction, and the wordmark and CTA hexagon drift (parallax). All play once, when the top crosses 80% of the viewport.
 - **Hover:** pill buttons flip in 3D to a coloured back face, circle buttons spin, tiles sink to 0.92, links draw their underline, and a "View recipe" label follows the pointer over dishes.
 - **Nav:** pills fly up while you scroll down and return when you scroll up; on mobile the plus slides them in from the right and turns into a minus.

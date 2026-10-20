@@ -349,10 +349,10 @@
   --duration-fade: 0.15s;
   /* The page-load clock. --load-start is when a page's entrance begins (the wordmark roll, the tagline);
      --load-delay is Slush's runPageLoad delay (title chars, staggered blocks). A client navigation pushes
-     both past the 3D page swing — PageSwing sets data-load on <html>. */
+     both past the page turn — PageTurn sets data-load on <html>. */
   --load-start: 0s;
   --load-delay: 0.1s;
-  /* Slush's motion-moment colours (page-swing panels, button back faces, the tab frame behind a sliding
+  /* Slush's motion-moment colours (button back faces, the tab frame behind a sliding
      photo). Slush's timings are kept; the colours are remapped into the site palette, names kept. */
   --slush-blue: #c2321b; /* tomato */
   --slush-yellow: #f4b942; /* saffron */
@@ -363,25 +363,24 @@
   --slush-ink: #000000;
   --slush-paper: #ffffff;
 }
-/* runTransition fires the new page's load at 1.5s, with a 0.15s delay. */
-:root[data-load="swing"] {
-  --load-start: 1.5s;
-  --load-delay: 1.65s;
+/* The page turn: the new page's entrance starts as the leaf passes the middle. */
+:root[data-load="turn"] {
+  --load-start: 0.55s;
+  --load-delay: 0.7s;
 }
 /* runReducedTransition: the new page fades in and loads at 0.15s. */
 :root[data-load="fade"] {
   --load-delay: 0.15s;
 }
 
-/* ---------- Page transition (Slush's Barba "runTransition") ----------
-   The old page shrinks into a rounded card, sinks back in 3D and swings out to the left while three
-   candy-coloured panels sweep past; the new page swings in from the right and settles flat. PageSwing
-   drives it with the View Transitions API: these rules switch off the browser's crossfade and set the
-   stacking (panels behind both pages, old page above the new one); the keyframes are sampled from
-   Slush's GSAP timeline in components/motion/page-swing.tsx. The header is not part of the swing. */
+/* ---------- Page transition: the cookbook page turn (PageTurn, components/motion/page-turn.tsx) ----------
+   The old page is turned like a leaf of paper from the bottom-right corner: a slanted fold sweeps right to left,
+   the turned part shows the cream back of the leaf (with the engravings) mirrored across the fold and throwing a
+   soft shadow, and the new page waits beneath. PageTurn drives it with the View Transitions API and per-frame
+   keyframes; these rules switch off the browser's crossfade and set the stacking (new page, old page, crease,
+   leaf, header). */
 ::view-transition {
   pointer-events: none;
-  background-color: var(--room-background);
 }
 ::view-transition-group(root) {
   animation: none;
@@ -394,21 +393,32 @@
 }
 ::view-transition-old(root) {
   z-index: 2;
-  clip-path: inset(0 round 2rem);
 }
 ::view-transition-new(root) {
   z-index: 1;
 }
-::view-transition-group(wp-panel-0),
-::view-transition-group(wp-panel-1),
-::view-transition-group(wp-panel-2) {
+::view-transition-group(wp-crease),
+::view-transition-group(wp-leaf),
+::view-transition-group(wp-leaf-shade) {
   animation: none;
-  z-index: 0;
+  overflow: visible;
 }
-::view-transition-new(wp-panel-0),
-::view-transition-new(wp-panel-1),
-::view-transition-new(wp-panel-2) {
+::view-transition-group(wp-crease) {
+  z-index: 2;
+}
+/* The leaf floats over both pages and throws its shadow on the one beneath. */
+::view-transition-group(wp-leaf) {
+  z-index: 3;
+  filter: drop-shadow(-14px 10px 22px rgb(0 0 0 / 0.28));
+}
+::view-transition-group(wp-leaf-shade) {
+  z-index: 4;
+}
+::view-transition-new(wp-crease),
+::view-transition-new(wp-leaf),
+::view-transition-new(wp-leaf-shade) {
   animation: none;
+  transform-origin: 0 0;
 }
 ::view-transition-group(site-header) {
   animation: none;
@@ -420,18 +430,51 @@
 ::view-transition-new(site-header) {
   animation: none;
 }
-/* The panels (.page-transition-el): only rendered while a swing is captured. */
-.wp-panel {
+/* The leaf and crease: only rendered while a turn is captured. */
+.wp-leaf,
+.wp-crease {
   display: none;
   position: fixed;
-  inset: 0;
-  z-index: -1;
-  width: 100vw;
+  top: 0;
+  left: 0;
   height: 100vh;
-  border-radius: 2rem;
   pointer-events: none;
+  z-index: -1;
 }
-:root[data-swing-panels] .wp-panel {
+/* The back of the leaf: plain paper a shade lighter than the page, with faint engravings (SectionArt inside). */
+.wp-leaf {
+  width: 100vw;
+  isolation: isolate;
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--background) 70%, #ffffff);
+}
+.wp-leaf .section-art {
+  background: color-mix(in srgb, currentColor 16%, transparent);
+}
+/* A 2×-wide band; its fold-shaped centre line is a soft dark edge fading toward the new page. */
+.wp-crease {
+  width: 200vw;
+  background: linear-gradient(
+    var(--crease-angle, 98deg),
+    transparent 50%,
+    rgb(0 0 0 / 0.26) 50%,
+    rgb(0 0 0 / 0.08) calc(50% + 70px),
+    transparent calc(50% + 220px)
+  );
+}
+/* On the leaf, along the fold: shade right at the crease, a sheen where the paper curls toward the light. */
+.wp-leaf-shade {
+  background: linear-gradient(
+    var(--crease-angle, 98deg),
+    transparent 50%,
+    rgb(0 0 0 / 0.22) 50%,
+    rgb(0 0 0 / 0) calc(50% + 90px),
+    rgb(255 255 255 / 0.32) calc(50% + 150px),
+    rgb(255 255 255 / 0) calc(50% + 300px)
+  );
+}
+:root[data-turn-leaf] .wp-leaf,
+:root[data-turn-leaf] .wp-crease {
   display: block;
 }
 
