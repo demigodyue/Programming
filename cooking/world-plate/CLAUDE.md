@@ -187,16 +187,24 @@ tests/unit, tests/e2e    Vitest and Playwright
 - Nav: pills hide upward on scroll down (desktop), slide in from the right via the plus (≤991px); 10px direction threshold.
 - Tabs (TrendingDishes): Flip pill 0.5s; text/photo swap 0.65s on "slush"; auto-advance to tab 2 at "center 75%".
 - Home from the About section down (2026-10-20): AboutPanel, TrendingPanel, CuisinePanel, QuickPanel, CtaPanel
-  (components/sections/home-panels.tsx, trending-panel.tsx). About: "A kitchen atlas" headline, short ScrubWords pitch,
+  (components/sections/home-panels.tsx, trending-panel.tsx, cuisine-panel.tsx). About: "A kitchen atlas" headline, short ScrubWords pitch,
   CountUp stats (dishes, cuisines, avg. hours), button, and three endlessly running photo columns (.about-cols; middle
   reversed; paused on hover/focus; still for reduced motion). The stacking-panel transition was tried and dropped
-  (user: "make it new… like text going from left to right after scrolling"). Now each later section opens with a
-  SlideBand (components/motion/slide-band.tsx): a giant headline sliding left to right with the scroll while an
-  outlined copy slides the other way — ScrollMotion's data-parallax with data-parallax-axis="x" (xPercent -38 → -4 and
-  back), so it works in every browser. The section's real h2 is sr-only. Its rows / strips / tiles / CTA lines slide in
-  from the left (the trending photo from the right) with .slide-in, a view-timeline animation staggered by --k.
-  Trending: hover/focus wipes that dish's photo in. Cuisines (#cuisines): ten strips, the hovered one widens; a tile
-  grid on phones. The hero exit and footer .foot-rise letters are unchanged.
+  (user: "make it new… like text going from left to right after scrolling"), and so was giving every section the same
+  slide-in (user: "add different scroll animation and transition in each section"). Each section now moves its own
+  way, scrubbed by ScrollMotion's `[data-progress]` → `--p` (0 → 1 between data-progress-start / -end; unset without JS
+  or with reduced motion, so every CSS fallback is the finished state; see "The --p scrubs" in globals.css):
+  - Trending: SlideBand (components/motion/slide-band.tsx) — a giant headline sliding left to right while an outlined
+    copy slides the other way (data-parallax with data-parallax-axis="x", xPercent -38 → -4; the h2 is sr-only). Each
+    row's rule draws across and its title rises out of a mask, staggered by --k; the photo window opens (clip inset)
+    and zooms out. Hover/focus still wipes that dish's photo in.
+  - Cuisines (#cuisines, client component): pinned horizontal gallery — the section is 100svh + n × 36svh tall, its
+    stage is sticky, and the card track translates by --p × (100vw − 100%); photos drift inside their cards and a bar
+    fills. Focusing a card scrolls the page to where it is in view. Fallback: a normal sideways-scrolling row.
+  - Quick meals: a circle wipe (the card colour grows from the top centre over the room colour), a ScrubWords heading,
+    and tiles that stand up in 3D (rotateX 80° → 0, hinged at the bottom, staggered by --k).
+  - CTA: a window growing from an inset rounded card to full bleed; its two lines slide in from opposite sides.
+  The hero exit and footer .foot-rise letters are unchanged.
 - Intro curtain (2026-10-19, recorded from kervangida.com; that site has no route transition, its transition is
   this first-load preloader): `IntroCurtain` (components/motion/intro-curtain.tsx, `.wp-intro` in globals.css). A
   full-screen `--dot` panel; the WORLD PLATE wordmark fills left to right over its outline (2s linear, from 0.1s), holds,

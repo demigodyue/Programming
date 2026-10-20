@@ -9,8 +9,9 @@ import type { RecipeCard } from "@/db/queries/recipes";
 import { formatMinutes } from "@/lib/scale";
 
 /**
- * Trending dishes as a big numbered list beside one large photo, under a sliding headline band; the rows slide in from
- * the left one by one and the photo from the right as the section scrolls in. Hovering (or focusing) a row makes it the active
+ * Trending dishes as a big numbered list beside one large photo, under a sliding headline band. Scrolled in, each
+ * row's rule draws across and its title rises out of a mask, one after another, while the photo window opens and
+ * zooms out (both scrubbed by ScrollMotion's --p, see "Trending" in globals.css). Hovering (or focusing) a row makes it the active
  * dish: its title turns to the headline colour and its photo wipes up into the frame over the previous one.
  */
 export function TrendingPanel({ recipes }: { recipes: RecipeCard[] }) {
@@ -29,9 +30,9 @@ export function TrendingPanel({ recipes }: { recipes: RecipeCard[] }) {
           <h2 id="trending-title" className="sr-only">
             Trending dishes
           </h2>
-          <ol className="mt-6">
+          <ol data-progress data-progress-start="top 92%" data-progress-end="top 30%" className="trend-rows mt-6">
             {rows.map((r, i) => (
-              <li key={r.slug} className="slide-in border-b" style={{ "--k": i } as CSSProperties}>
+              <li key={r.slug} className="trend-rows__item" style={{ "--k": i } as CSSProperties}>
                 <Link
                   href={`/recipes/${r.slug}`}
                   onMouseEnter={() => setActive(i)}
@@ -51,12 +52,17 @@ export function TrendingPanel({ recipes }: { recipes: RecipeCard[] }) {
           </ol>
         </div>
 
-        <div className="trend-frame slide-in slide-in--right relative aspect-[4/5] w-full overflow-hidden rounded-lg border lg:max-h-[74svh]">
-          {rows.map((r, i) => (
-            <span key={r.slug} aria-hidden data-on={active === i || undefined} className="trend-shot">
-              <Image src={r.image} alt="" fill sizes="(min-width: 1024px) 42vw, 92vw" className="object-cover" />
-            </span>
-          ))}
+        <div data-progress
+          data-progress-start="top bottom"
+          data-progress-end="top 25%"
+          className="trend-frame relative aspect-[4/5] w-full overflow-hidden rounded-lg border lg:max-h-[74svh]">
+          <span className="trend-frame__zoom">
+            {rows.map((r, i) => (
+              <span key={r.slug} aria-hidden data-on={active === i || undefined} className="trend-shot">
+                <Image src={r.image} alt="" fill sizes="(min-width: 1024px) 42vw, 92vw" className="object-cover" />
+              </span>
+            ))}
+          </span>
           <span className="bg-card text-card-foreground label-caps absolute bottom-4 left-4 rounded-full px-3.5 py-1.5">
             {rows[active]?.cuisineName}
           </span>

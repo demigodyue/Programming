@@ -1,7 +1,8 @@
 import { DishStage } from "@/components/sections/dish-stage";
 import { DishMarquee } from "@/components/sections/dish-marquee";
 import { Hero } from "@/components/sections/hero";
-import { AboutPanel, CtaPanel, CuisinePanel, QuickPanel } from "@/components/sections/home-panels";
+import { CuisinePanel } from "@/components/sections/cuisine-panel";
+import { AboutPanel, CtaPanel, QuickPanel } from "@/components/sections/home-panels";
 import { TrendingPanel } from "@/components/sections/trending-panel";
 import { db } from "@/db/db";
 import { listCuisines } from "@/db/queries/cuisines";
@@ -27,7 +28,7 @@ export default async function HomePage() {
       <DishMarquee items={all.map((r) => r.title)} />
       <DishStage href="/recipes/butter-chicken" />
       <AboutPanel recipes={all} cuisineCount={cuisines.length} />
-      {/* After About: giant headline bands slide left to right with the scroll and the content slides in from the side. */}
+      {/* After About each section has its own scroll motion: sliding headline, pinned sideways pan, circle wipe, growing window. */}
       <TrendingPanel recipes={trending} />
       <CuisinePanel cuisines={cuisines} />
       <QuickPanel recipes={quick} />

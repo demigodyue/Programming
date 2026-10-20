@@ -4,13 +4,12 @@ import type { CSSProperties } from "react";
 import { CountUp } from "@/components/motion/count-up";
 import { FlipFace, flipClass, TextLinkLine } from "@/components/motion/flip-face";
 import { ScrubWords } from "@/components/motion/scrub-words";
-import { SlideBand } from "@/components/motion/slide-band";
-import type { CuisineSummary } from "@/db/queries/cuisines";
 import type { RecipeCard } from "@/db/queries/recipes";
 import { formatMinutes } from "@/lib/scale";
 
-// The home page from the About section down. After About, each section opens with a SlideBand (a giant headline
-// sliding left to right with the scroll) and its content slides in from the side (.slide-in, scrubbed by its view).
+// The home page from the About section down. After About every section moves its own way with the scroll:
+// Trending slides its headline sideways (trending-panel.tsx), Cuisines pins and pans sideways (cuisine-panel.tsx),
+// Quick meals opens with a circle wipe and 3D tiles, and the call to action grows from a card to full bleed.
 
 /**
  * About: the pitch and three numbers on the left (they count up as the panel arrives); on the right, three tall
@@ -86,60 +85,32 @@ export function AboutPanel({ recipes, cuisineCount }: { recipes: RecipeCard[]; c
 }
 
 /**
- * Ten tall photo strips side by side; the one you point at (or tab to) widens to show its name and recipe count,
- * the first one is open when nothing is. Small screens: a two-column grid of tiles.
+ * Quick meals, opened by a circle wipe: the section starts in the cuisine section's colour and its own colour
+ * grows out from the top centre as it scrolls in. The heading fills word by word, and the four tiles stand up out of
+ * the table one after another (3D, hinged at the bottom). All scrubbed by --p; reduced motion shows the end state.
  */
-export function CuisinePanel({ cuisines }: { cuisines: CuisineSummary[] }) {
-  return (
-    <section id="cuisines" aria-labelledby="cuisines-title" className="room flex scroll-mt-0 flex-col justify-center overflow-x-clip pb-24 lg:pb-32">
-      <SlideBand text="Explore by cuisine" />
-      <div className="container-page">
-        <div className="label-caps text-muted-foreground flex justify-between border-b pb-3">
-          <span>02 · The collection</span>
-          <span>{cuisines.length} kitchens</span>
-        </div>
-        <div className="mt-6 flex flex-wrap items-end justify-between gap-4">
-          <h2 id="cuisines-title" className="sr-only">
-            Explore by cuisine
-          </h2>
-          <p className="text-muted-foreground max-w-xs pb-2 text-[0.9375rem] leading-relaxed">
-            Ten kitchens, from Kathmandu street stalls to Parisian bakeries.
-          </p>
-        </div>
-        <ul className="cuisine-strips mt-8">
-          {cuisines.map((c, i) => (
-            <li key={c.slug} className="slide-in" style={{ "--i": i, "--k": i } as CSSProperties}>
-              <Link href={`/cuisine/${c.slug}`} data-cursor="Explore" className="cuisine-strip group">
-                <Image src={c.image} alt={c.imageAlt} fill sizes="(min-width: 1024px) 40vw, 50vw" className="object-cover" />
-                <span className="cuisine-strip__label font-display">{c.name}</span>
-                <span className="cuisine-strip__meta">
-                  <span className="font-display block text-[clamp(1.125rem,2.6vw,2.75rem)] leading-none uppercase">{c.name}</span>
-                  <span className="label-caps mt-2 block">
-                    {c.country} · {c.recipeCount} {c.recipeCount === 1 ? "recipe" : "recipes"}
-                  </span>
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
-}
-
 export function QuickPanel({ recipes }: { recipes: RecipeCard[] }) {
   return (
-    <section aria-labelledby="quick-title" className="bg-card text-card-foreground flex flex-col justify-center overflow-x-clip pb-24 lg:pb-32">
-      <SlideBand text="Quick meals under 30 minutes" />
+    <section
+      aria-labelledby="quick-title"
+      data-progress
+      data-progress-start="top bottom"
+      data-progress-end="top 10%"
+      className="quick-wipe text-card-foreground relative isolate overflow-x-clip py-24 lg:py-36"
+    >
+      <span aria-hidden className="quick-wipe__circle" />
       <div className="container-page grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
         <div>
           <div className="label-caps text-muted-foreground flex justify-between border-b pb-3">
             <span>03 · Weeknights</span>
             <span>Under 30 min</span>
           </div>
-          <h2 id="quick-title" className="sr-only">
-            Quick meals
-          </h2>
+          <ScrubWords
+            id="quick-title"
+            text="Dinner on the table in thirty minutes"
+            em={["thirty"]}
+            className="text-display mt-6"
+          />
           <p className="text-muted-foreground mt-5 max-w-sm text-[0.9375rem] leading-relaxed">
             Weeknight dinners under 30 minutes, start to finish — prep included.
           </p>
@@ -148,9 +119,9 @@ export function QuickPanel({ recipes }: { recipes: RecipeCard[] }) {
             <TextLinkLine />
           </Link>
         </div>
-        <ul className="grid grid-cols-2 gap-3 lg:gap-4">
+        <ul data-progress data-progress-start="top 95%" data-progress-end="top 30%" className="quick-tiles grid grid-cols-2 gap-3 lg:gap-4">
           {recipes.slice(0, 4).map((r, i) => (
-            <li key={r.slug} className="slide-in" style={{ "--k": i } as CSSProperties}>
+            <li key={r.slug} className="quick-tiles__item" style={{ "--k": i } as CSSProperties}>
               <Link href={`/recipes/${r.slug}`} data-cursor="View recipe" className="quick-tile group">
                 <Image src={r.image} alt={r.imageAlt} fill sizes="(min-width: 1024px) 26vw, 46vw" className="object-cover" />
                 <span className="bg-card text-card-foreground absolute inset-x-3 bottom-3 flex items-center justify-between gap-2 rounded-full px-3.5 py-1.5">
@@ -166,28 +137,36 @@ export function QuickPanel({ recipes }: { recipes: RecipeCard[] }) {
   );
 }
 
+/**
+ * The closing call to action, as a window that grows: it arrives as an inset rounded card and widens to full bleed
+ * as it scrolls up, while its two lines slide in from opposite sides and meet. Scrubbed by --p.
+ */
 export function CtaPanel() {
   return (
-    <section aria-labelledby="cta-title" className="bg-headline text-background flex flex-col justify-center overflow-x-clip py-24 lg:py-36">
-      <div className="container-page flex flex-col items-start gap-8">
-        <span className="label-caps">04 · Tonight</span>
-        <h2 id="cta-title" className="text-[clamp(3.5rem,10vw,9rem)] leading-[0.9] text-inherit">
-          <span className="slide-in block" style={{ "--k": 0 } as CSSProperties}>
-            Pick a dish.
-          </span>
-          <span className="slide-in block" style={{ "--k": 1 } as CSSProperties}>
-            Start cooking tonight.
-          </span>
-        </h2>
-        <div className="flex flex-wrap items-center gap-6">
-          <p className="max-w-md text-[0.9375rem] leading-relaxed">
-            Real ingredients, honest timings and a step-by-step Cook Mode that keeps your screen awake.
-          </p>
-          <Link href="/recipes" data-accent="yellow" className={flipClass()}>
-            <FlipFace>Browse recipes</FlipFace>
-          </Link>
+    <div className="bg-card">
+      <section
+        aria-labelledby="cta-title"
+        data-progress
+        data-progress-start="top bottom"
+        data-progress-end="top 15%"
+        className="cta-window bg-headline text-background flex flex-col justify-center overflow-x-clip py-24 lg:py-36"
+      >
+        <div className="container-page flex flex-col items-start gap-8">
+          <span className="label-caps">04 · Tonight</span>
+          <h2 id="cta-title" className="text-[clamp(3.5rem,10vw,9rem)] leading-[0.9] text-inherit">
+            <span className="cta-window__line block">Pick a dish.</span>
+            <span className="cta-window__line cta-window__line--right block">Start cooking tonight.</span>
+          </h2>
+          <div className="flex flex-wrap items-center gap-6">
+            <p className="max-w-md text-[0.9375rem] leading-relaxed">
+              Real ingredients, honest timings and a step-by-step Cook Mode that keeps your screen awake.
+            </p>
+            <Link href="/recipes" data-accent="yellow" className={flipClass()}>
+              <FlipFace>Browse recipes</FlipFace>
+            </Link>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }

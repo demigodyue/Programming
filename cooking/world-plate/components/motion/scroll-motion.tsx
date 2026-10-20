@@ -14,6 +14,10 @@ import { useEffect } from "react";
  *   `data-parallax-trigger` names an ancestor (closest selector) to measure instead of the element itself.
  *   `data-parallax-axis="x"` moves it sideways instead (xPercent), for the sliding headline bands.
  *   Skipped for reduced motion.
+ * - `[data-progress]` elements get their scroll progress as `--p` (0 → 1) between `data-progress-start` and
+ *   `-end` (same positions as above, default "top bottom" → "top top"); CSS turns it into whatever the section
+ *   needs (a pinned horizontal track, a circle wipe, a growing window). Without JS or with reduced motion `--p`
+ *   is never set, so the CSS falls back to the finished state.
  *
  * - `[data-scrub="words"]` (ScrubWords) fill word by word as you scroll — Hungry Tiger's text scrub: each `.word`
  *   goes 0.2 → 1 opacity, 0.2 long, 0.4 apart, power1.out, scrubbed from "top 90%" to "top center"
@@ -82,6 +86,32 @@ export function ScrollMotion() {
       }
     };
 
+    // ---- Progress (--p) ----
+    type Progress = { el: HTMLElement; s0: number; s1: number };
+    const progress: Progress[] = [];
+    const addProgress = (el: HTMLElement) => {
+      if (reduce.matches || progress.some((p) => p.el === el)) return;
+      progress.push({ el, s0: 0, s1: 0 });
+    };
+    const measureProgress = () => {
+      for (const p of progress) {
+        p.s0 = position(p.el.dataset.progressStart ?? "top bottom", p.el);
+        p.s1 = position(p.el.dataset.progressEnd ?? "top top", p.el);
+      }
+    };
+    const renderProgress = (y: number) => {
+      for (let i = progress.length - 1; i >= 0; i--) {
+        const p = progress[i];
+        if (!p.el.isConnected) {
+          progress.splice(i, 1);
+          continue;
+        }
+        const span = p.s1 - p.s0;
+        const v = span > 0 ? Math.min(1, Math.max(0, (y - p.s0) / span)) : y >= p.s1 ? 1 : 0;
+        p.el.style.setProperty("--p", v.toFixed(4));
+      }
+    };
+
     // ---- Word scrub (Hungry Tiger) ----
     type Scrub = { el: HTMLElement; words: HTMLElement[]; s0: number; s1: number };
     const scrubs: Scrub[] = [];
@@ -118,6 +148,7 @@ export function ScrollMotion() {
       frame = 0;
       const y = window.scrollY;
       renderScrubs(y);
+      renderProgress(y);
       for (let i = items.length - 1; i >= 0; i--) {
         const item = items[i];
         if (!item.el.isConnected) {
@@ -156,10 +187,12 @@ export function ScrollMotion() {
       node.querySelectorAll("[data-reveal]").forEach(observe);
       node.querySelectorAll<HTMLElement>("[data-parallax]").forEach(addParallax);
       node.querySelectorAll<HTMLElement>('[data-scrub="words"]').forEach(addScrub);
+      node.querySelectorAll<HTMLElement>("[data-progress]").forEach(addProgress);
     };
     const refresh = () => {
       measure();
       measureScrubs();
+      measureProgress();
       render();
     };
 
@@ -174,6 +207,7 @@ export function ScrollMotion() {
           if (node.matches("[data-reveal]")) observe(node);
           if (node.matches("[data-parallax]")) addParallax(node);
           if (node.matches('[data-scrub="words"]')) addScrub(node);
+          if (node.matches("[data-progress]")) addProgress(node);
           scan(node);
           added = true;
         });
@@ -190,6 +224,8 @@ export function ScrollMotion() {
       items.length = 0;
       scrubs.forEach((s) => s.words.forEach((w) => (w.style.opacity = "")));
       scrubs.length = 0;
+      progress.forEach((p) => p.el.style.removeProperty("--p"));
+      progress.length = 0;
     };
 
     window.addEventListener("scroll", schedule, { passive: true });
