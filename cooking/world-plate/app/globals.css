@@ -229,7 +229,7 @@
     opacity: 0.4;
   }
   .page-art::after {
-    background: color-mix(in srgb, var(--foreground) 34%, transparent);
+    background: color-mix(in srgb, var(--foreground) 44%, transparent);
     -webkit-mask: var(--art-lines) top center / var(--art-w) auto repeat-y;
     mask: var(--art-lines) top center / var(--art-w) auto repeat-y;
   }
@@ -241,7 +241,7 @@
     z-index: -1;
     overflow: hidden;
     pointer-events: none;
-    background: color-mix(in srgb, currentColor 26%, transparent);
+    background: color-mix(in srgb, currentColor 42%, transparent);
     -webkit-mask: var(--art-lines) center var(--art-y, 0px) / var(--art-w) auto repeat-y;
     mask: var(--art-lines) center var(--art-y, 0px) / var(--art-w) auto repeat-y;
   }
@@ -1503,6 +1503,7 @@
   /* The engravings (SectionArt) sit on the slats, under the wordmark and pot, and leave with the panel. */
   .wp-intro .section-art {
     z-index: 0;
+    background: color-mix(in srgb, currentColor 58%, transparent);
   }
   .wp-intro__slat {
     position: absolute;
