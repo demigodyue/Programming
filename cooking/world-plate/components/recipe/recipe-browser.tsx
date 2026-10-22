@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { T } from "@/components/i18n";
 import { FlipFace, flipClass } from "@/components/motion/flip-face";
+import { useMotionReady } from "@/components/motion/motion-provider";
 import { RecipeCard } from "@/components/recipe/recipe-card";
 import { ContinuousTabs } from "@/components/watermelon/continuous-tabs";
 import { EmojiSpreeChips } from "@/components/watermelon/emoji-spree-choice-chips";
@@ -49,6 +50,7 @@ export function RecipeBrowser({
   cuisines: { id: string; label: string; ja: string; emoji: string }[];
 }) {
   const reduce = useReducedMotion();
+  const motionReady = useMotionReady();
   const t = useT();
   const chips = useMemo(() => cuisines.map((c) => ({ id: c.id, emoji: c.emoji, label: <T en={c.label} ja={c.ja} /> })), [cuisines]);
   const [filters, setFilters] = useState<Filters>(emptyFilters);
@@ -60,6 +62,9 @@ export function RecipeBrowser({
 
   const onUrl = useCallback((query: string) => {
     if (query === lastWritten.current) return;
+    // A late report of a query the address bar has already moved past (the watcher can resolve after the
+    // visitor starts typing) would wipe their filters: only follow what the address bar says now.
+    if (query !== new URLSearchParams(window.location.search).toString()) return;
     lastWritten.current = query;
     setFilters(parseFilters(query));
     setUrlVersion((v) => v + 1);
@@ -183,7 +188,8 @@ export function RecipeBrowser({
             </button>
           </div>
         ) : (
-          <ul key={urlVersion} className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+          // Until Motion's features load, exits can't run and filtered-out cards would linger: swap the list in place.
+          <ul key={motionReady ? urlVersion : `${urlVersion}:${toQuery(filters)}`} className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
             <AnimatePresence mode="popLayout" initial={false}>
               {recipes.map((r, i) => (
                 <m.li

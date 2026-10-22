@@ -14,6 +14,9 @@ import { ScrollMotion } from "@/components/motion/scroll-motion";
 import { SiteFooter } from "@/components/sections/site-footer";
 import { SiteHeader } from "@/components/sections/site-header";
 import { ThemeProvider } from "@/components/theme-provider";
+import { db } from "@/db/db";
+import { searchRecipes } from "@/db/queries/recipes";
+import { fold } from "@/lib/recipe-filter";
 import { site } from "@/lib/site";
 import "./globals.css";
 
@@ -72,7 +75,18 @@ const INTRO_SKIP = `try{var p=location.pathname,h=${JSON.stringify(HOME)};if(!(p
 // Pick the language before first paint: the visitor's saved choice, else Japanese for a Japanese browser.
 const LANG_INIT = `try{var l=localStorage.getItem("wp:lang");if(!l&&/^ja(-|$)/i.test(navigator.language||""))l="ja";if(l==="ja"){var r=document.documentElement;r.dataset.lang="ja";r.lang="ja"}}catch(e){}`;
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // The header search's dish list, built once at build time (trending first).
+  const searchItems = (await searchRecipes(db, { cuisine: [], vegetarian: false })).map((r) => ({
+    slug: r.slug,
+    title: r.title,
+    titleJa: r.ja.title,
+    cuisine: r.cuisineName,
+    cuisineJa: r.ja.cuisineName,
+    image: r.image,
+    minutes: r.totalMinutes,
+    text: fold([r.title, r.ja.title, r.cuisineName, r.ja.cuisineName, r.description, r.ja.description].join(" ")),
+  }));
   // Every page leads with an Unsplash photo — open the connection before the <img> is parsed.
   preconnect("https://images.unsplash.com");
   return (
@@ -100,7 +114,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <PageSwing />
           <Cursor />
           <AccountBoot />
-          <SiteHeader />
+          <SiteHeader searchItems={searchItems} />
           <main id="main" className="flex-1">
             {children}
           </main>

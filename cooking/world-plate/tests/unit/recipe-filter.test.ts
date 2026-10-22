@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { emptyFilters, filterRecipes, parseFilters, toQuery } from "@/lib/recipe-filter";
+import { emptyFilters, filterRecipes, fold, parseFilters, toQuery } from "@/lib/recipe-filter";
 
 const recipes = [
   { slug: "ramen", cuisineSlug: "japanese", difficulty: "hard", vegetarian: false, totalMinutes: 180, searchText: "shoyu ramen pork belly" },
@@ -38,5 +38,13 @@ describe("filterRecipes", () => {
     expect(slugs("time=under-30")).toEqual(["pad-thai"]);
     expect(slugs("time=30-60")).toEqual(["dal"]);
     expect(slugs("time=over-60")).toEqual(["ramen"]);
+  });
+});
+
+describe("fold", () => {
+  it("ignores case and Latin accents but keeps Japanese as written", () => {
+    expect(fold("Phở Bò")).toBe("pho bo");
+    expect(fold("French Crêpes")).toBe("french crepes");
+    expect(fold("ガパオ")).toBe("ガパオ");
   });
 });

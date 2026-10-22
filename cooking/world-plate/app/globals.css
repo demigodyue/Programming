@@ -1031,6 +1031,149 @@
     }
   }
 
+  /* ---------- Header search (components/sections/header-search.tsx) ----------
+     The magnifier turns into a cross while the box is open. The box hangs under the bar at the screen's right
+     edge and grows out of the search circle (its transform-origin), on the slush-bounce curve; the dishes slide
+     in one after another each time it opens. */
+  .nav-search-btn {
+    position: relative;
+  }
+  .nav-search-btn > svg {
+    transition:
+      opacity 0.2s,
+      scale 0.45s var(--ease-slush-bounce),
+      rotate 0.45s var(--ease-slush-bounce);
+  }
+  .nav-search-btn__x {
+    position: absolute;
+    opacity: 0;
+    scale: 0.4;
+    rotate: -90deg;
+  }
+  .nav-search-btn[data-open] .nav-search-btn__glass {
+    opacity: 0;
+    scale: 0.4;
+    rotate: 90deg;
+  }
+  .nav-search-btn[data-open] .nav-search-btn__x {
+    opacity: 1;
+    scale: 1;
+    rotate: 0deg;
+  }
+  .nav-search {
+    position: absolute;
+    top: calc(100% + 0.75rem);
+    right: 1rem;
+    width: min(26rem, calc(100vw - 2rem));
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 1.5rem;
+    background: var(--card);
+    color: var(--card-foreground);
+    box-shadow: 0 24px 60px rgb(0 0 0 / 0.18);
+    /* The search circle's centre: the account circle (50px) and a 6px gap sit to its right. */
+    transform-origin: calc(100% - 81px) -1.5rem;
+    opacity: 0;
+    scale: 0.55;
+    filter: blur(6px);
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity 0.2s,
+      scale 0.5s var(--ease-slush-bounce),
+      filter 0.25s,
+      visibility 0s linear 0.5s;
+  }
+  @media (width >= 40rem) {
+    .nav-search {
+      right: 1.5rem;
+    }
+  }
+  @media (width >= 64rem) {
+    .nav-search {
+      right: 2rem;
+    }
+  }
+  .nav-search[data-open] {
+    opacity: 1;
+    scale: 1;
+    filter: none;
+    visibility: visible;
+    pointer-events: auto;
+    transition-delay: 0s;
+  }
+  .nav-search__field {
+    display: flex;
+    height: 3.25rem;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.5rem;
+    padding-inline: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 9999px;
+    background: var(--background);
+    transition: border-color 0.2s;
+  }
+  .nav-search__field:focus-within {
+    border-color: var(--ring);
+  }
+  .nav-search__field input::-webkit-search-cancel-button {
+    appearance: none;
+  }
+  .nav-search[data-open] .nav-search__item {
+    animation: wp-row-in 0.45s var(--ease-slush-bounce) both;
+    animation-delay: calc(0.08s + var(--i, 0) * 35ms);
+  }
+  .nav-search__link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.9rem;
+    transition: background-color 0.15s;
+  }
+  .nav-search__link[data-active] {
+    background: var(--muted);
+  }
+  .nav-search__arrow {
+    opacity: 0;
+    translate: -6px 0;
+    transition:
+      opacity 0.2s,
+      translate 0.3s var(--ease-out);
+  }
+  .nav-search__link[data-active] .nav-search__arrow {
+    opacity: 1;
+    translate: 0 0;
+  }
+  .nav-search__all {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.9rem 1.25rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background-color 0.15s;
+  }
+  @media (hover: hover) {
+    .nav-search__all:hover {
+      background: var(--muted);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nav-search,
+    .nav-search-btn > svg {
+      scale: 1 !important;
+      rotate: 0deg !important;
+      filter: none !important;
+    }
+    .nav-search[data-open] .nav-search__item {
+      animation: none;
+    }
+  }
+
   /* ---------- Cursor label (Slush's .cursor) ----------
      A pill that follows the pointer (0.525s power3.out) and appears over anything with data-cursor,
      showing that attribute as its text. It flips to the left near the right edge and above near the bottom. */

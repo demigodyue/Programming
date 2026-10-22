@@ -17,13 +17,21 @@ export type Searchable = {
   difficulty: string;
   vegetarian: boolean;
   totalMinutes: number;
-  /** Lower-cased title, description, cuisine, tags and ingredient names. */
+  /** Title, description, cuisine, tags and ingredient names in both languages, folded (see fold). */
   searchText: string;
 };
 
 const DIFFICULTIES = ["easy", "medium", "hard"];
 const TIMES = ["under-30", "30-60", "over-60"];
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+/**
+ * Search text and queries are compared folded: lower case, Latin accents dropped ("Phở" → "pho", "crêpes" →
+ * "crepes"). Only the Latin combining marks go, so Japanese kana keep their voicing marks (が stays が).
+ */
+export function fold(text: string) {
+  return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").normalize("NFC");
+}
 
 export const emptyFilters: Filters = { q: "", cuisine: [], difficulty: "", time: "", vegetarian: false };
 
@@ -56,7 +64,7 @@ export function toQuery(f: Filters) {
 }
 
 export function filterRecipes<T extends Searchable>(recipes: T[], f: Filters): T[] {
-  const q = f.q.trim().toLowerCase();
+  const q = fold(f.q.trim());
   return recipes.filter((r) => {
     if (q && !r.searchText.includes(q)) return false;
     if (f.cuisine.length && !f.cuisine.includes(r.cuisineSlug)) return false;

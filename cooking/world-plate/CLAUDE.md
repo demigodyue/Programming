@@ -114,6 +114,13 @@ docs are unfilled templates. The final security review used the built-in `securi
   The E2E specs set localStorage `wp-account-demo=1` to use `demo-backend.ts` (localStorage, plaintext passwords,
   test-only). The account panels use enter-only keyed animations: an `AnimatePresence mode="wait"` exit can stall
   before Motion's lazy features load, leaving the panel blank.
+- **Header + search (2026-10-22)**: the nav is full width (logo at the left edge, menu at the right edge, not
+  `container-page`), with the account circle last. `HeaderSearch` gets its dish list from `app/layout.tsx` (an async
+  layout querying at build time). The box stays mounted and animates with CSS (`.nav-search[data-open]`), not
+  AnimatePresence. All search text goes through `fold()` (`lib/recipe-filter.ts`: lower case, Latin accents
+  dropped, kana kept). Before Motion's lazy features load, an AnimatePresence exit never runs: `useMotionReady()`
+  (motion-provider.tsx) lets RecipeBrowser swap its list in place until then (otherwise filtered-out cards linger).
+  RecipeBrowser also ignores late URL reports that no longer match `location.search`.
 - **Recipe kitchen (2026-10-20)**: `lib/step-info.ts` reads each English step for its action (the earliest verb
   wins → `StepIcon`) and its timings (`parseDurations`: a range's first value, 10 s–6 h). Timers live in a module
   store in `step-timer.tsx`, keyed `slug:step:index` and shared with Cook Mode. The pot (`MisePot`) is drawn full

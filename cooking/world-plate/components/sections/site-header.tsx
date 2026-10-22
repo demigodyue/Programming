@@ -1,6 +1,5 @@
 "use client";
 
-import { Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
@@ -10,8 +9,8 @@ import { LangToggle } from "@/components/lang-toggle";
 import { LogoMark } from "@/components/logo";
 import { FlipFace, flipClass, type FlipAccent } from "@/components/motion/flip-face";
 import { ThemeIconToggle } from "@/components/theme-switch";
+import { HeaderSearch, type SearchItem } from "./header-search";
 import { useT } from "@/lib/lang";
-import { cn } from "@/lib/utils";
 
 const NAV: { href: string; label: string; ja: string; accent: FlipAccent }[] = [
   { href: "/recipes", label: "Recipes", ja: "レシピ", accent: "yellow" },
@@ -27,8 +26,9 @@ function isActive(pathname: string, href: string) {
 }
 
 /**
- * Slush's floating nav: a logo circle on the left; on the right a row of pill links, a plus button,
- * the language, account and theme circles and a dark "Search" pill. Every pill flips in 3D on hover.
+ * Slush's floating nav: a logo circle at the left edge of the screen; at the right edge a row of pill links, then
+ * the language, theme, plus and search circles, and the account circle last. Every pill flips in 3D on hover.
+ * The search circle opens a search box with live results (HeaderSearch).
  *
  * - The bar rides lower on the home page until you scroll 50px, then moves up (top, 0.6s elastic).
  * - Desktop: scrolling down flies the pills up out of view, first pill first (0.03s apart, 0.75s
@@ -38,7 +38,7 @@ function isActive(pathname: string, href: string) {
  *   first) and turns into a minus. No backdrop, as on Slush.
  * - Scroll direction is only read after 10px of movement (initDetectScrollingDirection).
  */
-export function SiteHeader() {
+export function SiteHeader({ searchItems }: { searchItems: SearchItem[] }) {
   const pathname = usePathname();
   const t = useT();
   const [open, setOpen] = useState(false);
@@ -96,7 +96,7 @@ export function SiteHeader() {
       data-home={pathname === "/" || undefined}
       data-scrolled={scrolled || undefined}
     >
-      <nav aria-label={t("Main", "メイン")} className="nav-intro container-page flex items-start justify-between gap-3">
+      <nav aria-label={t("Main", "メイン")} className="nav-intro relative flex w-full items-start justify-between gap-3 px-4 sm:px-6 lg:px-8">
         <Link
           href="/"
           aria-label={t("World Plate home", "World Plate ホーム")}
@@ -142,7 +142,6 @@ export function SiteHeader() {
           </ul>
 
           <LangToggle className="nav-circle nav-circle--text bg-dot text-dot-foreground size-[50px]" />
-          <AccountButton className="nav-circle nav-circle--text bg-dot text-dot-foreground size-[50px]" />
           {/* Phones keep the bar on one line without it; the footer has the full theme switch. */}
           <ThemeIconToggle className="nav-circle bg-dot text-dot-foreground size-[50px] max-sm:hidden" />
 
@@ -162,12 +161,8 @@ export function SiteHeader() {
             </span>
           </button>
 
-          <Link href="/recipes" data-accent="yellow" className={cn(flipClass("solid"), "text-[0.8125rem]")}>
-            <FlipFace>
-              <Search className="size-4" strokeWidth={1.75} aria-hidden />
-              <T en="Search" ja="検索" />
-            </FlipFace>
-          </Link>
+          <HeaderSearch items={searchItems} className="nav-circle bg-primary text-primary-foreground size-[50px]" />
+          <AccountButton className="nav-circle nav-circle--text bg-dot text-dot-foreground size-[50px]" />
         </div>
       </nav>
     </header>
