@@ -482,6 +482,34 @@
 ::view-transition-new(site-header) {
   animation: none;
 }
+/* Shared photo (page-swing.tsx): a dish photo flies from the card you clicked into the recipe page's hero photo,
+   over the cascading cards, for the whole swing and on Slush's ease. Both snapshots are cropped like the photos
+   (object-fit: cover), so the 4:3 card grows into the 4:5 hero without stretching. */
+:root[data-vt-photo] [data-vt-hero]:not([data-vt-old]) {
+  view-transition-name: wp-photo;
+}
+::view-transition-group(wp-photo) {
+  z-index: 3;
+  animation-duration: 1.04s;
+  animation-timing-function: cubic-bezier(0.65, 0.05, 0, 1);
+}
+::view-transition-image-pair(wp-photo) {
+  overflow: hidden;
+  border-radius: var(--radius);
+}
+::view-transition-old(wp-photo),
+::view-transition-new(wp-photo) {
+  height: 100%;
+  object-fit: cover;
+}
+/* Circle reveal (lib/circle-reveal.ts): language and theme switches. No page card here, so the old page keeps its
+   square corners, and the old header stays under the new one while the circle grows over both. */
+:root[data-vt="reveal"]::view-transition-old(root) {
+  clip-path: none;
+}
+:root[data-vt="reveal"]::view-transition-old(site-header) {
+  display: block;
+}
 /* The panels (.page-transition-el): only rendered while a swing is captured. */
 .wp-panel {
   display: none;
@@ -2558,6 +2586,37 @@
   }
 }
 
+/* ---------- Scroll-linked extras (CSS view timelines; skipped where unsupported or with reduced motion) ----------
+   Recipe cards in the browse and favourites grids rise into place as they scroll up into view, tipping level from a
+   slight lean that alternates by column (--c); the recipe page's hero photo slowly pushes in as you scroll past it. */
+@keyframes wp-card-rise {
+  from {
+    opacity: 0;
+    translate: 0 4rem;
+    scale: 0.92;
+    rotate: calc((var(--c, 1) - 1) * 2.5deg);
+  }
+}
+@keyframes wp-hero-zoom {
+  to {
+    scale: 1.14;
+  }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .card-rise {
+      animation: wp-card-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 75%;
+    }
+    .hero-zoom {
+      animation: wp-hero-zoom linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+  }
+}
+
 /* ---------- Recipe kitchen (components/recipe/recipe-kitchen.tsx, step-icon.tsx, step-timer.tsx) ----------
    Ingredient rows slide in one after another; each method step rises out of a blur as you reach it; the rail
    between the step numbers fills link by link as you read on; the mise-en-place pot fills as ingredients are ticked off. */
@@ -2751,6 +2810,17 @@
   }
   .mise-pot[data-full] .mise-pot__steam path:nth-child(3) {
     animation-delay: 1.2s;
+  }
+  /* A saved recipe's heart on its way to the header (recipe-actions.tsx, lib/fly.ts). */
+  .fly-heart {
+    display: grid;
+    width: 2.5rem;
+    height: 2.5rem;
+    place-items: center;
+    border-radius: 9999px;
+    background: var(--headline);
+    color: var(--background);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.25);
   }
   /* The ingredient name in flight from its row to the pot (made in RecipeKitchen.flyIntoPot). */
   .fly-chip {

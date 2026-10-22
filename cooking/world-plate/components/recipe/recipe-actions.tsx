@@ -4,11 +4,32 @@ import { Heart, Star } from "lucide-react";
 import { m, AnimatePresence, useAnimate, useReducedMotion } from "motion/react";
 import { useState } from "react";
 import { T } from "@/components/i18n";
+import { fly } from "@/lib/fly";
 import { useT } from "@/lib/lang";
 import { setFavorite, setRating, useFavorites, useRating } from "@/lib/local-store";
 import { cn } from "@/lib/utils";
 
 const BURST = Array.from({ length: 8 }, (_, i) => (i / 8) * Math.PI * 2);
+
+/** Where a saved recipe's heart flies: the header's Favorites pill, or the account circle when the pills are away. */
+function favoritesTarget() {
+  const visible = (el: Element | null) => {
+    const r = el?.getBoundingClientRect();
+    return r && r.width > 0 && r.bottom > 0 && r.top < window.innerHeight && r.left < window.innerWidth ? el : null;
+  };
+  return visible(document.querySelector('.nav-bar a[href*="/favorites"]')) ?? visible(document.querySelector('.nav-bar a[href*="/account"]'));
+}
+
+/** A heart leaves the button and arcs up into the header, which bumps as it lands. */
+function sendHeart(from: Element) {
+  const target = favoritesTarget();
+  if (!target) return;
+  const heart = document.createElement("span");
+  heart.className = "fly-heart";
+  heart.innerHTML =
+    '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 21s-7.5-4.6-9.5-9.2C1 8 3.4 4.5 7 4.5c2 0 3.6 1.1 5 3 1.4-1.9 3-3 5-3 3.6 0 6 3.5 4.5 7.3C19.5 16.4 12 21 12 21z"/></svg>';
+  fly({ node: heart, from: from.getBoundingClientRect(), to: target, spin: 20, duration: 750 });
+}
 
 /** Saved state lives in this browser (see lib/local-store.ts). */
 export function FavoriteButton({ slug }: { slug: string }) {
@@ -23,6 +44,7 @@ export function FavoriteButton({ slug }: { slug: string }) {
     setFavorite(slug, next);
     if (next && !reduce) {
       setBurstKey((k) => k + 1);
+      if (scope.current) sendHeart(scope.current);
       animate(scope.current, { transform: ["scale(1)", "scale(1.28)", "scale(0.94)", "scale(1)"] }, { duration: 0.45, ease: [0.23, 1, 0.32, 1] });
     }
   };

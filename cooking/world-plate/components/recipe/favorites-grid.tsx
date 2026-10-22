@@ -69,7 +69,9 @@ export function FavoritesGrid({ allRecipes }: { allRecipes: RecipeCardData[] }) 
               transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1], layout: { type: "spring", duration: 0.45, bounce: 0.1 } }}
               className="relative"
             >
-              <RecipeCard recipe={r} headingLevel={2} />
+              <div className="card-rise h-full">
+                <RecipeCard recipe={r} headingLevel={2} />
+              </div>
               <button
                 type="button"
                 onClick={() => remove(r)}

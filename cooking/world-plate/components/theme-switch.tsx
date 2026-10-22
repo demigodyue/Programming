@@ -5,8 +5,21 @@ import { m, AnimatePresence, useReducedMotion } from "motion/react";
 import { useTheme } from "next-themes";
 import { useSyncExternalStore } from "react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/watermelon/theme-toggler";
+import { circleReveal } from "@/lib/circle-reveal";
 import { useT } from "@/lib/lang";
 import { cn } from "@/lib/utils";
+
+/** Apply a theme with the circle reveal: next-themes sets the class in an effect, too late for the view transition. */
+function revealTheme(from: Element | null, theme: string, setTheme: (t: string) => void) {
+  const root = document.documentElement;
+  const dark = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  circleReveal(from, () => {
+    root.classList.toggle("dark", dark);
+    root.classList.toggle("light", !dark);
+    root.style.colorScheme = dark ? "dark" : "light";
+    setTheme(theme);
+  });
+}
 
 const useMounted = () =>
   useSyncExternalStore(
@@ -34,7 +47,7 @@ export function ThemeSwitch({ className }: { className?: string }) {
       size="sm"
       aria-label={t("Colour theme", "カラーテーマ")}
       value={mounted ? (theme ?? "system") : ""}
-      onValueChange={(v: string) => v && setTheme(v)}
+      onValueChange={(v: string) => v && revealTheme(document.activeElement, v, setTheme)}
       className={cn("bg-card", className)}
     >
       {OPTIONS.map(({ value, label, ja, Icon }) => (
@@ -58,7 +71,7 @@ export function ThemeIconToggle({ className }: { className?: string }) {
   return (
     <button
       type="button"
-      onClick={() => setTheme(isDark ? "light" : "dark")}
+      onClick={(e) => revealTheme(e.currentTarget, isDark ? "light" : "dark", setTheme)}
       aria-label={isDark ? t("Switch to light theme", "ライトテーマに切り替え") : t("Switch to dark theme", "ダークテーマに切り替え")}
       className={cn(
         "relative grid size-10 place-items-center rounded-full transition-colors duration-200 hover-fine:bg-foreground/8",

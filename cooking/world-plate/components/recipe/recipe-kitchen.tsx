@@ -10,6 +10,7 @@ import { StepIcon } from "@/components/recipe/step-icon";
 import { StepTimer } from "@/components/recipe/step-timer";
 import { Stepper } from "@/components/watermelon/stepper";
 import type { Ingredient, IngredientJa } from "@/db/queries/recipes";
+import { fly } from "@/lib/fly";
 import { useLang, useT } from "@/lib/lang";
 import { formatQuantity, formatQuantityJa } from "@/lib/scale";
 import { parseDurations, stepAction } from "@/lib/step-info";
@@ -55,20 +56,6 @@ function parseTicks(raw: string): Set<number> {
   } catch {
     return new Set();
   }
-}
-
-/** A point on the flight from the row into the pot: straight across, lifted into an arc. */
-function flightKeyframes(dx: number, dy: number) {
-  const lift = 70 + Math.abs(dx) * 0.25;
-  return Array.from({ length: 13 }, (_, i) => {
-    const t = i / 12;
-    const x = dx * t;
-    const y = dy * t - lift * 4 * t * (1 - t);
-    return {
-      transform: `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) rotate(${(-28 * t).toFixed(1)}deg) scale(${(1 - 0.65 * t).toFixed(3)})`,
-      opacity: t > 0.9 ? (1 - t) * 10 : 1,
-    };
-  });
 }
 
 /**
@@ -156,33 +143,24 @@ export function RecipeKitchen({
   const flyIntoPot = (index: number) => {
     const row = card.current?.querySelector<HTMLElement>(`[data-ing="${index}"] [data-l="${lang}"] .ing-name`);
     const target = pot.current;
-    if (!row || !target || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const from = row.getBoundingClientRect();
-    const to = target.getBoundingClientRect();
-    if (to.bottom < 0 || to.top > window.innerHeight) return; // the pot is off-screen: just tick
+    if (!row || !target) return;
     const chip = document.createElement("span");
     chip.className = "fly-chip";
     chip.textContent = row.textContent;
-    chip.style.left = `${from.left}px`;
-    chip.style.top = `${from.top}px`;
-    document.body.append(chip);
-    const dx = to.left + to.width / 2 - (from.left + chip.offsetWidth / 2);
-    const dy = to.top + to.height * 0.38 - (from.top + chip.offsetHeight / 2);
-    const flight = chip.animate(flightKeyframes(dx, dy), { duration: 650, easing: "cubic-bezier(0.45, 0, 0.55, 1)" });
-    flight.onfinish = () => {
-      chip.remove();
-      target.animate(
-        [{ transform: "scale(1, 1)" }, { transform: "scale(1.08, 0.9)" }, { transform: "scale(0.96, 1.05)" }, { transform: "scale(1, 1)" }],
-        { duration: 450, easing: "cubic-bezier(0.34, 1.56, 0.64, 1)" },
-      );
-      target.querySelector(".mise-pot__splash")?.animate(
-        [
-          { opacity: 0.9, transform: "scale(0.4)" },
-          { opacity: 0, transform: "scale(1.6)" },
-        ],
-        { duration: 500, easing: "ease-out" },
-      );
-    };
+    fly({
+      node: chip,
+      from: row.getBoundingClientRect(),
+      to: target,
+      aim: 0.38,
+      onLand: () =>
+        target.querySelector(".mise-pot__splash")?.animate(
+          [
+            { opacity: 0.9, transform: "scale(0.4)" },
+            { opacity: 0, transform: "scale(1.6)" },
+          ],
+          { duration: 500, easing: "ease-out" },
+        ),
+    });
   };
 
   const toggle = (index: number) => {

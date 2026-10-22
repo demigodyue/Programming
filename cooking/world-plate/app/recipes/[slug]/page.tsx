@@ -73,7 +73,7 @@ export default async function RecipePage({ params }: PageProps<"/recipes/[slug]"
 
           <div className="rule-draw mt-4 grid items-center gap-10 pt-10 lg:grid-cols-2 lg:gap-16">
             <div className="load-fade lg:order-2">
-                <div className="bg-muted relative aspect-[4/3] overflow-hidden rounded-lg lg:aspect-[4/5]">
+                <div data-vt-hero className="bg-muted relative aspect-[4/3] overflow-hidden rounded-lg lg:aspect-[4/5]">
                   <LImage
                     src={recipe.image}
                     alt={recipe.imageAlt}
@@ -83,7 +83,7 @@ export default async function RecipePage({ params }: PageProps<"/recipes/[slug]"
                     fetchPriority="high"
                     sizes="(min-width: 1024px) 45vw, 100vw"
                     quality={55}
-                    className="object-cover"
+                    className="hero-zoom object-cover"
                   />
                 </div>
             </div>

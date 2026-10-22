@@ -14,7 +14,10 @@ import { slush } from "./slush-ease";
  * per frame from the tracks below. The old card tips back and falls away down the screen, the panels tumble down past
  * the middle, and the new card drops in from the top, straightens and comes forward to full screen; the new page's own
  * entrance starts as it lands (the `data-load="swing"` clock in globals.css).
- * The header has its own view-transition name and stays put. Reduced motion: Slush's
+ * The header has its own view-transition name and stays put. Opening a recipe from a dish photo (a `[data-vt-photo]`
+ * inside the link or its `[data-vt-card]`) also flies that photo into the recipe page's hero photo (`[data-vt-hero]`)
+ * while the cards cascade: both get the view-transition name `wp-photo` (globals.css, "Shared photo").
+ * Reduced motion: Slush's
  * `runReducedTransition` — the old page fades out (0.525s) while the new one fades in (1s).
  * Browser back/forward and browsers without view transitions navigate without it.
  */
@@ -136,13 +139,26 @@ export function PageSwing() {
         check();
       });
 
-    const swing = (url: URL) => {
+    // The photo to carry into a recipe page, if the clicked link shows one.
+    const photoIn = (a: Element) =>
+      a.querySelector<HTMLElement>("[data-vt-photo]") ?? a.closest("[data-vt-card]")?.querySelector<HTMLElement>("[data-vt-photo]") ?? null;
+
+    const swing = (url: URL, a: Element) => {
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const href = (url.pathname.slice(BASE.length) || "/") + url.search + url.hash;
       const target = normalise(url.pathname) + url.search;
       running = true;
+      root.dataset.swing = ""; // other view transitions (the circle reveal) stand aside meanwhile
       window.clearTimeout(clearLoad);
       const before = document.querySelector("main")?.firstElementChild ?? null;
+      const photo = !reduce && /\/recipes\/[^/]+\/?$/.test(url.pathname) ? photoIn(a) : null;
+      const heroes = () => document.querySelectorAll<HTMLElement>("[data-vt-hero]");
+      if (photo) {
+        // Old state: only the clicked photo carries the name (a recipe page's own hero steps aside).
+        heroes().forEach((el) => el.setAttribute("data-vt-old", ""));
+        photo.style.viewTransitionName = "wp-photo";
+        root.dataset.vtPhoto = "";
+      }
 
       let transition: ViewTransition;
       try {
@@ -160,33 +176,49 @@ export function PageSwing() {
           }
           router.push(href);
           await waitForPage(target, before);
+          if (photo) {
+            // New state: the new page's hero takes the name; its own fade-in would only dim the photo as it lands.
+            heroes().forEach((el) => {
+              el.removeAttribute("data-vt-old");
+              const fade = el.closest<HTMLElement>(".load-fade");
+              if (fade) fade.style.animation = "none";
+            });
+          }
         });
       } catch {
         running = false;
+        delete root.dataset.swing;
         router.push(href);
         return;
       }
 
+      // fill: "both" outlives the transition: a later view transition (the circle reveal) would pick up these end
+      // states (the old page fallen away) on its own pseudo-elements, so they are cancelled when this one ends.
+      const animations: Animation[] = [];
+      const play = (frames: Keyframe[], options: KeyframeAnimationOptions) => animations.push(root.animate(frames, options));
       transition.ready
         .then(() => {
           const opts = { duration: (END * 1000) / SPEED, easing: "linear", fill: "both" } as const;
           if (reduce) {
             const ease = "cubic-bezier(0.65, 0.05, 0, 1)";
-            root.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 525, easing: ease, fill: "both", pseudoElement: "::view-transition-old(root)" });
-            root.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 1000, easing: ease, fill: "both", pseudoElement: "::view-transition-new(root)" });
+            play([{ opacity: 1 }, { opacity: 0 }], { duration: 525, easing: ease, fill: "both", pseudoElement: "::view-transition-old(root)" });
+            play([{ opacity: 0 }, { opacity: 1 }], { duration: 1000, easing: ease, fill: "both", pseudoElement: "::view-transition-new(root)" });
             return;
           }
           const vw = window.innerWidth / 100;
-          root.animate(keyframes(OLD, vw, { goneAt: OLD_GONE }), { ...opts, pseudoElement: "::view-transition-old(root)" });
-          root.animate(keyframes(NEW, vw, { radius: true }), { ...opts, pseudoElement: "::view-transition-new(root)" });
-          PANELS.forEach((track, i) =>
-            root.animate(keyframes(track, vw), { ...opts, pseudoElement: `::view-transition-group(wp-panel-${i})` }),
-          );
+          play(keyframes(OLD, vw, { goneAt: OLD_GONE }), { ...opts, pseudoElement: "::view-transition-old(root)" });
+          play(keyframes(NEW, vw, { radius: true }), { ...opts, pseudoElement: "::view-transition-new(root)" });
+          PANELS.forEach((track, i) => play(keyframes(track, vw), { ...opts, pseudoElement: `::view-transition-group(wp-panel-${i})` }));
         })
         .catch(() => {});
 
       transition.finished.finally(() => {
+        animations.forEach((a) => a.cancel());
         delete root.dataset.swingPanels;
+        delete root.dataset.swing;
+        delete root.dataset.vtPhoto;
+        if (photo) photo.style.viewTransitionName = "";
+        heroes().forEach((el) => el.removeAttribute("data-vt-old"));
         running = false;
         // Hand the page-load clock back once the new page's entrance has played out.
         clearLoad = window.setTimeout(() => delete root.dataset.load, 2500);
@@ -203,7 +235,7 @@ export function PageSwing() {
       if (normalise(url.pathname) === normalise(location.pathname) && url.search === location.search) return;
       e.preventDefault(); // next/link skips its own navigation when the click is already handled
       if (running) return; // Barba's preventRunning: ignore clicks mid-transition
-      swing(url);
+      swing(url, a);
     };
 
     // Back/forward isn't animated, so give the new page the normal load timing.

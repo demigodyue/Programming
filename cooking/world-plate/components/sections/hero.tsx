@@ -64,7 +64,7 @@ export function Hero({
                   className="animate-float group relative block size-full"
                   style={{ rotate: p.tilt, "--float-dur": p.dur, "--float-delay": p.delay, "--float-y": "12px", "--float-r": "3deg" } as CSSProperties}
                 >
-                  <span className="relative block size-full">
+                  <span data-vt-photo className="relative block size-full">
                     <LImage
                       src={r.image}
                       alt={r.imageAlt}

@@ -116,6 +116,13 @@ docs are unfilled templates. The final security review used the built-in `securi
   The E2E specs set localStorage `wp-account-demo=1` to use `demo-backend.ts` (localStorage, plaintext passwords,
   test-only). The account panels use enter-only keyed animations: an `AnimatePresence mode="wait"` exit can stall
   before Motion's lazy features load, leaving the panel blank.
+- **Transitions added 2026-10-22**: shared photo (page-swing names the clicked `[data-vt-photo]` and the new page's
+  `[data-vt-hero]` `wp-photo`; an old recipe page's own hero is marked `data-vt-old` so names never repeat, and the
+  hero's `.load-fade` is switched off so the landed photo isn't dimmed). `lib/circle-reveal.ts` (language + theme;
+  it stands aside while `data-swing` is set). Every WAAPI animation on view-transition pseudo-elements is cancelled
+  when its transition finishes: `fill: "both"` would otherwise re-apply its end state to the next transition's
+  pseudo-elements (the old page vanished under the circle reveal). `lib/fly.ts` (ingredient chips, saved-recipe
+  heart). `.card-rise` / `.hero-zoom` are CSS view timelines.
 - **Header + search (2026-10-22)**: the nav is full width (logo at the left edge, menu at the right edge, not
   `container-page`), with the account circle last. `HeaderSearch` gets its dish list from `app/layout.tsx` (an async
   layout querying at build time). The box stays mounted and animates with CSS (`.nav-search[data-open]`), not

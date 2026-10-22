@@ -3,7 +3,7 @@
 import { Leaf, Search, X } from "lucide-react";
 import { m, AnimatePresence, useReducedMotion } from "motion/react";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { T } from "@/components/i18n";
 import { FlipFace, flipClass } from "@/components/motion/flip-face";
 import { useMotionReady } from "@/components/motion/motion-provider";
@@ -200,7 +200,9 @@ export function RecipeBrowser({
                   exit={{ opacity: 0, transform: reduce ? "none" : "scale(0.96)" }}
                   transition={{ duration: 0.3, ease: EASE_OUT, layout: { type: "spring", duration: 0.45, bounce: 0.1 } }}
                 >
-                  <RecipeCard recipe={r} eager={i < 3} headingLevel={2} />
+                  <div className="card-rise h-full" style={{ "--c": i % 3 } as CSSProperties}>
+                    <RecipeCard recipe={r} eager={i < 3} headingLevel={2} />
+                  </div>
                 </m.li>
               ))}
             </AnimatePresence>

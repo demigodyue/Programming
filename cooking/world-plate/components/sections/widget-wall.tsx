@@ -17,7 +17,7 @@ function DishWidget({ recipe, className }: { recipe: RecipeCard; className?: str
     // Hover: the whole tile sinks to 0.92 on the elastic curve (Slush's footer tiles).
     <Widget className={cn("tile-press", className)}>
       <Link href={`/recipes/${recipe.slug}`} data-cursor="View recipe" className="flex h-full flex-col overflow-hidden rounded-lg">
-        <span className="bg-muted relative block min-h-32 flex-1 overflow-hidden">
+        <span data-vt-photo className="bg-muted relative block min-h-32 flex-1 overflow-hidden">
           <LImage src={recipe.image} alt={recipe.imageAlt} altJa={recipe.ja.imageAlt} fill sizes="(min-width: 768px) 25vw, 50vw" className="scroll-zoom object-cover" />
         </span>
         <span className="flex items-end justify-between gap-3 p-4">

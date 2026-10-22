@@ -1,21 +1,25 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, type MouseEvent } from "react";
 import { T } from "@/components/i18n";
+import { circleReveal } from "@/lib/circle-reveal";
 import { setLang, useLang, useT } from "@/lib/lang";
 import { cn } from "@/lib/utils";
 
 /**
  * The English ⇄ Japanese switch: a header circle that shows the language you'd switch to ("あ" or "EN").
- * Clicking flips the circle over on its vertical axis while the whole page swaps language underneath.
+ * Clicking flips the circle over on its vertical axis while the new language spreads across the page in a circle
+ * growing out of the button.
  */
 export function LangToggle({ className }: { className?: string }) {
   const lang = useLang();
   const t = useT();
   const face = useRef<HTMLSpanElement>(null);
 
-  const toggle = () => {
-    setLang(lang === "ja" ? "en" : "ja");
+  const toggle = (e: MouseEvent<HTMLButtonElement>) => {
+    const next = lang === "ja" ? "en" : "ja";
+    // The new language spreads over the page from this button (lib/circle-reveal.ts).
+    circleReveal(e.currentTarget, () => setLang(next));
     if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       face.current?.animate(
         [{ transform: "perspective(200px) rotateY(-180deg) scale(0.8)" }, { transform: "perspective(200px) rotateY(0deg) scale(1)" }],

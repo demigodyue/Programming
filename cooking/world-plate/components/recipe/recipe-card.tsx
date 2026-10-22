@@ -23,9 +23,9 @@ export function RecipeCard({ recipe, sizes, className, eager, headingLevel = 3 }
   const Heading = headingLevel === 2 ? "h2" : "h3";
 
   return (
-    <article data-cursor="View recipe" className={cn("group relative h-full", className)}>
+    <article data-cursor="View recipe" data-vt-card className={cn("group relative h-full", className)}>
       <div className="bg-card text-card-foreground group-hover-fine:-translate-y-1.5 relative flex h-full flex-col overflow-hidden rounded-lg border transition-[translate] duration-500 ease-(--ease-slush-bounce) group-has-focus-visible:outline-ring group-has-focus-visible:outline-2 group-has-focus-visible:outline-offset-2">
-        <div className="bg-muted relative aspect-4/3 overflow-hidden">
+        <div data-vt-photo className="bg-muted relative aspect-4/3 overflow-hidden">
           <LImage
             src={recipe.image}
             alt={recipe.imageAlt}
