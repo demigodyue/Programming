@@ -22,9 +22,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  /* Japanese falls through to Dela Gothic One under Anton and Noto Sans JP under Inter (app/layout.tsx). */
+  /* Japanese falls through to Noto Sans JP; the big headlines switch to Dela Gothic One ("Language" below). */
   --font-sans: var(--font-inter), var(--font-jp), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-anton), var(--font-jp-display), Impact, "Arial Narrow", sans-serif;
+  --font-display: var(--font-anton), var(--font-jp), Impact, "Arial Narrow", sans-serif;
   --font-ui: var(--font-inter), var(--font-jp), ui-sans-serif, system-ui, sans-serif;
   --font-heading: var(--font-display);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -195,13 +195,52 @@
 :root[data-lang="ja"] [data-l="en"] {
   display: none !important;
 }
-/* Japanese lines break at phrase boundaries where the browser supports it. */
+/* Japanese readability. Kana and kanji at the Latin sizes read small and cramped: the Japanese copy is set a step
+   larger with looser leading, labels lose their wide tracking, and smaller display type (card titles, numbers) is
+   bold Noto Sans JP. Only the big headlines use the heavy poster face, where it has room to read. Anton has no bold,
+   so faux-bolding the digits inside is switched off. */
+:root[data-lang="ja"] [data-l="ja"] {
+  font-size: 1.07em;
+  letter-spacing: 0.01em;
+}
+:root[data-lang="ja"] :is(p, li, dd, label):not(.font-display, .label-caps) > [data-l="ja"] {
+  line-height: 1.8;
+}
+:root[data-lang="ja"] .label-caps [data-l="ja"],
+:root[data-lang="ja"] .label-caps[data-l="ja"] {
+  font-size: 1.1em;
+  letter-spacing: 0.02em;
+}
+:root[data-lang="ja"] :is(.font-display, h1, h2, h3, dd) [data-l="ja"] {
+  font-weight: 700;
+  font-synthesis-weight: none;
+}
+/* Reading text set in the display face (the dish story, the About pitch) is long Japanese prose: regular Noto Sans
+   JP throughout (digits included) with reading leading, not bold display type. */
+:root[data-lang="ja"] p.font-display:not(.quick-zoom__title) {
+  word-break: normal;
+}
+:root[data-lang="ja"] p.font-display:not(.quick-zoom__title) [data-l="ja"] {
+  font-family: var(--font-jp), sans-serif;
+  font-weight: 500;
+  line-height: 1.75;
+}
+:root[data-lang="ja"] :is(h1, .text-display, .cuisine-stack__title, .cta-stove__title, .quick-zoom__title, .slide-band__line) {
+  font-family: var(--font-anton), var(--font-jp-display), var(--font-jp), sans-serif;
+}
+:root[data-lang="ja"] :is(h1, .text-display, .cuisine-stack__title, .cta-stove__title, .quick-zoom__title, .slide-band__line) [data-l="ja"] {
+  font-size: 1em;
+  font-weight: 400;
+}
 /* Cuisine names run up to six wide characters ("イタリア料理"): size them to fit the card. */
 :root[data-lang="ja"] .cuisine-card__name {
   font-size: min(1.2rem, calc(1.15vw + 0.45rem));
 }
+/* Japanese headings break at phrase boundaries where the browser supports it; running text fills its lines. */
 :root[data-lang="ja"] body {
   line-break: strict;
+}
+:root[data-lang="ja"] :is(h1, h2, h3, .font-display) {
   word-break: auto-phrase;
 }
 

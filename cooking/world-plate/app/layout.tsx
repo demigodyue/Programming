@@ -44,9 +44,10 @@ const jpDisplay = Dela_Gothic_One({
   preload: false,
 });
 
+// No 400: Japanese at the regular weight reads thin on the cream canvas, so regular text resolves to 500.
 const jp = Noto_Sans_JP({
   variable: "--font-jp",
-  weight: ["400", "500", "700"],
+  weight: ["500", "700"],
   display: "swap",
   preload: false,
 });

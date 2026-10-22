@@ -1,10 +1,10 @@
 :HL["/Programming/cooking/site/_next/static/chunks/2m2sac855v08h.css","style"]
-:HL["/Programming/cooking/site/_next/static/chunks/051j8esewjkbw.css","style"]
-:HL["/Programming/cooking/site/_next/static/chunks/15fq9j8b3fqp_.css","style"]
+:HL["/Programming/cooking/site/_next/static/chunks/1l9r_df9al2r6.css","style"]
+:HL["/Programming/cooking/site/_next/static/chunks/085n10t3zotq7.css","style"]
 :HL["/Programming/cooking/site/_next/static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/Programming/cooking/site/_next/static/media/9e9f04e3c37952ab-s.p.0pan85mumqyf3.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HC"https://images.unsplash.com"
 3:[["children",{"s":"__PAGE__","h":160}]]
 2:[["children",{"s":{"n":"slug","t":"d","k":"tiramisu","s":[]},"h":65632,"c":"$Q3"}]]
 1:[["children",{"s":"recipes","h":131136,"c":"$Q2"}]]
-0:{"b":"Z6Qfk6IESUO2fP_FuyuDu","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}
+0:{"b":"koTRCPDgch4MNajB7rni2","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}
