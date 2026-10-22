@@ -52,7 +52,7 @@ export default async function CuisinePage({ params }: PageProps<"/cuisine/[name]
         <div className="load-stagger label-caps text-muted-foreground flex items-center justify-between" style={{ "--i": 0 } as CSSProperties}>
           <Link href="/#cuisines" className="hover-fine:text-foreground inline-flex min-h-11 items-center gap-2 transition-colors">
             <ArrowLeft className="size-3.5" strokeWidth={1.5} aria-hidden />
-            <T en="All cuisines" ja="すべての国" />
+            <T en="All cuisines" ja="すべての国の料理" />
           </Link>
           <span>
             <T en={cuisine.country} ja={cuisine.ja.country} />

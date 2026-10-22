@@ -18,7 +18,7 @@ export function SiteFooter() {
       description={
         <T
           en="Famous dishes from around the world, written up properly — real ingredients, honest timings and the story behind each plate."
-          ja="世界の名物料理を、きちんと。本物の材料、正直な時間、そして一皿ごとの物語とともに。"
+          ja="世界の名物料理を、きちんと。本物の材料、正確な時間、そして一皿ごとの物語とともに。"
         />
       }
       aside={
@@ -40,8 +40,8 @@ export function SiteFooter() {
             { label: <T en="Your account" ja="アカウント" />, href: "/account" },
           ],
         },
-        { title: <T en="Cuisines" ja="料理の国" />, links: cuisinesSeed.slice(0, half).map(cuisineLink) },
-        { title: <T en="More cuisines" ja="さらに" />, links: cuisinesSeed.slice(half).map(cuisineLink) },
+        { title: <T en="Cuisines" ja="各国料理" />, links: cuisinesSeed.slice(0, half).map(cuisineLink) },
+        { title: <T en="More cuisines" ja="その他の国" />, links: cuisinesSeed.slice(half).map(cuisineLink) },
       ]}
       copyright={`© ${new Date().getFullYear()} World Plate`}
       credit={

@@ -15,7 +15,7 @@ export default function NotFound() {
       <p className="load-stagger text-muted-foreground mt-6 max-w-md text-base" style={{ "--i": 1 } as CSSProperties}>
         <T
           en="The page you were looking for doesn't exist or has moved. The recipes are all still here."
-          ja="お探しのページは存在しないか、移動しました。レシピはすべてここにあります。"
+          ja="お探しのページは存在しないか、移動した可能性があります。レシピはすべてそろっています。"
         />
       </p>
       <Link href="/recipes" data-accent="yellow" className={flipClass("solid", "load-stagger mt-8")} style={{ "--i": 2 } as CSSProperties}>

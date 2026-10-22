@@ -128,7 +128,7 @@ export function Hero({
               <span aria-hidden className="load-pop hex-outline" />
               <div className="flex gap-1.5">
                 <dt>
-                  <T en="Cuisines:" ja="料理の国：" />
+                  <T en="Cuisines:" ja="各国料理：" />
                 </dt>
                 <dd>{cuisineCount}</dd>
               </div>

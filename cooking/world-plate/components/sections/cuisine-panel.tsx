@@ -68,7 +68,7 @@ export function CuisinePanel({ cuisines }: { cuisines: CuisineSummary[] }) {
             <T en="02 · The collection" ja="02 · コレクション" />
           </span>
           <span>
-            <T en={`${cuisines.length} kitchens`} ja={`${cuisines.length}の国の台所`} />
+            <T en={`${cuisines.length} kitchens`} ja={`${cuisines.length}の食文化`} />
           </span>
         </div>
         <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-2">
@@ -89,7 +89,7 @@ export function CuisinePanel({ cuisines }: { cuisines: CuisineSummary[] }) {
           <p className="text-muted-foreground max-w-xs pb-1 text-[0.9375rem] leading-relaxed">
             <T
               en={`${cuisines.length} kitchens, from Kathmandu street stalls to Parisian bakeries.`}
-              ja={`カトマンズの屋台からパリのパン屋まで、${cuisines.length}の国の台所。`}
+              ja={`カトマンズの屋台からパリのパン屋まで、${cuisines.length}の食文化。`}
             />
           </p>
         </div>

@@ -29,7 +29,7 @@ export function AboutPanel({ recipes, cuisineCount }: { recipes: RecipeCard[]; c
         <div className="relative z-10 lg:py-16">
           <div className="label-caps text-muted-foreground flex justify-between border-b pb-3">
             <span>
-              <T en="[ About ]" ja="［ について ］" />
+              <T en="[ About ]" ja="［ このサイトについて ］" />
             </span>
             <span>World Plate</span>
           </div>
@@ -51,15 +51,15 @@ export function AboutPanel({ recipes, cuisineCount }: { recipes: RecipeCard[]; c
             as="p"
             text="Famous dishes from Japan to Nepal to Rome — ramen, momo, carbonara — each written up properly, with real ingredients, honest timings and the story behind the plate."
             em={["ramen", "momo", "carbonara", "story"]}
-            ja="日本から|ネパール、|ローマまで——|ラーメン、|モモ、|カルボナーラ——|世界の名物料理を、|本物の材料と|正直な時間、|そして一皿の|物語とともに|きちんと|紹介します。"
+            ja="日本から|ネパール、|ローマまで——|ラーメン、|モモ、|カルボナーラ——|世界の名物料理を、|本物の材料と|正確な時間、|そして一皿の|物語とともに|きちんと|紹介します。"
             emJa={["ラーメン、", "モモ、", "カルボナーラ——", "物語とともに"]}
             className="font-display mt-6 max-w-[34ch] text-[clamp(1.25rem,1.9vw,1.75rem)] leading-[1.15]"
           />
           <dl className="mt-9 grid max-w-md grid-cols-3 gap-4 border-t pt-5">
             {[
               { n: recipes.length, label: "Famous dishes", ja: "名物料理" },
-              { n: cuisineCount, label: "Cuisines", ja: "料理の国" },
-              { n: averageHours, label: "Avg. hours", ja: "平均時間", decimals: 1 },
+              { n: cuisineCount, label: "Cuisines", ja: "各国料理" },
+              { n: averageHours, label: "Avg. hours", ja: "平均所要時間（h）", decimals: 1 },
             ].map((s) => (
               <div key={s.label} className="flex flex-col">
                 <dt className="label-caps text-muted-foreground order-last mt-1 text-[0.6875rem]">
@@ -153,7 +153,7 @@ export function CtaPanel() {
               <p className="max-w-sm text-[0.9375rem] leading-relaxed">
                 <T
                   en="Real ingredients, honest timings and a step-by-step Cook Mode that keeps your screen awake."
-                  ja="本物の材料、正直な時間、そして画面を消さずに一歩ずつ進める「クックモード」。"
+                  ja="本物の材料、正確な時間、そして画面を消さずに一歩ずつ進める「クックモード」。"
                 />
               </p>
               <Link href="/recipes" data-accent="yellow" className={flipClass()}>

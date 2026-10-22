@@ -101,7 +101,9 @@ docs are unfilled templates. The final security review used the built-in `securi
   marks phrase breaks with "|" (no spaces), and ScrollMotion only scrubs the shown language's words. Recipe and
   cuisine Japanese lives in `data/recipes.ja.ts` / `data/cuisines.ja.ts`, keyed by slug, with ingredients and steps
   lined up **by position** with the English seed (`tests/unit/i18n-data.test.ts` checks counts and section names).
-  A new recipe needs its Japanese edition too. Queries attach it as `.ja`. Japanese quantities: `formatQuantityJa`
+  A new recipe needs its Japanese edition too. Japanese copy style (reviewed 2026-10-22 against Japanese sources):
+  asides go in （）, never ——; Korean names follow Japanese usage (마복림 → マ・ボンリム); "Cuisines" is 各国料理, "kitchens"
+  is 食文化; story facts are checked before they ship (both languages tell the same facts). Queries attach it as `.ja`. Japanese quantities: `formatQuantityJa`
   (spoons first, a counter after counted items, default 個). Fonts: Dela Gothic One under Anton and Noto Sans JP
   under Inter (`preload: false`). Don't stack two next/font instances of one family for different weights: they
   share a family name, so the browser mixes the weights.

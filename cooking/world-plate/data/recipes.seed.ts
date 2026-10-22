@@ -759,7 +759,7 @@ export const recipesSeed: SeedRecipe[] = [
       "Slice each cutlet into strips. Spoon rice into one side of each plate, lay the katsu beside it and pour the curry sauce around. Serve with pickles or cabbage.",
     ],
     story:
-      "Curry came to Japan in the late 1800s by way of the British Navy, as a curry-powder stew thickened with roux, and the Imperial Navy adopted it as its Friday meal. Tonkatsu appeared in Tokyo's Western-style restaurants around the same time. Putting the two together is credited to Ginza's Grill Swiss in 1948, for a baseball player who wanted both on one plate.",
+      "Curry came to Japan in the late 1800s by way of the British Navy: the Imperial Navy took it up as a curry-powder stew thickened with roux, and Japan's Maritime Self-Defense Force still eats it every Friday. Tonkatsu appeared in Tokyo's Western-style restaurants around the same time. Putting the two together is credited to the restaurant Ginza Swiss in 1948, for Yomiuri Giants player Shigeru Chiba, who wanted both on one plate.",
   },
   {
     slug: "okonomiyaki",
@@ -1477,7 +1477,7 @@ export const recipesSeed: SeedRecipe[] = [
       "Taste for salt and lemon. Spread it on a plate with the back of a spoon, making a swirl, then fill it with olive oil, Aleppo pepper, nuts, the whole chickpeas and parsley. Serve with warm pita.",
     ],
     story:
-      "Hummus bi tahini — 'chickpeas with tahini' — is claimed by Lebanon, Syria, Palestine and Israel alike; the earliest written recipes come from 13th-century Cairo. In the Levant it is eaten fresh and warm in hummusiyas that sell out by lunchtime, scooped up with pita and raw onion rather than spread.",
+      "Hummus bi tahini — 'chickpeas with tahini' — is claimed by Lebanon, Syria, Palestine and Israel alike; the oldest surviving recipe is in a 13th-century cookbook linked to Aleppo, in Syria. In the Levant it is eaten fresh and warm in hummusiyas that sell out by lunchtime, scooped up with pita and raw onion rather than spread.",
   },
   {
     slug: "pho-bo",

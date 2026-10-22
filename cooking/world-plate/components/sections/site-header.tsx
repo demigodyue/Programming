@@ -14,7 +14,7 @@ import { useT } from "@/lib/lang";
 
 const NAV: { href: string; label: string; ja: string; accent: FlipAccent }[] = [
   { href: "/recipes", label: "Recipes", ja: "レシピ", accent: "yellow" },
-  { href: "/#cuisines", label: "Cuisines", ja: "料理の国", accent: "orange" },
+  { href: "/#cuisines", label: "Cuisines", ja: "各国料理", accent: "orange" },
   { href: "/favorites", label: "Favorites", ja: "お気に入り", accent: "mint" },
 ];
 

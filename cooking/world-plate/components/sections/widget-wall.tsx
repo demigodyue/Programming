@@ -74,7 +74,7 @@ export function WidgetWall({
         <Widget className="col-span-2 md:col-span-7">
           <div className="flex h-full flex-col justify-between gap-6 overflow-hidden p-5">
             <span className="label-caps text-muted-foreground">
-              <T en={`${cuisines.length} kitchens`} ja={`${cuisines.length}の国の台所`} />
+              <T en={`${cuisines.length} kitchens`} ja={`${cuisines.length}の食文化`} />
             </span>
             <h2 id="wall-title" className="font-display max-w-[22ch] text-[clamp(1.5rem,2.6vw,2.125rem)] leading-[1.1]">
               <T en="Ramen to croissants, pho to paella." ja="ラーメンからクロワッサン、フォーからパエリアまで。" />
@@ -113,7 +113,7 @@ export function WidgetWall({
             <span className="text-muted-foreground text-xs">
               <T
                 en={`Across all ${allMinutes.length} recipes, quickest to slowest`}
-                ja={`全${allMinutes.length}レシピを、早い順から遅い順に`}
+                ja={`全${allMinutes.length}レシピを、早い順に並べて`}
               />
             </span>
           </div>
@@ -147,7 +147,7 @@ export function WidgetWall({
           <Widget className="col-span-1 md:col-span-3">
             <Link href={`/recipes/${quickest.slug}`} className="group flex h-full min-h-64 flex-col justify-between gap-6 p-5 md:min-h-72">
               <span className="label-caps text-muted-foreground">
-                <T en="Quickest tonight" ja="今夜いちばん早い一品" />
+                <T en="Quickest tonight" ja="今夜すぐ作れる一品" />
               </span>
               <span>
                 <span className="font-display link-group text-2xl leading-tight">
