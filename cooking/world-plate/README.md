@@ -30,17 +30,42 @@ The round **あ / EN** button in the header switches every word on the site inst
 
 ## Accounts (Firebase)
 
-Visitors can create an account (name, email, password), sign in later and see their saved recipes on any device. Favorites saved before signing in are added to the account. Signing out removes them from that browser; they stay in the account. There is also a "Forgot your password?" email reset.
+Visitors can create an account (name, email, password) or **continue with Google**, sign in later, and see their saved recipes and star ratings on any device. Favourites and ratings made before signing in are added to the account. Signing out removes them from that browser; they stay in the account. New email accounts get a confirmation email (with "Send it again"), there is a "Forgot your password?" reset, and **Delete my account** permanently removes the account and everything it saved. For safety, deleting needs a sign-in from the last few minutes.
 
 Accounts use Firebase (Authentication + Firestore), called straight from the browser, so the site stays a static export. To switch them on:
 
 1. Create a free project at https://console.firebase.google.com.
-2. **Authentication → Sign-in method:** enable **Email/Password**.
+2. **Authentication → Sign-in method:** enable **Email/Password**, and **Google** if you want the Google button to work.
 3. **Firestore Database → Create database** (production mode), then **Rules:** paste the contents of `firestore.rules` and publish. They let each account read and write only its own `users/{uid}` document.
 4. **Project settings → Your apps → Web (`</>`):** register an app and copy its config into `.env.local` (the `NEXT_PUBLIC_FIREBASE_*` keys listed in `.env.example`).
 5. `npm run build`. The web config is public by design; the security rules protect the data.
 
 Without the config the site works as before: favorites stay in the browser, and the account page says accounts aren't switched on yet. The Firebase SDK is only downloaded on the account page, or for visitors who were signed in last time.
+
+## Shopping list, sharing and printing
+
+- **Shopping list:** on any recipe, pick how many you're cooking for and press **Add to shopping list**. The ingredients, scaled to that number, go on one list (the Shopping list pill in the header). Tick things off at the shop, copy the remaining items as text, print the list, or remove a recipe. The list is kept in this browser.
+- **Share and print:** every recipe has a **Share** button (your phone's share sheet, or it copies the link) and a **Print** button. Printing gives a clean black-on-white page with the ingredients and method, without the header, footer, artwork or animations.
+
+## Publishing (GitHub Pages)
+
+The built site in `cooking/site/` is committed, and its base path (`/Programming/cooking/site`) matches GitHub Pages for this repo. To put it online:
+
+1. On GitHub, open the **Programming** repo → **Settings → Pages**.
+2. Under **Build and deployment**, choose **Deploy from a branch**, branch **main**, folder **/ (root)**, and save.
+3. After a minute the site is at **https://demigodyue.github.io/Programming/cooking/site/**.
+
+The repo has a `.nojekyll` file at its root. Without it, GitHub Pages would hide the `_next/` folder that holds the site's code. Once accounts are switched on, add `demigodyue.github.io` under Firebase → Authentication → Settings → **Authorized domains**, so Google sign-in works there.
+
+## Security
+
+- **Content Security Policy** (a `<meta>` tag, since a static host can't send headers). Scripts, styles, fonts, images and connections may only come from this site, Unsplash photos, Google Fonts (Japanese mode) and Firebase/Google sign-in. `scripts/copy-site.mjs` moves the tag to the top of every page so it covers everything after it.
+- **Clickjacking guard:** a page loaded inside another site's frame hides itself (a `<meta>` CSP can't forbid framing).
+- **Untrusted storage is validated:** favourites, ratings and the shopping list are checked when read back from localStorage or from the account (slug-shaped names only, stars 1–5, capped list sizes).
+- **Firestore rules** (`firestore.rules`): each account can read and write only its own document, and only the known fields. Types and sizes are checked, and timestamps must be the server's own time.
+- **Accounts:** passwords need at least 8 characters. Deleting an account needs a recent sign-in. The test-only stand-in login works only in the test build (`NEXT_PUBLIC_ACCOUNT_DEMO`), never on the published site.
+- **Dependencies:** `npm audit --omit=dev` reports 0 vulnerabilities. A patched `@grpc/grpc-js` is forced through `overrides`; the browser never loads it anyway, since it uses Firestore Lite. The full audit lists 4 moderate issues in `drizzle-kit`'s bundled esbuild. That development tool never runs a server, and its only fix would break it.
+- **Recommended once accounts are on:** in Google Cloud console → APIs & Services → Credentials, restrict the Firebase browser API key to your site's addresses (HTTP referrers). Consider Firebase App Check too.
 
 ## Commands
 
@@ -134,9 +159,9 @@ The Agence Foudre magazine style (from Refero): a butter-yellow canvas, huge con
 ## Status (last verified)
 
 - Lint, typecheck, 106 unit tests and 18 E2E runs (9 tests × desktop + mobile) pass, and the production build succeeds (2026-10-20, after adding the 20 new dishes, Japanese and accounts). The account flow is tested against a localStorage stand-in for Firebase (`lib/account/demo-backend.ts`); real Firebase sign-in needs the project config above.
-- Lighthouse scores below were measured before the restyle and haven't been re-run since.
-- Lighthouse, mobile preset, against a local production server: **Accessibility 100, Best Practices 100, SEO 100** on every page. **Performance** is 91 on home, 92 on recipes, 93–94 on cuisine pages and 93 on favorites. Recipe detail pages score **88–90**, just under the 90 target. That number is Lighthouse's simulated slow-4G estimate for the large hero photo; the real unthrottled LCP is about 0.1 s.
-- `npm audit --omit=dev`: 0 vulnerabilities. The full audit lists 13 issues, all in dev tooling (shadcn CLI, eslint-config-next, drizzle-kit). The high-severity `braces` advisory has no patched release yet.
-- Security review: no exploitable issues found. See CLAUDE.md for the security rules.
+- Lighthouse 12, mobile preset (simulated slow 4G), against a local server that gzips like a real host (2026-10-26): **Performance** 78 on home, 87 on recipes, 88 on a recipe page, 85 on cuisine pages. **Best Practices 100, SEO 100** (the account, favourites and shopping list pages are deliberately `noindex`). **Accessibility 100**, except home at 96: the cuisine cards overlap while they're still piled up, before the deal animation spreads them out.
+- Speed fixes made in that pass: the Japanese fonts load only in Japanese mode (they were a 189 KB render-blocking stylesheet for everyone), the large background-engravings image loads after the page, and the entrance fades start at 1% opacity so Chrome can measure Largest Contentful Paint.
+- `npm audit --omit=dev`: 0 vulnerabilities (see Security above).
+- Security review (2026-10-26): no exploitable issues found; hardening listed under Security.
 
 Food photos come from [Unsplash](https://unsplash.com) (free licence), each chosen from a contact sheet of search results.

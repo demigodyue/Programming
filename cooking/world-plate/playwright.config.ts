@@ -3,7 +3,8 @@ import { defineConfig, devices } from "@playwright/test";
 const PORT = 3200;
 // A separate database so E2E runs never touch your dev data.
 // BASE_PATH="" builds the static export for the URL root (and skips copying it to ../site).
-const env = { DATABASE_URL: "file:db/e2e.db", NEXT_PUBLIC_SITE_URL: `http://localhost:${PORT}`, BASE_PATH: "" };
+// NEXT_PUBLIC_ACCOUNT_DEMO lets the account specs use the localStorage stand-in backend (lib/account/store.ts).
+const env = { DATABASE_URL: "file:db/e2e.db", NEXT_PUBLIC_SITE_URL: `http://localhost:${PORT}`, BASE_PATH: "", NEXT_PUBLIC_ACCOUNT_DEMO: "1" };
 
 export default defineConfig({
   testDir: "tests/e2e",

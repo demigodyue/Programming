@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Anton, Dela_Gothic_One, Inter, Noto_Sans_JP } from "next/font/google";
+import { Anton, Inter } from "next/font/google";
 import { preconnect } from "react-dom";
 import { AccountBoot } from "@/components/account/account-boot";
 import { T } from "@/components/i18n";
@@ -14,10 +14,11 @@ import { ScrollMotion } from "@/components/motion/scroll-motion";
 import { SiteFooter } from "@/components/sections/site-footer";
 import { SiteHeader } from "@/components/sections/site-header";
 import { ThemeProvider } from "@/components/theme-provider";
+import { TitleSync } from "@/components/title-sync";
 import { db } from "@/db/db";
 import { searchRecipes } from "@/db/queries/recipes";
 import { fold } from "@/lib/recipe-filter";
-import { site } from "@/lib/site";
+import { JA_FONTS, site } from "@/lib/site";
 import "./globals.css";
 
 // Foudre type, two families only: Anton for display (standing in for Beni 900) and Inter for everything else
@@ -35,22 +36,9 @@ const inter = Inter({
   display: "swap",
 });
 
-// Japanese, split by unicode-range so a page only downloads the glyphs it uses, and not preloaded — English visitors
-// never fetch it. Dela Gothic One, a heavy poster face, stands under Anton; Noto Sans JP under Inter.
-const jpDisplay = Dela_Gothic_One({
-  variable: "--font-jp-display",
-  weight: "400",
-  display: "swap",
-  preload: false,
-});
-
-// No 400: Japanese at the regular weight reads thin on the cream canvas, so regular text resolves to 500.
-const jp = Noto_Sans_JP({
-  variable: "--font-jp",
-  weight: ["500", "700"],
-  display: "swap",
-  preload: false,
-});
+// The Japanese fonts (Dela Gothic One under Anton, Noto Sans JP under Inter) aren't bundled: their stylesheet is
+// hundreds of unicode-range rules, render-blocking for every visitor if next/font included it. It's added only when
+// the page is in Japanese — by LANG_INIT below, or by setLang() (lib/lang.ts; the URL is JA_FONTS in lib/site.ts).
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -59,6 +47,7 @@ export const metadata: Metadata = {
   applicationName: site.name,
   openGraph: { type: "website", siteName: site.name, locale: "en_US" },
   twitter: { card: "summary_large_image" },
+  other: { "title-ja": `${site.name} — 世界の名物料理` },
 };
 
 export const viewport: Viewport = {
@@ -74,7 +63,32 @@ const HOME = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/`;
 const INTRO_SKIP = `try{var p=location.pathname,h=${JSON.stringify(HOME)};if(!(p===h||p===h+"index.html"||p+"/"===h)||localStorage.getItem("wp-intro-skip")||matchMedia("(prefers-reduced-motion: reduce)").matches){var d=document.documentElement;d.removeAttribute("data-intro");d.removeAttribute("data-intro-lock")}}catch(e){}`;
 
 // Pick the language before first paint: the visitor's saved choice, else Japanese for a Japanese browser.
-const LANG_INIT = `try{var l=localStorage.getItem("wp:lang");if(!l&&/^ja(-|$)/i.test(navigator.language||""))l="ja";if(l==="ja"){var r=document.documentElement;r.dataset.lang="ja";r.lang="ja"}}catch(e){}`;
+const LANG_INIT = `try{var l=localStorage.getItem("wp:lang");if(!l&&/^ja(-|$)/i.test(navigator.language||""))l="ja";if(l==="ja"){var r=document.documentElement;r.dataset.lang="ja";r.lang="ja";var f=document.createElement("link");f.rel="stylesheet";f.id="wp-ja-fonts";f.href=${JSON.stringify(JA_FONTS)};document.head.appendChild(f)}}catch(e){}`;
+
+// Content Security Policy, as a <meta> because a static host can't send headers. It limits where the page may load
+// code, images and connections from: this site, Unsplash photos, and (for accounts) Firebase and Google sign-in.
+// 'unsafe-inline' is needed for Next's inline hydration scripts and inline styles; everything else is an allow-list.
+// The ws:// entries let VS Code Live Server's reload socket through. Production only: dev needs eval for fast refresh.
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' https://apis.google.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "img-src 'self' data: blob: https://images.unsplash.com https://lh3.googleusercontent.com",
+  "font-src 'self' data: https://fonts.gstatic.com",
+  "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com ws://127.0.0.1:* ws://localhost:*",
+  "frame-src https://*.firebaseapp.com https://accounts.google.com https://apis.google.com",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join("; ");
+
+// Clickjacking guard: a <meta> CSP can't forbid framing, so a page loaded inside someone else's frame hides itself
+// and asks the top window to load it directly instead.
+const FRAME_GUARD = `if(window.top!==window.self){document.documentElement.style.visibility="hidden";try{window.top.location.replace(window.self.location.href)}catch(e){}}`;
+
+// The background engravings (a large image) wait until the page has loaded and the browser is idle (globals.css,
+// :root[data-art]), so they never compete with the page's own photos and code on a slow connection.
+const ART_LATER = `addEventListener("load",function(){(window.requestIdleCallback||function(f){setTimeout(f,200)})(function(){document.documentElement.dataset.art=""},{timeout:1500})})`;
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   // The header search's dish list, built once at build time (trending first).
@@ -91,11 +105,15 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   // Every page leads with an Unsplash photo — open the connection before the <img> is parsed.
   preconnect("https://images.unsplash.com");
   return (
-    <html lang="en" suppressHydrationWarning data-intro="" data-intro-lock="" className={`${anton.variable} ${inter.variable} ${jpDisplay.variable} ${jp.variable}`}>
+    <html lang="en" suppressHydrationWarning data-intro="" data-intro-lock="" className={`${anton.variable} ${inter.variable}`}>
       <head>
+        {process.env.NODE_ENV === "production" && <meta httpEquiv="Content-Security-Policy" content={CSP} />}
+        <meta name="referrer" content="strict-origin-when-cross-origin" />
+        <script dangerouslySetInnerHTML={{ __html: FRAME_GUARD }} />
         {/* Decide about the intro before first paint (see INTRO_SKIP). */}
         <script dangerouslySetInnerHTML={{ __html: INTRO_SKIP }} />
         <script dangerouslySetInnerHTML={{ __html: LANG_INIT }} />
+        <script dangerouslySetInnerHTML={{ __html: ART_LATER }} />
       </head>
       <body className="relative isolate flex min-h-dvh flex-col">
         <PageArt />
@@ -115,6 +133,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           <PageSwing />
           <Cursor />
           <AccountBoot />
+          <TitleSync />
           <SiteHeader searchItems={searchItems} />
           <main id="main" className="flex-1">
             {children}

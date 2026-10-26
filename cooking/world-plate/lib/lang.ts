@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { JA_FONTS } from "@/lib/site";
 
 /**
  * The site's language, English or Japanese. Every page ships both (see components/i18n.tsx): the language is a
@@ -12,6 +13,16 @@ import { useSyncExternalStore } from "react";
 export type Lang = "en" | "ja";
 
 export const LANG_KEY = "wp:lang";
+
+/** Adds the Japanese fonts' stylesheet the first time the page turns Japanese (JA_FONTS, lib/site.ts). */
+function loadJaFonts() {
+  if (document.getElementById("wp-ja-fonts")) return;
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.id = "wp-ja-fonts";
+  link.href = JA_FONTS;
+  document.head.append(link);
+}
 const EVENT = "wp:lang";
 
 function current(): Lang {
@@ -36,6 +47,7 @@ export function useT() {
 
 export function setLang(lang: Lang) {
   const root = document.documentElement;
+  if (lang === "ja") loadJaFonts();
   root.dataset.lang = lang;
   root.lang = lang;
   try {

@@ -37,6 +37,7 @@ export function SiteFooter() {
             { label: <T en="Quick meals" ja="時短ごはん" />, href: "/recipes?time=under-30" },
             { label: <T en="Vegetarian" ja="ベジタリアン" />, href: "/recipes?vegetarian=1" },
             { label: <T en="Your favorites" ja="お気に入り" />, href: "/favorites" },
+            { label: <T en="Shopping list" ja="買い物リスト" />, href: "/shopping-list" },
             { label: <T en="Your account" ja="アカウント" />, href: "/account" },
           ],
         },

@@ -3,4 +3,4 @@ Allow: /
 Disallow: /api/
 Disallow: /favorites
 
-Sitemap: http://localhost:3000/sitemap.xml
+Sitemap: https://demigodyue.github.io/Programming/cooking/site/sitemap.xml

@@ -135,9 +135,15 @@ export function ScrollMotion() {
           scrubs.splice(i, 1);
           continue;
         }
+        const words = document.documentElement.dataset.lang === "ja" ? s.ja : s.en;
+        // Far below the screen, words keep their full colour (so the text reads at full contrast to anything that
+        // inspects the page); they only dim to 20% once the heading is within half a screen of coming into view.
+        if (y < s.s0 - window.innerHeight * 0.5) {
+          words.forEach((w) => (w.style.opacity = ""));
+          continue;
+        }
         const span = s.s1 - s.s0;
         const p = span > 0 ? Math.min(1, Math.max(0, (y - s.s0) / span)) : y >= s.s1 ? 1 : 0;
-        const words = document.documentElement.dataset.lang === "ja" ? s.ja : s.en;
         const t = p * ((words.length - 1) * 0.4 + 0.2);
         words.forEach((w, k) => {
           const local = Math.min(1, Math.max(0, (t - k * 0.4) / 0.2));

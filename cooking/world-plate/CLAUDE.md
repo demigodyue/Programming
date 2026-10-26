@@ -344,11 +344,18 @@ tests/unit, tests/e2e    Vitest and Playwright
 - Favorites/ratings reference `session_id` (anonymous cookie). Keep `session_id` as the owner column so a `user_id` can be added later.
 
 ## Security rules
-- Validate all external input (query strings, localStorage) and drop invalid values rather than throwing.
-- Secrets only in `.env.local`; `.env.example` is committed; never hard-code keys.
-- No response headers on a static host; if this is ever deployed behind a server again, restore CSP and the other security headers.
-- No `dangerouslySetInnerHTML` with user content (JSON-LD uses escaped, static recipe data only).
-- `npm audit` must show no high/critical issues.
+- Validate all external input (query strings, localStorage, account documents) and drop invalid values rather than
+  throwing: `cleanFavorites` / `cleanRatings` (lib/local-store.ts), `cleanShopping` (lib/shopping-list.ts).
+- Secrets only in `.env.local`; `.env.example` is committed; never hard-code keys. (Firebase web config is public by design.)
+- CSP is a `<meta>` in app/layout.tsx (production only), hoisted to the top of each page by scripts/copy-site.mjs. Any new
+  third-party origin (script, style, font, image, connect, frame) must be added there deliberately. FRAME_GUARD stands in
+  for frame-ancestors. Behind a real server, send CSP, frame-ancestors and the other security headers as headers instead.
+- No `dangerouslySetInnerHTML` / `innerHTML` with user content (JSON-LD uses escaped, static recipe data; the flying
+  heart/basket are fixed SVG strings; flying ingredient chips use textContent).
+- firestore.rules allow-lists the user document's fields; a new saved field means updating the rules too.
+- The localStorage demo account backend is only reachable when the build sets NEXT_PUBLIC_ACCOUNT_DEMO=1 (the E2E build).
+- `npm audit --omit=dev` must show no high/critical issues (`overrides` pins a patched @grpc/grpc-js).
+- Hex colours outside globals.css: the Google "G" logo's brand colours in components/account/account-panel.tsx.
 
 ## Code conventions
 - Server Components by default; `"use client"` only for interactivity/animation leaves.

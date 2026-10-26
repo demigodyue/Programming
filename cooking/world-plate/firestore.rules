@@ -1,19 +1,32 @@
 rules_version = '2';
 
-// World Plate: each account has one document, users/{uid}, holding its name and saved recipe slugs.
+// World Plate: each account has one document, users/{uid}, holding its name, saved recipe slugs and star ratings.
 // Paste this into Firebase console → Firestore Database → Rules → Publish.
+//
+// - Only the signed-in owner can read or write their own document; nothing else in the database is reachable.
+// - Writes may only touch these fields, with these types and sizes (the site never writes anything else):
+//     name       string, up to 60 characters
+//     favorites  list of up to 300 recipe slugs
+//     ratings    map of up to 300 slug → stars entries
+//     createdAt / updatedAt  the server's own timestamp (request.time), so nobody can backdate or bloat them
 service cloud.firestore {
   match /databases/{database}/documents {
     match /users/{uid} {
-      allow read: if request.auth != null && request.auth.uid == uid;
-      allow create, update: if request.auth != null
-        && request.auth.uid == uid
-        && request.resource.data.keys().hasOnly(["name", "favorites", "createdAt", "updatedAt"])
-        && (!("favorites" in request.resource.data)
-            || (request.resource.data.favorites is list && request.resource.data.favorites.size() <= 300))
-        && (!("name" in request.resource.data)
-            || (request.resource.data.name is string && request.resource.data.name.size() <= 60));
-      allow delete: if request.auth != null && request.auth.uid == uid;
+      function isOwner() {
+        return request.auth != null && request.auth.uid == uid;
+      }
+      function validFields(data) {
+        return data.keys().hasOnly(["name", "favorites", "ratings", "createdAt", "updatedAt"])
+          && (!("name" in data) || (data.name is string && data.name.size() <= 60))
+          && (!("favorites" in data) || (data.favorites is list && data.favorites.size() <= 300))
+          && (!("ratings" in data) || (data.ratings is map && data.ratings.size() <= 300))
+          && (!("createdAt" in data) || data.createdAt == request.time || data.createdAt == resource.data.createdAt)
+          && (!("updatedAt" in data) || data.updatedAt == request.time || data.updatedAt == resource.data.updatedAt);
+      }
+
+      allow read, delete: if isOwner();
+      allow create: if isOwner() && validFields(request.resource.data);
+      allow update: if isOwner() && validFields(request.resource.data);
     }
   }
 }

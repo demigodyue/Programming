@@ -3,11 +3,13 @@ import type { Metadata } from "next";
 import { AccountPanel } from "@/components/account/account-panel";
 import { T } from "@/components/i18n";
 import { SlantText } from "@/components/motion/slant-text";
+import { jaTitle } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Your account",
   description: "Sign in or create a World Plate account to keep your favorite recipes on every device.",
   robots: { index: false },
+  other: jaTitle("アカウント"),
 };
 
 export default function AccountPage() {

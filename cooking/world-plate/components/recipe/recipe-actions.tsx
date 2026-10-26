@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart, Star } from "lucide-react";
+import { Check, Heart, Printer, Share2, Star } from "lucide-react";
 import { m, AnimatePresence, useAnimate, useReducedMotion } from "motion/react";
 import { useState } from "react";
 import { T } from "@/components/i18n";
@@ -168,11 +168,50 @@ export function StarRating({ slug }: { slug: string }) {
   );
 }
 
-export function RecipeActions({ slug }: { slug: string }) {
+/** Share (the phone's share sheet, or copy the link) and print (a clean ingredients-and-method page, globals.css). */
+function ShareAndPrint({ title }: { title: string }) {
+  const t = useT();
+  const [copied, setCopied] = useState(false);
+  const share = async () => {
+    const url = window.location.href.split("#")[0];
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, url });
+        return;
+      } catch (e) {
+        if (e instanceof DOMException && e.name === "AbortError") return; // the visitor closed the sheet
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {}
+  };
+  const pill = "hover-fine:bg-muted inline-flex h-11 items-center gap-2 rounded-full border px-4 text-sm font-medium transition-colors";
   return (
-    <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-8">
-      <FavoriteButton slug={slug} />
-      <StarRating slug={slug} />
+    <div data-print="hide" className="flex flex-wrap gap-2">
+      <button type="button" onClick={share} className={pill} aria-live="polite">
+        {copied ? <Check className="size-4" strokeWidth={2} aria-hidden /> : <Share2 className="size-4" strokeWidth={1.75} aria-hidden />}
+        {copied ? <T en="Link copied" ja="リンクをコピーしました" /> : <T en="Share" ja="共有" />}
+      </button>
+      <button type="button" onClick={() => window.print()} className={pill} aria-label={t("Print this recipe", "このレシピを印刷")}>
+        <Printer className="size-4" strokeWidth={1.75} aria-hidden />
+        <T en="Print" ja="印刷" />
+      </button>
+    </div>
+  );
+}
+
+export function RecipeActions({ slug, title, titleJa }: { slug: string; title: string; titleJa: string }) {
+  const t = useT();
+  return (
+    <div className="flex flex-col gap-5">
+      <div data-print="hide" className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-8">
+        <FavoriteButton slug={slug} />
+        <StarRating slug={slug} />
+      </div>
+      <ShareAndPrint title={t(title, titleJa)} />
     </div>
   );
 }

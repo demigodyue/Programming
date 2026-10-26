@@ -5,11 +5,13 @@ import { SlantText } from "@/components/motion/slant-text";
 import { FavoritesGrid } from "@/components/recipe/favorites-grid";
 import { db } from "@/db/db";
 import { searchRecipes } from "@/db/queries/recipes";
+import { jaTitle } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Your favorites",
   description: "Recipes you've saved on World Plate.",
   robots: { index: false },
+  other: jaTitle("お気に入り"),
 };
 
 export default async function FavoritesPage() {

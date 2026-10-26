@@ -6,6 +6,7 @@ import { useMemo, useRef, useState, useSyncExternalStore, type CSSProperties } f
 import { T } from "@/components/i18n";
 import { FlipFace, flipClass } from "@/components/motion/flip-face";
 import { useActiveIndex } from "@/components/motion/use-active-index";
+import { ShoppingButton } from "@/components/recipe/shopping-button";
 import { StepIcon } from "@/components/recipe/step-icon";
 import { StepTimer } from "@/components/recipe/step-timer";
 import { Stepper } from "@/components/watermelon/stepper";
@@ -291,6 +292,15 @@ export function RecipeKitchen({
               </div>
             ))}
           </div>
+          <ShoppingButton
+            slug={slug}
+            title={title}
+            titleJa={titleJa}
+            baseServings={baseServings}
+            servings={servings}
+            ingredients={ingredients}
+            ingredientsJa={ingredientsJa}
+          />
           {fill >= 1 && (
             <button type="button" onClick={() => setCooking(true)} data-accent="orange" className={flipClass("solid", "mt-6 w-full justify-center")}>
               <FlipFace className="w-full justify-center">

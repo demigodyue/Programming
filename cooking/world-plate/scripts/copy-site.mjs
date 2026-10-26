@@ -1,5 +1,5 @@
 // Copies the static export (out/) to ../site so cooking/index.html can open it with Live Server.
-import { copyFileSync, cpSync, existsSync, readdirSync, rmSync } from "node:fs";
+import { copyFileSync, cpSync, existsSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -45,4 +45,26 @@ function copyNested(srcDir, targetDir, prefix) {
 }
 flatten(to);
 
-console.log(`Static site ready: ${to} (${flattened} prefetch files flattened)\nOpen cooking/index.html with Live Server.`);
+/**
+ * A <meta> Content-Security-Policy only covers what comes after it, and Next writes its own preload links and chunk
+ * scripts into <head> before the layout's tags. Move the policy up to sit right after <meta charset> in every page.
+ */
+const CSP_META = /<meta http-equiv="Content-Security-Policy" content="[^"]*"\/>/;
+let hoisted = 0;
+function hoistCsp(dir) {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) hoistCsp(full);
+    else if (entry.name.endsWith(".html")) {
+      const html = readFileSync(full, "utf8");
+      const meta = html.match(CSP_META)?.[0];
+      if (!meta) continue;
+      const moved = html.replace(meta, "").replace(/<meta charSet="utf-8"\/>/, (charset) => charset + meta);
+      writeFileSync(full, moved);
+      hoisted++;
+    }
+  }
+}
+hoistCsp(to);
+
+console.log(`Static site ready: ${to} (${flattened} prefetch files flattened, CSP first in ${hoisted} pages)\nOpen cooking/index.html with Live Server.`);

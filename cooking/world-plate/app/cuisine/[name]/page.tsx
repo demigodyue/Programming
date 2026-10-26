@@ -13,7 +13,7 @@ import { RecipeCard } from "@/components/recipe/recipe-card";
 import { db } from "@/db/db";
 import { getCuisine, listCuisines } from "@/db/queries/cuisines";
 import { listRecipesByCuisine } from "@/db/queries/recipes";
-import { unsplashSized } from "@/lib/site";
+import { jaTitle, unsplashSized } from "@/lib/site";
 
 const ACCENTS: FlipAccent[] = ["yellow", "mint", "lavender", "orange", "blue"];
 
@@ -37,6 +37,7 @@ export async function generateMetadata({ params }: PageProps<"/cuisine/[name]">)
       url: `/cuisine/${cuisine.slug}`,
       images: [{ url: unsplashSized(cuisine.image, 1200, 630), width: 1200, height: 630, alt: cuisine.imageAlt }],
     },
+    other: jaTitle(`${cuisine.ja.name}のレシピ`),
   };
 }
 

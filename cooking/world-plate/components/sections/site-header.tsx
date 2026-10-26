@@ -16,6 +16,7 @@ const NAV: { href: string; label: string; ja: string; accent: FlipAccent }[] = [
   { href: "/recipes", label: "Recipes", ja: "レシピ", accent: "yellow" },
   { href: "/#cuisines", label: "Cuisines", ja: "各国料理", accent: "orange" },
   { href: "/favorites", label: "Favorites", ja: "お気に入り", accent: "mint" },
+  { href: "/shopping-list", label: "Shopping list", ja: "買い物リスト", accent: "lavender" },
 ];
 
 const MOBILE = "(max-width: 991px)";

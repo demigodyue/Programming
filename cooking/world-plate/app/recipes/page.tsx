@@ -6,12 +6,14 @@ import { RecipeBrowser } from "@/components/recipe/recipe-browser";
 import { db } from "@/db/db";
 import { listCuisines } from "@/db/queries/cuisines";
 import { getRecipeBySlug, searchRecipes } from "@/db/queries/recipes";
+import { jaTitle } from "@/lib/site";
 import { fold } from "@/lib/recipe-filter";
 
 export const metadata: Metadata = {
   title: "All recipes",
   description: "Search and filter famous dishes from around the world by cuisine, difficulty, cooking time and vegetarian.",
   alternates: { canonical: "/recipes" },
+  other: jaTitle("すべてのレシピ"),
 };
 
 export default async function RecipesPage() {

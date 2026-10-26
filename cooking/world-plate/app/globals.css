@@ -22,7 +22,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  /* Japanese falls through to Noto Sans JP; the big headlines switch to Dela Gothic One ("Language" below). */
+  /* Japanese falls through to Noto Sans JP; the big headlines switch to Dela Gothic One ("Language" below). Both are
+     loaded only in Japanese mode (JA_FONTS in lib/site.ts). */
   --font-sans: var(--font-inter), var(--font-jp), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-anton), var(--font-jp), Impact, "Arial Narrow", sans-serif;
   --font-ui: var(--font-inter), var(--font-jp), ui-sans-serif, system-ui, sans-serif;
@@ -85,6 +86,8 @@
    only in motion moments and the jar, black only for line art. Flat: no shadows, gradients or glass.
    Rooms are forest bands with saffron headlines (~5:1). */
 :root {
+  --font-jp: "Noto Sans JP";
+  --font-jp-display: "Dela Gothic One";
   --background: #f6e3b4; /* butter */
   --foreground: #00522d; /* forest ink */
   --headline: #c2321b; /* tomato */
@@ -289,10 +292,19 @@
   .dark .page-art::before {
     opacity: 0.4;
   }
+  /* The engravings tile is large (lines.webp), so it isn't fetched until the page has loaded and the browser is idle
+     (data-art on <html>, set by ART_LATER in app/layout.tsx); then the drawings fade in. The ink is a flat gradient
+     rather than a background colour: accessibility checkers can't see the mask and would otherwise read the ink as a
+     solid layer behind all text. */
   .page-art::after {
-    background: color-mix(in srgb, var(--foreground) 44%, transparent);
+    background-image: linear-gradient(color-mix(in srgb, var(--foreground) 44%, transparent), color-mix(in srgb, var(--foreground) 44%, transparent));
+    opacity: 0;
+    transition: opacity 0.9s ease;
+  }
+  :root[data-art] .page-art::after {
     -webkit-mask: var(--art-lines) top center / var(--art-w) auto repeat-y;
     mask: var(--art-lines) top center / var(--art-w) auto repeat-y;
+    opacity: 1;
   }
   /* SectionArt: the same engravings inside a coloured section, in that section's text colour. */
   .section-art {
@@ -302,9 +314,14 @@
     z-index: -1;
     overflow: hidden;
     pointer-events: none;
-    background: color-mix(in srgb, currentColor 42%, transparent);
+    background-image: linear-gradient(color-mix(in srgb, currentColor 42%, transparent), color-mix(in srgb, currentColor 42%, transparent));
+    opacity: 0;
+    transition: opacity 0.9s ease;
+  }
+  :root[data-art] .section-art {
     -webkit-mask: var(--art-lines) center var(--art-y, 0px) / var(--art-w) auto repeat-y;
     mask: var(--art-lines) center var(--art-y, 0px) / var(--art-w) auto repeat-y;
+    opacity: 1;
   }
   /* After both rules above, so phones really get the whole tile at screen width. */
   @media (width < 48rem) {
@@ -533,17 +550,24 @@
     opacity: 0;
   }
 }
+/* The page-load entrances start at 1% opacity, not 0: Chrome never counts an element for Largest Contentful Paint
+   if it was fully transparent when it first painted — the recipe photo, loading during its fade, went unmeasured. */
+@keyframes wp-load-in {
+  from {
+    opacity: 0.01;
+  }
+}
 /* Title characters: x -0.25em → 0 with autoAlpha (data-anim-hero / data-anim-slant). */
 @keyframes wp-char-in {
   from {
-    opacity: 0;
+    opacity: 0.01;
     transform: translateX(-0.25em);
   }
 }
 /* data-load-stagger: y 3em → 0. */
 @keyframes wp-load-rise {
   from {
-    opacity: 0;
+    opacity: 0.01;
     transform: translateY(3em);
   }
 }
@@ -633,7 +657,7 @@
      Pure CSS so it plays at first paint, before hydration. Stagger index: --i. */
   /* [data-hero-content]: the first section is invisible until the load begins. */
   .hero-content {
-    animation: wp-fade-in 0.1s ease-out both;
+    animation: wp-load-in 0.1s ease-out both;
     animation-delay: var(--load-delay);
   }
   /* [data-anim-hero] title: characters slide in from the last one back (stagger 0.015s, from "end"). */
@@ -653,7 +677,7 @@
   }
   /* [data-hero-fade] */
   .load-fade {
-    animation: wp-fade-in 0.525s var(--ease-slush-bounce) both;
+    animation: wp-load-in 0.525s var(--ease-slush-bounce) both;
     animation-delay: calc(var(--load-delay) + 0.5s);
   }
   /* Lottie stickers: random order (--r), 0.1s apart. */
@@ -749,12 +773,8 @@
   [data-reveal="intro"] {
     animation: wp-intro-in 1.2s var(--ease-slush-bounce) both;
   }
-  /* Hungry Tiger word scrub: words wait at 20% until ScrollMotion takes over (only with JS and motion). */
-  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-    [data-scrub="words"] .word {
-      opacity: 0.2;
-    }
-  }
+  /* Hungry Tiger word scrub: ScrollMotion sets each word's opacity inline, dimming a heading to 20% only as it
+     nears the screen (scroll-motion.tsx); until then, and without JS or motion, words are at full colour. */
   @media (scripting: enabled) {
     [data-reveal]:not([data-in]) :is(.char, .reveal-card, .word),
     [data-reveal="intro"]:not([data-in]) {
@@ -1742,7 +1762,7 @@
   /* The engravings (SectionArt) sit on the slats, under the wordmark and pot, and leave with the panel. */
   .wp-intro .section-art {
     z-index: 0;
-    background: color-mix(in srgb, currentColor 58%, transparent);
+    background-image: linear-gradient(color-mix(in srgb, currentColor 58%, transparent), color-mix(in srgb, currentColor 58%, transparent));
   }
   .wp-intro__slat {
     position: absolute;
@@ -2928,5 +2948,68 @@
   }
   .mise-pot__level {
     transition: none;
+  }
+}
+
+/* ---------- Print (the Print buttons on recipes and the shopping list) ----------
+   Ink on paper: no header, footer, artwork, animation or buttons, all colours to black on white, the steps kept
+   whole across page breaks, and the hero photo small. Whichever language is showing is the one that prints. */
+@media print {
+  .nav-bar,
+  footer,
+  .page-art,
+  .section-art,
+  .wp-intro,
+  .wp-panel,
+  .scroll-progress,
+  .wp-cursor,
+  .mise-pot,
+  .step-icon,
+  .step-timer,
+  [data-print="hide"],
+  main button {
+    display: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    box-shadow: none !important;
+  }
+  html,
+  body,
+  main,
+  .room,
+  .bg-card,
+  .bg-muted,
+  .method-step[data-active] {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  .text-headline,
+  .text-muted-foreground,
+  .text-accent-ink {
+    color: #000 !important;
+  }
+  .lg\:sticky,
+  .sticky {
+    position: static !important;
+  }
+  [data-vt-hero] {
+    max-height: 7cm;
+    aspect-ratio: auto !important;
+    height: 7cm;
+  }
+  .method-step,
+  .reveal-row {
+    break-inside: avoid;
+  }
+  .method-step::before,
+  .method-step::after {
+    display: none;
+  }
+  a {
+    text-decoration: none !important;
   }
 }

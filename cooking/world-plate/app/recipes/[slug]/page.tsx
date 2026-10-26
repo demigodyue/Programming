@@ -16,7 +16,7 @@ import { SectionHeading } from "@/components/sections/section-heading";
 import { db } from "@/db/db";
 import { getRecipeBySlug, listRecipeSlugs, listRelatedRecipes } from "@/db/queries/recipes";
 import { recipeJsonLd, serializeJsonLd } from "@/lib/json-ld";
-import { unsplashSized } from "@/lib/site";
+import { jaTitle, unsplashSized } from "@/lib/site";
 
 export async function generateStaticParams() {
   return (await listRecipeSlugs(db)).map(({ slug }) => ({ slug }));
@@ -40,6 +40,7 @@ export async function generateMetadata({ params }: PageProps<"/recipes/[slug]">)
       images: [{ url: unsplashSized(recipe.image, 1200, 630), width: 1200, height: 630, alt: recipe.imageAlt }],
     },
     twitter: { card: "summary_large_image", title, description: recipe.description, images: [unsplashSized(recipe.image, 1200, 630)] },
+    other: jaTitle(`${recipe.ja.title}（${recipe.ja.cuisineName}）`),
   };
 }
 
@@ -117,7 +118,7 @@ export default async function RecipePage({ params }: PageProps<"/recipes/[slug]"
                   )}
                 </div>
                 <div className="load-stagger mt-8" style={{ "--i": 4 } as CSSProperties}>
-                  <RecipeActions slug={recipe.slug} />
+                  <RecipeActions slug={recipe.slug} title={recipe.title} titleJa={recipe.ja.title} />
                 </div>
             </div>
 
@@ -149,7 +150,7 @@ export default async function RecipePage({ params }: PageProps<"/recipes/[slug]"
       </article>
 
       {related.length > 0 && (
-        <section aria-labelledby="related-title" className="container-page py-20 md:py-28">
+        <section aria-labelledby="related-title" data-print="hide" className="container-page py-20 md:py-28">
           <SectionHeading
             id="related-title"
             index={{ en: "More", ja: "もっと" }}
