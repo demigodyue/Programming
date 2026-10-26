@@ -9,7 +9,7 @@ import { LangToggle } from "@/components/lang-toggle";
 import { LogoMark } from "@/components/logo";
 import { FlipFace, flipClass, type FlipAccent } from "@/components/motion/flip-face";
 import { ThemeIconToggle } from "@/components/theme-switch";
-import { HeaderSearch, type SearchItem } from "./header-search";
+import { HeaderSearch, type SearchItem, type SearchPlace } from "./header-search";
 import { useT } from "@/lib/lang";
 
 const NAV: { href: string; label: string; ja: string; accent: FlipAccent }[] = [
@@ -39,7 +39,7 @@ function isActive(pathname: string, href: string) {
  *   first) and turns into a minus. No backdrop, as on Slush.
  * - Scroll direction is only read after 10px of movement (initDetectScrollingDirection).
  */
-export function SiteHeader({ searchItems }: { searchItems: SearchItem[] }) {
+export function SiteHeader({ searchItems, searchPlaces }: { searchItems: SearchItem[]; searchPlaces: SearchPlace[] }) {
   const pathname = usePathname();
   const t = useT();
   const [open, setOpen] = useState(false);
@@ -162,7 +162,7 @@ export function SiteHeader({ searchItems }: { searchItems: SearchItem[] }) {
             </span>
           </button>
 
-          <HeaderSearch items={searchItems} className="nav-circle bg-primary text-primary-foreground size-[50px]" />
+          <HeaderSearch items={searchItems} places={searchPlaces} className="nav-circle bg-primary text-primary-foreground size-[50px]" />
           <AccountButton className="nav-circle nav-circle--text bg-dot text-dot-foreground size-[50px]" />
         </div>
       </nav>

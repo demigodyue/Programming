@@ -107,7 +107,7 @@ describe("recipe queries", () => {
     expect(quick.every((r) => r.totalMinutes <= 30)).toBe(true);
 
     const easyNepali = await search({ cuisine: "nepali", difficulty: "easy" });
-    expect(easyNepali.map((r) => r.slug)).toEqual(["dal-bhat", "thukpa"]);
+    expect(easyNepali.map((r) => r.slug).sort()).toEqual(["dal-bhat", "kukhura-ko-masu", "thukpa"]);
 
     const multi = await search({ cuisine: "japanese,thai" });
     expect(new Set(multi.map((r) => r.cuisineSlug))).toEqual(new Set(["japanese", "thai"]));
@@ -146,7 +146,14 @@ describe("cuisine queries", () => {
   it("gets a cuisine and its dishes", async () => {
     expect((await getCuisine(db, "nepali"))?.country).toBe("Nepal");
     expect(await getCuisine(db, "atlantis")).toBeNull();
-    expect((await listRecipesByCuisine(db, "nepali")).map((r) => r.slug)).toEqual(["chicken-momo", "dal-bhat", "thukpa"]);
+    expect((await listRecipesByCuisine(db, "nepali")).map((r) => r.slug).sort()).toEqual([
+      "chicken-momo",
+      "dal-bhat",
+      "jhol-momo",
+      "kukhura-ko-masu",
+      "sel-roti",
+      "thukpa",
+    ]);
     expect((await getCuisine(db, "vietnamese"))?.ja.name).toBe("ベトナム料理");
   });
 });

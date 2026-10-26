@@ -5,8 +5,8 @@ test("search for a dish, open it and save it to favorites", async ({ page }) => 
   await expect(page.getByRole("heading", { level: 1, name: "All recipes" })).toBeVisible();
 
   // Search (filtered in the browser, mirrored into the URL)
-  await page.getByLabel("Search dishes, ingredients or cuisines").fill("momo");
-  await expect(page).toHaveURL(/[?&]q=momo/);
+  await page.getByLabel("Search dishes, ingredients or countries").fill("chicken momo");
+  await expect(page).toHaveURL(/[?&]q=chicken\+momo/);
   const results = page.getByRole("list").filter({ has: page.getByRole("article") });
   await expect(results.getByRole("article")).toHaveCount(1);
 
@@ -29,6 +29,33 @@ test("search for a dish, open it and save it to favorites", async ({ page }) => 
   await page.goto("/favorites");
   await expect(page.getByRole("heading", { level: 1, name: "Your favorites" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Chicken Momo" })).toBeVisible();
+});
+
+test("searching by country finds that country's dishes, in English or Japanese", async ({ page }) => {
+  await page.goto("/recipes");
+  const search = page.getByLabel("Search dishes, ingredients or countries");
+  const results = page.getByRole("list").filter({ has: page.getByRole("article") });
+  await search.fill("Nepal");
+  await expect(results.getByRole("article")).toHaveCount(6);
+  await expect(results.getByRole("link", { name: "Sel Roti" })).toBeVisible();
+  await search.fill("ネパール");
+  await expect(results.getByRole("article")).toHaveCount(6);
+  // Other names for a country, and the city a dish comes from.
+  await search.fill("Lebanon");
+  await expect(results.getByRole("link", { name: "Silky Hummus" })).toBeVisible();
+  await search.fill("Osaka");
+  await expect(results.getByRole("link", { name: "Okonomiyaki" })).toBeVisible();
+});
+
+test("the header search box offers a country's whole cuisine page", async ({ page }) => {
+  await page.goto("/recipes/croissants");
+  await page.getByRole("button", { name: "Search recipes" }).click();
+  const box = page.getByRole("combobox", { name: "Search recipes" });
+  await box.fill("Japan");
+  await expect(page.getByRole("option").first()).toContainText("All Japanese dishes");
+  await box.press("ArrowDown");
+  await box.press("Enter");
+  await expect(page).toHaveURL(/\/cuisine\/japanese\/?$/);
 });
 
 test("the header search box finds a dish as you type and opens it", async ({ page }) => {

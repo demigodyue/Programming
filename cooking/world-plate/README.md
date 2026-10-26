@@ -1,6 +1,6 @@
 # World Plate
 
-An animation-rich recipe site with 35 famous dishes from twelve cuisines, each with a full recipe: a servings scaler, an animated ingredient checklist that fills a pot, a method with kitchen timers, a step-by-step Cook Mode, favorites and star ratings. The whole site switches between English and Japanese with one button, and visitors can create an account to keep their favorites on every device.
+An animation-rich recipe site with 38 famous dishes from twelve cuisines, each with a full recipe: a servings scaler, an animated ingredient checklist that fills a pot, a method with kitchen timers, a step-by-step Cook Mode, favorites and star ratings. The whole site switches between English and Japanese with one button, and visitors can create an account to keep their favorites on every device.
 
 Built with Next.js 16 (App Router), TypeScript, Tailwind CSS v4, shadcn/ui, [Watermelon UI](https://ui.watermelon.sh), Motion, Lenis, SQLite + Drizzle ORM and Zod.
 
@@ -26,7 +26,7 @@ npm start
 
 ## English and Japanese
 
-The round **あ / EN** button in the header switches every word on the site instantly, without reloading: menus, headings and buttons, all 35 recipes (titles, descriptions, ingredients, steps, stories, photo descriptions) and the cuisines. The choice is remembered, and a first visit from a Japanese browser starts in Japanese. Quantities are written the Japanese way (小さじ2, 大さじ1½, 250g, 卵 4個). Japanese headlines use Dela Gothic One and body text uses Noto Sans JP; both load only when Japanese is shown. Search works in Japanese too (ラーメン, 鶏肉…).
+The round **あ / EN** button in the header switches every word on the site instantly, without reloading: menus, headings and buttons, all 38 recipes (titles, descriptions, ingredients, steps, stories, photo descriptions) and the cuisines. The choice is remembered, and a first visit from a Japanese browser starts in Japanese. Quantities are written the Japanese way (小さじ2, 大さじ1½, 250g, 卵 4個). Japanese headlines use Dela Gothic One and body text uses Noto Sans JP; both load only when Japanese is shown. Search works in Japanese too (ラーメン, 鶏肉, ネパール…).
 
 ## Accounts (Firebase)
 
@@ -41,6 +41,10 @@ Accounts use Firebase (Authentication + Firestore), called straight from the bro
 5. `npm run build`. The web config is public by design; the security rules protect the data.
 
 Without the config the site works as before: favorites stay in the browser, and the account page says accounts aren't switched on yet. The Firebase SDK is only downloaded on the account page, or for visitors who were signed in last time.
+
+## Search by country
+
+Both searches (the box on /recipes and the header search) find dishes by country as well as by name and ingredient, in English or Japanese: "Nepal" or "ネパール" lists all six Nepali dishes. They also know a country's other names ("Korea", "Nepalese", "Lebanon" and "Syria" for the Levant; see `lib/places.ts`) and the city or region a dish comes from ("Osaka", "Kathmandu").
 
 ## Shopping list, sharing and printing
 
@@ -105,7 +109,7 @@ components/recipe/       recipe card, browser/filters, kitchen (servings + pot c
 components/account/      account page panel, header account button, favorites note, account boot
 components/i18n.tsx      <T en ja> (both languages in the page, CSS shows one); i18n-image.tsx (bilingual alt text)
 db/                      schema, client, migrations, typed queries, idempotent seed
-data/                    seed content (35 recipes, 12 cuisines), their Japanese editions (*.ja.ts) + Zod schemas
+data/                    seed content (38 recipes, 12 cuisines), their Japanese editions (*.ja.ts) + Zod schemas
 lib/                     scaling/formatting (English + Japanese), language (lang.ts), accounts (account/), step parsing, JSON-LD, site config
 tests/unit, tests/e2e    Vitest and Playwright
 ```
@@ -141,7 +145,7 @@ All motion is modelled on [slush.app](https://slush.app) (the "Slush" style on R
 - **Page load:** the title's characters slide in from the last one, then blocks rise 3em 0.1s apart; on a client navigation this waits until the swing has landed. On the home page the "World Plate" wordmark rolls up letter by letter and the tagline rises at 1.5s.
 - **Scroll:** display titles slide in by character, smaller headings tip in line by line in 3D, card rows fly in from the right in 3D, the home showcase rises and grows, marquees reverse with your scroll direction, and the wordmark and CTA hexagon drift (parallax). All play once, when the top crosses 80% of the viewport.
 - **Hover:** pill buttons flip in 3D to a coloured back face, circle buttons spin, tiles sink to 0.92, links draw their underline, and a "View recipe" label follows the pointer over dishes.
-- **Nav:** the logo sits at the left edge of the screen and the menu at the right edge: the pills, then the language, theme, plus and search circles, with the account circle last. The pills fly up while you scroll down and return when you scroll up; on mobile the plus slides them in from the right and turns into a minus. The search circle opens a search box that grows out of the button. Dishes appear as you type (English or Japanese, accents optional: "pho" finds Phở), the arrow keys pick one and Enter opens it; with nothing picked, Enter runs the full search on /recipes. "/" or Ctrl/⌘+K opens it anywhere, and Esc closes it.
+- **Nav:** the logo sits at the left edge of the screen and the menu at the right edge: the pills, then the language, theme, plus and search circles, with the account circle last. The pills fly up while you scroll down and return when you scroll up; on mobile the plus slides them in from the right and turns into a minus. The search circle opens a search box that grows out of the button. Dishes appear as you type (English or Japanese, accents optional: "pho" finds Phở). Typing a country also offers that cuisine's whole page first ("Japan" → All Japanese dishes), the arrow keys pick one and Enter opens it; with nothing picked, Enter runs the full search on /recipes. "/" or Ctrl/⌘+K opens it anywhere, and Esc closes it.
 - **Trending dishes:** Slush's tab system — a red pill follows the hovered tab; switching slides the old text off and the new title in by character. The photo frame opens from a smaller rounded window as it scrolls in.
 - **Background artwork:** behind every page runs one tall illustrated canvas, top to bottom — soft saffron, sage and paprika blobs at the edges with real vintage-style engravings among them — rosemary, a pepper plant, onion, mushrooms, parsley, oranges, spoons, pomegranate, fennel, carrot, fig, sage, ginger, pear, thyme and grapes (public-domain line art by Pearson Scott Foresman, from Wikimedia Commons) — on a faint paper grain, like the pages of an illustrated cookbook. The engravings carry on through the coloured sections too (the green, red and cream panels and the footer), drawn in each section's own text colour, and they follow dark mode.
 - **Intro curtain:** when you open the home page, a tomato-red panel shows the World Plate wordmark filling in left to right (timings recorded from kervangida.com's preloader) above a glossy enamel stockpot boiling on a gas hob — shaded like real cookware, with polished steel handles and lid rim, a rattling lid with a glossy black knob, translucent flickering blue gas flames under a cast-iron grate, bubbles and soft vapour, and the pot's reflection in the black glass hob. It waits for you to scroll: as you do, the lid blows off in a puff of steam, the wordmark floats away and the pot moves to the middle and grows; keep scrolling and the lid flies off and the page opens up out of the pot's mouth until it fills the screen. Scroll back and it runs backwards; click or press Enter to skip.

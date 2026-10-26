@@ -7,6 +7,7 @@ import { db } from "@/db/db";
 import { listCuisines } from "@/db/queries/cuisines";
 import { getRecipeBySlug, searchRecipes } from "@/db/queries/recipes";
 import { jaTitle } from "@/lib/site";
+import { placeWords } from "@/lib/places";
 import { fold } from "@/lib/recipe-filter";
 
 export const metadata: Metadata = {
@@ -18,7 +19,9 @@ export const metadata: Metadata = {
 
 export default async function RecipesPage() {
   const [recipes, cuisines] = await Promise.all([searchRecipes(db, { cuisine: [], vegetarian: false }), listCuisines(db)]);
-  // Static page: build a small search index (title, description, cuisine, tags, ingredients — in both languages) per recipe.
+  // Static page: build a small search index per recipe, in both languages: title, description, cuisine, country (and
+  // its other names, lib/places.ts), the city or region it comes from, tags and ingredients.
+  const cuisineBySlug = new Map(cuisines.map((c) => [c.slug, c]));
   const searchable = await Promise.all(
     recipes.map(async (r) => {
       const detail = await getRecipeBySlug(db, r.slug);
@@ -26,6 +29,9 @@ export default async function RecipesPage() {
         r.title,
         r.description,
         r.cuisineName,
+        ...placeWords(cuisineBySlug.get(r.cuisineSlug)),
+        detail?.origin,
+        detail?.ja.origin,
         ...(detail?.tags ?? []),
         ...(detail?.ingredients.map((i) => i.item) ?? []),
         r.ja.title,

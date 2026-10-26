@@ -19,29 +19,52 @@ export type SearchItem = {
   cuisineJa: string;
   image: string;
   minutes: number;
-  /** Title, description and cuisine in both languages, folded (lib/recipe-filter.ts). */
+  /** Title, description, cuisine, country and origin in both languages, folded (lib/recipe-filter.ts). */
+  text: string;
+};
+
+/** One cuisine in the header search, found by its name or country (app/layout.tsx, lib/places.ts). */
+export type SearchPlace = {
+  slug: string;
+  name: string;
+  nameJa: string;
+  country: string;
+  countryJa: string;
+  emoji: string;
+  count: number;
   text: string;
 };
 
 const MAX = 6;
+const MAX_PLACES = 2;
 
-function match(items: SearchItem[], query: string) {
+type Option = { kind: "dish"; item: SearchItem; href: string } | { kind: "place"; place: SearchPlace; href: string };
+
+/** Matching cuisines first (typing "Nepal" offers the whole Nepali page), then dishes. */
+function match(items: SearchItem[], places: SearchPlace[], query: string): Option[] {
+  const dish = (item: SearchItem): Option => ({ kind: "dish", item, href: `/recipes/${item.slug}` });
   const q = fold(query.trim());
-  if (!q) return items.slice(0, MAX);
+  if (!q) return items.slice(0, MAX).map(dish);
   const starts = (s: string) => fold(s).startsWith(q);
-  return items
+  const placeHits = places
+    .filter((p) => p.text.includes(q))
+    .slice(0, MAX_PLACES)
+    .map((place): Option => ({ kind: "place", place, href: `/cuisine/${place.slug}` }));
+  const dishHits = items
     .filter((r) => r.text.includes(q))
     .sort((a, b) => Number(starts(b.title) || starts(b.titleJa)) - Number(starts(a.title) || starts(a.titleJa)))
-    .slice(0, MAX);
+    .slice(0, MAX)
+    .map(dish);
+  return [...placeHits, ...dishHits];
 }
 
 /**
  * The header's round search button. It opens a search box that grows out of the button: type and the matching
- * dishes appear under it (in either language), arrow keys move through them, Enter opens one — or the full search
+ * cuisines and dishes appear under it (in either language, by name or country), arrow keys move through them, Enter opens one — or the full search
  * on /recipes when none is picked. "/" or Ctrl/⌘+K opens it from anywhere; Esc, a click outside or navigating
  * closes it. The box stays mounted and animates with CSS (`.nav-search`, globals.css).
  */
-export function HeaderSearch({ items, className }: { items: SearchItem[]; className?: string }) {
+export function HeaderSearch({ items, places, className }: { items: SearchItem[]; places: SearchPlace[]; className?: string }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(-1);
@@ -52,7 +75,7 @@ export function HeaderSearch({ items, className }: { items: SearchItem[]; classN
   const lang = useLang();
   const t = useT();
   const listId = useId();
-  const results = useMemo(() => match(items, query), [items, query]);
+  const results = useMemo(() => match(items, places, query), [items, places, query]);
 
   // Close on navigation.
   const [lastPath, setLastPath] = useState(pathname);
@@ -90,7 +113,7 @@ export function HeaderSearch({ items, className }: { items: SearchItem[]; classN
 
   const submit = () => {
     const pick = results[active];
-    if (pick) router.push(`/recipes/${pick.slug}`);
+    if (pick) router.push(pick.href);
     else router.push(query.trim() ? `/recipes?q=${encodeURIComponent(query.trim())}` : "/recipes");
     setOpen(false);
   };
@@ -135,7 +158,7 @@ export function HeaderSearch({ items, className }: { items: SearchItem[]; classN
                 if (n) setActive((a) => (e.key === "ArrowDown" ? (a + 1) % n : (a - 1 + n) % n));
               }
             }}
-            placeholder={t("Search dishes, cuisines…", "料理名・国で検索…")}
+            placeholder={t("Search dishes, countries…", "料理名・国で検索…")}
             aria-label={t("Search recipes", "レシピを検索")}
             role="combobox"
             aria-expanded={open}
@@ -153,7 +176,7 @@ export function HeaderSearch({ items, className }: { items: SearchItem[]; classN
 
         <p className="label-caps text-muted-foreground px-5 pt-3 pb-1 text-[0.6875rem]">
           {query.trim() ? (
-            <T en={`${results.length ? "Dishes" : "No dishes found"}`} ja={results.length ? "料理" : "見つかりませんでした"} />
+            <T en={results.length ? "Results" : "No dishes found"} ja={results.length ? "検索結果" : "見つかりませんでした"} />
           ) : (
             <T en="Popular right now" ja="いま人気" />
           )}
@@ -161,7 +184,7 @@ export function HeaderSearch({ items, className }: { items: SearchItem[]; classN
         <ul id={listId} role="listbox" aria-label={t("Matching dishes", "一致する料理")} className="px-2 pb-2">
           {results.map((r, i) => (
             <li
-              key={r.slug}
+              key={r.href}
               id={`${listId}-${i}`}
               role="option"
               aria-selected={active === i}
@@ -169,23 +192,44 @@ export function HeaderSearch({ items, className }: { items: SearchItem[]; classN
               style={{ "--i": i } as CSSProperties}
             >
               <Link
-                href={`/recipes/${r.slug}`}
+                href={r.href}
                 tabIndex={-1}
                 onMouseEnter={() => setActive(i)}
                 data-active={active === i || undefined}
                 className="nav-search__link"
               >
-                <span className="bg-muted relative size-11 shrink-0 overflow-hidden rounded-md">
-                  <Image src={r.image} alt="" fill sizes="44px" className="object-cover" />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate font-medium">
-                    <T en={r.title} ja={r.titleJa} />
-                  </span>
-                  <span className="text-muted-foreground block truncate text-xs">
-                    <T en={r.cuisine} ja={r.cuisineJa} /> · <Minutes m={r.minutes} />
-                  </span>
-                </span>
+                {r.kind === "place" ? (
+                  <>
+                    <span className="bg-secondary grid size-11 shrink-0 place-items-center rounded-md text-xl" aria-hidden>
+                      {r.place.emoji}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-medium">
+                        <T en={`All ${r.place.name} dishes`} ja={`${r.place.nameJa}をすべて見る`} />
+                      </span>
+                      <span className="text-muted-foreground block truncate text-xs">
+                        <T
+                          en={`${r.place.country} · ${r.place.count} ${r.place.count === 1 ? "recipe" : "recipes"}`}
+                          ja={`${r.place.countryJa} · ${r.place.count}品`}
+                        />
+                      </span>
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="bg-muted relative size-11 shrink-0 overflow-hidden rounded-md">
+                      <Image src={r.item.image} alt="" fill sizes="44px" className="object-cover" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-medium">
+                        <T en={r.item.title} ja={r.item.titleJa} />
+                      </span>
+                      <span className="text-muted-foreground block truncate text-xs">
+                        <T en={r.item.cuisine} ja={r.item.cuisineJa} /> · <Minutes m={r.item.minutes} />
+                      </span>
+                    </span>
+                  </>
+                )}
                 <ArrowRight className="nav-search__arrow size-4 shrink-0" strokeWidth={1.75} aria-hidden />
               </Link>
             </li>

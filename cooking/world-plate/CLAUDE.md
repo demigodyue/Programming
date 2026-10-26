@@ -130,6 +130,10 @@ docs are unfilled templates. The final security review used the built-in `securi
   dropped, kana kept). Before Motion's lazy features load, an AnimatePresence exit never runs: `useMotionReady()`
   (motion-provider.tsx) lets RecipeBrowser swap its list in place until then (otherwise filtered-out cards linger).
   RecipeBrowser also ignores late URL reports that no longer match `location.search`.
+- **Country search (2026-10-26)**: both search indexes (app/recipes/page.tsx and app/layout.tsx) add the cuisine's
+  name and country in both languages plus aliases from `lib/places.ts` (`placeWords`), and the recipe's origin. Only
+  add aliases the data doesn't already contain as a substring. The header search also lists matching cuisines
+  (`SearchPlace`, up to 2) before dishes, linking to /cuisine/<slug>.
 - **Recipe kitchen (2026-10-20)**: `lib/step-info.ts` reads each English step for its action (the earliest verb
   wins → `StepIcon`) and its timings (`parseDurations`: a range's first value, 10 s–6 h). Timers live in a module
   store in `step-timer.tsx`, keyed `slug:step:index` and shared with Cook Mode. The pot (`MisePot`) is drawn full

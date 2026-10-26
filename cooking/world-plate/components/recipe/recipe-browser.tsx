@@ -89,7 +89,7 @@ export function RecipeBrowser({
       <div className="space-y-5">
         <form role="search" onSubmit={(e) => e.preventDefault()} className="max-w-xl">
           <FloatingInput
-            label={<T en="Search dishes, ingredients or cuisines" ja="料理名・材料・国で検索" />}
+            label={<T en="Search dishes, ingredients or countries" ja="料理名・材料・国で検索" />}
             icon={<Search className="size-5" strokeWidth={1.75} />}
             type="search"
             name="q"

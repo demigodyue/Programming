@@ -16,7 +16,9 @@ import { SiteHeader } from "@/components/sections/site-header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TitleSync } from "@/components/title-sync";
 import { db } from "@/db/db";
-import { searchRecipes } from "@/db/queries/recipes";
+import { listCuisines } from "@/db/queries/cuisines";
+import { getRecipeBySlug, searchRecipes } from "@/db/queries/recipes";
+import { placeWords } from "@/lib/places";
 import { fold } from "@/lib/recipe-filter";
 import { JA_FONTS, site } from "@/lib/site";
 import "./globals.css";
@@ -91,16 +93,44 @@ const FRAME_GUARD = `if(window.top!==window.self){document.documentElement.style
 const ART_LATER = `addEventListener("load",function(){(window.requestIdleCallback||function(f){setTimeout(f,200)})(function(){document.documentElement.dataset.art=""},{timeout:1500})})`;
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  // The header search's dish list, built once at build time (trending first).
-  const searchItems = (await searchRecipes(db, { cuisine: [], vegetarian: false })).map((r) => ({
-    slug: r.slug,
-    title: r.title,
-    titleJa: r.ja.title,
-    cuisine: r.cuisineName,
-    cuisineJa: r.ja.cuisineName,
-    image: r.image,
-    minutes: r.totalMinutes,
-    text: fold([r.title, r.ja.title, r.cuisineName, r.ja.cuisineName, r.description, r.ja.description].join(" ")),
+  // The header search's lists, built once at build time: dishes (trending first) and cuisines. Both can be found by
+  // country, in either language (lib/places.ts); dishes also by the city or region they come from.
+  const [cards, cuisines] = await Promise.all([searchRecipes(db, { cuisine: [], vegetarian: false }), listCuisines(db)]);
+  const cuisineBySlug = new Map(cuisines.map((c) => [c.slug, c]));
+  const searchItems = await Promise.all(
+    cards.map(async (r) => {
+      const detail = await getRecipeBySlug(db, r.slug);
+      return {
+        slug: r.slug,
+        title: r.title,
+        titleJa: r.ja.title,
+        cuisine: r.cuisineName,
+        cuisineJa: r.ja.cuisineName,
+        image: r.image,
+        minutes: r.totalMinutes,
+        text: fold(
+          [
+            r.title,
+            r.ja.title,
+            ...placeWords(cuisineBySlug.get(r.cuisineSlug)),
+            detail?.origin,
+            detail?.ja.origin,
+            r.description,
+            r.ja.description,
+          ].join(" "),
+        ),
+      };
+    }),
+  );
+  const searchPlaces = cuisines.map((c) => ({
+    slug: c.slug,
+    name: c.name,
+    nameJa: c.ja.name,
+    country: c.country,
+    countryJa: c.ja.country,
+    emoji: c.emoji,
+    count: c.recipeCount,
+    text: fold(placeWords(c).join(" ")),
   }));
   // Every page leads with an Unsplash photo — open the connection before the <img> is parsed.
   preconnect("https://images.unsplash.com");
@@ -134,7 +164,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           <Cursor />
           <AccountBoot />
           <TitleSync />
-          <SiteHeader searchItems={searchItems} />
+          <SiteHeader searchItems={searchItems} searchPlaces={searchPlaces} />
           <main id="main" className="flex-1">
             {children}
           </main>
