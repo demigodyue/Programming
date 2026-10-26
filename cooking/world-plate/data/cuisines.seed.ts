@@ -31,8 +31,8 @@ export const cuisinesSeed: SeedCuisine[] = [
     emoji: "🥟",
     intro:
       "Nepali kitchens sit between India and Tibet, and the food shows it: lentils and rice twice a day, Himalayan spices like timur and jimbu, and dumplings steamed in stacked baskets.",
-    image: u("1626776876729-bab4369a5a5a"),
-    imageAlt: "Steamed dumplings in a bamboo basket with a small bowl of dipping sauce",
+    image: u("1593252719532-53f183016149"),
+    imageAlt: "Newari samay baji on a leaf plate: beaten rice, black soybeans, spiced potatoes, greens and meat",
   },
   {
     slug: "italian",

@@ -154,7 +154,7 @@ export const recipesJa: Record<string, RecipeJa> = {
     title: "チキンモモ",
     origin: "ネパール・カトマンズ",
     description: "手でひだを寄せた肉汁たっぷりの鶏肉餃子を蒸し、焼きトマトとごまのスモーキーなアチャールを添えて。",
-    imageAlt: "ハーブとたれを添えた蒸しモモの皿",
+    imageAlt: "白い皿に並べた蒸しチキンモモと、オレンジ色のトマトのアチャール",
     sections: { Dough: "皮", Filling: "具", "Tomato achar": "トマトのアチャール" },
     ingredients: [
       "中力粉",
@@ -198,7 +198,7 @@ export const recipesJa: Record<string, RecipeJa> = {
     title: "ダルバート",
     origin: "ネパール",
     description: "ネパールの毎日のごはん。ジュッと香ばしいにんにくとクミンのテンパリングで仕上げるなめらかな豆のダル、ふっくらご飯、ほんのりスパイスのじゃがいもとカリフラワーのタルカリ。",
-    imageAlt: "豆のダル、野菜カレー、ご飯、平たいパンをのせたステンレスのターリー",
+    imageAlt: "真鍮の皿に盛ったダルバートのセット。ご飯、豆のダル、野菜のタルカリ、アチャール、パパド",
     sections: { Dal: "ダル", Tempering: "テンパリング", Rice: "ご飯", Tarkari: "タルカリ" },
     ingredients: [
       "皮むき赤レンズ豆（マスールダル）",
@@ -704,7 +704,7 @@ export const recipesJa: Record<string, RecipeJa> = {
     title: "トゥクパ",
     origin: "ネパールとチベットのヒマラヤ地方",
     description: "体が温まるヒマラヤの麺スープ。もちもちの麺と鶏肉を、生姜とにんにくのスープにトマト、青菜、ティムール山椒をきかせて。",
-    imageAlt: "野菜入りの麺スープと、蒸したモモの皿",
+    imageAlt: "青菜、にんじん、トマトが入ったトゥクパの器",
     sections: { Broth: "スープ", "To serve": "仕上げ" },
     ingredients: [
       "マスタード油またはサラダ油",

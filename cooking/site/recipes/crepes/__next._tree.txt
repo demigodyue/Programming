@@ -6,4 +6,4 @@
 3:[["children",{"s":"__PAGE__","h":160}]]
 2:[["children",{"s":{"n":"slug","t":"d","k":"crepes","s":[]},"h":65632,"c":"$Q3"}]]
 1:[["children",{"s":"recipes","h":131136,"c":"$Q2"}]]
-0:{"b":"6BLVdm5eKPoO5P7-PqyzV","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}
+0:{"b":"m8mYmMuzSFxUxz2TJyu21","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}

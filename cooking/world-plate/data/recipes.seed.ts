@@ -200,8 +200,8 @@ export const recipesSeed: SeedRecipe[] = [
     origin: "Kathmandu, Nepal",
     description:
       "Juicy hand-pleated chicken dumplings, steamed and served with a smoky roasted-tomato and sesame achar.",
-    image: u("1534422298391-e4f8c172dddb"),
-    imageAlt: "Plates of steamed momo dumplings with herbs and dipping sauce",
+    image: u("1694923450868-b432a8ee52aa"),
+    imageAlt: "Steamed chicken momo on a white plate around a bowl of orange tomato achar",
     prepMinutes: 60,
     cookMinutes: 15,
     servings: 4,
@@ -254,8 +254,8 @@ export const recipesSeed: SeedRecipe[] = [
     origin: "Nepal",
     description:
       "Nepal's everyday meal: silky lentil dal finished with a sizzling garlic-cumin tempering, fluffy rice and a gently spiced potato-cauliflower tarkari.",
-    image: u("1546833999-b9f581a1996d"),
-    imageAlt: "Steel thali plate with lentil dal, vegetable curry, rice and flatbread",
+    image: u("1588644525273-f37b60d78512"),
+    imageAlt: "Dal bhat set on a brass plate: rice, lentil dal, vegetable tarkari, pickles and a papad",
     prepMinutes: 15,
     cookMinutes: 45,
     servings: 4,
@@ -902,8 +902,8 @@ export const recipesSeed: SeedRecipe[] = [
     origin: "Himalayan Nepal and Tibet",
     description:
       "A warming Himalayan noodle soup: chewy noodles and chicken in a ginger-garlic broth with tomato, greens and a hit of timur pepper.",
-    image: u("1628410040883-c412c8d9a0f9"),
-    imageAlt: "Bowl of noodle soup with vegetables beside a plate of steamed momo",
+    image: u("1642342235314-8e194838046e"),
+    imageAlt: "Bowl of thukpa noodle soup with greens, carrot and tomato",
     prepMinutes: 15,
     cookMinutes: 40,
     servings: 4,
