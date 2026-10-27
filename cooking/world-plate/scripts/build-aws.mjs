@@ -1,6 +1,7 @@
 // Builds the site for AWS Amplify Hosting and packs it for Amplify's "Deploy without Git":
 //
-//   npm run build:aws -- https://main.d1abc23.amplifyapp.com
+//   npm run build:aws                (the published address, set in package.json)
+//   npm run build:aws -- https://…   (another address, e.g. a custom domain)
 //
 // The site is served from the root of its own domain there (not /Programming/cooking/site/ as for Live Server), and
 // the address given is used for canonical links, Open Graph and the sitemap. The output is dist/ plus
@@ -17,7 +18,8 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const dist = join(root, "dist");
 const zipPath = join(root, "world-plate-aws.zip");
 
-const siteUrl = (process.argv[2] || process.env.AWS_SITE_URL || "").replace(/\/$/, "");
+// The address comes from package.json ("build:aws"); a later argument or AWS_SITE_URL overrides it.
+const siteUrl = (process.env.AWS_SITE_URL || (process.argv.length > 2 ? process.argv.at(-1) : "")).replace(/\/$/, "");
 if (siteUrl && !/^https:\/\/[\w.-]+$/.test(siteUrl)) {
   console.error(`Not a site address: ${siteUrl} (expected something like https://main.d1abc23.amplifyapp.com)`);
   process.exit(1);

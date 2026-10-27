@@ -6,7 +6,7 @@
     "dev": "next dev",
     "predev": "npm run db:setup",
     "build": "next build && node scripts/copy-site.mjs",
-    "build:aws": "node scripts/build-aws.mjs",
+    "build:aws": "node scripts/build-aws.mjs https://main.d1arn7be8fhjvi.amplifyapp.com",
     "prebuild": "npm run db:setup",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",

@@ -55,11 +55,13 @@ Both searches (the box on /recipes and the header search) find dishes by country
 
 The site is published on AWS Amplify Hosting as plain static files, uploaded with Amplify's **Deploy without Git**. Amplify's own Git builds aren't used: they only support Next.js 12–15, and the site is a static export anyway.
 
+The site is live at **https://main.d1arn7be8fhjvi.amplifyapp.com**.
+
 ```bash
-npm run build:aws -- https://main.<app-id>.amplifyapp.com
+npm run build:aws
 ```
 
-This builds the site for the root of its own domain (the `cooking/site/` copy is built for `/Programming/cooking/site/` under Live Server instead), writes `dist/`, and packs it as `world-plate-aws.zip`. The address is used for canonical links, Open Graph and the sitemap. The zip includes a `customHttp.yml`, so Amplify sends real security headers: the Content Security Policy from `lib/csp.ts` plus `frame-ancestors 'none'`, HSTS, nosniff, a referrer policy and a permissions policy, and long caching for the hashed files in `_next/static/`.
+This builds the site for the root of its own domain (the `cooking/site/` copy is built for `/Programming/cooking/site/` under Live Server instead), writes `dist/`, and packs it as `world-plate-aws.zip`. The address (set in the `build:aws` script in package.json; pass another after `--` to override) is used for canonical links, Open Graph and the sitemap. The zip includes a `customHttp.yml`, so Amplify sends real security headers: the Content Security Policy from `lib/csp.ts` plus `frame-ancestors 'none'`, HSTS, nosniff, a referrer policy and a permissions policy, and long caching for the hashed files in `_next/static/`.
 
 **First time:**
 
@@ -68,7 +70,7 @@ This builds the site for the root of its own domain (the `cooking/site/` copy is
 3. **Hosting → Rewrites and redirects → Manage redirects → Add rewrite:** source `/<*>`, target `/404.html`, type **404 (Rewrite)**, so unknown addresses show the site's own "not found" page.
 4. In Firebase → Authentication → Settings → **Authorized domains**, add the Amplify address (without `https://`), so Google sign-in works there.
 
-**Each update:** run `npm run build:aws -- <address>` and upload the zip under **Deploy updates**. To use your own domain later: Amplify → **Hosting → Custom domains**, then add that domain to Firebase's authorized domains too and rebuild with it.
+**Each update:** run `npm run build:aws` and upload the zip under **Deploy updates**. To use your own domain later: Amplify → **Hosting → Custom domains**, then add that domain to Firebase's authorized domains too and rebuild with it.
 
 ## Security
 
