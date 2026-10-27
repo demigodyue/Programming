@@ -351,9 +351,12 @@ tests/unit, tests/e2e    Vitest and Playwright
 - Validate all external input (query strings, localStorage, account documents) and drop invalid values rather than
   throwing: `cleanFavorites` / `cleanRatings` (lib/local-store.ts), `cleanShopping` (lib/shopping-list.ts).
 - Secrets only in `.env.local`; `.env.example` is committed; never hard-code keys. (Firebase web config is public by design.)
-- CSP is a `<meta>` in app/layout.tsx (production only), hoisted to the top of each page by scripts/copy-site.mjs. Any new
-  third-party origin (script, style, font, image, connect, frame) must be added there deliberately. FRAME_GUARD stands in
-  for frame-ancestors. Behind a real server, send CSP, frame-ancestors and the other security headers as headers instead.
+- CSP lives in lib/csp.ts. It is a `<meta>` in app/layout.tsx (production only), hoisted to the top of each page by
+  scripts/copy-site.mjs, and a real header on AWS Amplify (scripts/build-aws.mjs writes customHttp.yml with CSP_HEADER,
+  which adds frame-ancestors, plus HSTS etc.). Any new third-party origin (script, style, font, image, connect, frame)
+  must be added there deliberately. FRAME_GUARD stands in for frame-ancestors on hosts that can't send headers.
+- Hosting: AWS Amplify, manual deploys (`npm run build:aws -- <https address>` → world-plate-aws.zip). Not Amplify's Git
+  builds: they support Next.js 12–15 only. `npm run build` still writes ../site for Live Server.
 - No `dangerouslySetInnerHTML` / `innerHTML` with user content (JSON-LD uses escaped, static recipe data; the flying
   heart/basket are fixed SVG strings; flying ingredient chips use textContent).
 - firestore.rules allow-lists the user document's fields; a new saved field means updating the rules too.

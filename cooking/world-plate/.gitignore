@@ -41,6 +41,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# AWS Amplify build (npm run build:aws)
+/dist/
+/world-plate-aws.zip
+
 # local database
 /db/*.db
 /db/*.db-*

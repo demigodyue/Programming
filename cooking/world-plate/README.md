@@ -51,15 +51,24 @@ Both searches (the box on /recipes and the header search) find dishes by country
 - **Shopping list:** on any recipe, pick how many you're cooking for and press **Add to shopping list**. The ingredients, scaled to that number, go on one list (the Shopping list pill in the header). Tick things off at the shop, copy the remaining items as text, print the list, or remove a recipe. The list is kept in this browser.
 - **Share and print:** every recipe has a **Share** button (your phone's share sheet, or it copies the link) and a **Print** button. Printing gives a clean black-on-white page with the ingredients and method, without the header, footer, artwork or animations.
 
-## Publishing (GitHub Pages)
+## Publishing (AWS Amplify)
 
-The built site in `cooking/site/` is committed, and its base path (`/Programming/cooking/site`) matches GitHub Pages for this repo. To put it online:
+The site is published on AWS Amplify Hosting as plain static files, uploaded with Amplify's **Deploy without Git**. Amplify's own Git builds aren't used: they only support Next.js 12–15, and the site is a static export anyway.
 
-1. On GitHub, open the **Programming** repo → **Settings → Pages**.
-2. Under **Build and deployment**, choose **Deploy from a branch**, branch **main**, folder **/ (root)**, and save.
-3. After a minute the site is at **https://demigodyue.github.io/Programming/cooking/site/**.
+```bash
+npm run build:aws -- https://main.<app-id>.amplifyapp.com
+```
 
-The repo has a `.nojekyll` file at its root. Without it, GitHub Pages would hide the `_next/` folder that holds the site's code. Once accounts are switched on, add `demigodyue.github.io` under Firebase → Authentication → Settings → **Authorized domains**, so Google sign-in works there.
+This builds the site for the root of its own domain (the `cooking/site/` copy is built for `/Programming/cooking/site/` under Live Server instead), writes `dist/`, and packs it as `world-plate-aws.zip`. The address is used for canonical links, Open Graph and the sitemap. The zip includes a `customHttp.yml`, so Amplify sends real security headers: the Content Security Policy from `lib/csp.ts` plus `frame-ancestors 'none'`, HSTS, nosniff, a referrer policy and a permissions policy, and long caching for the hashed files in `_next/static/`.
+
+**First time:**
+
+1. In the AWS console, open **Amplify → Create new app → Deploy without Git**. Name the app `world-plate` and the branch `main`, then drag in `world-plate-aws.zip`.
+2. Note the address Amplify gives the site (`https://main.<app-id>.amplifyapp.com`), rebuild with it (the command above) and upload the new zip under **Deploy updates**.
+3. **Hosting → Rewrites and redirects → Manage redirects → Add rewrite:** source `/<*>`, target `/404.html`, type **404 (Rewrite)**, so unknown addresses show the site's own "not found" page.
+4. In Firebase → Authentication → Settings → **Authorized domains**, add the Amplify address (without `https://`), so Google sign-in works there.
+
+**Each update:** run `npm run build:aws -- <address>` and upload the zip under **Deploy updates**. To use your own domain later: Amplify → **Hosting → Custom domains**, then add that domain to Firebase's authorized domains too and rebuild with it.
 
 ## Security
 

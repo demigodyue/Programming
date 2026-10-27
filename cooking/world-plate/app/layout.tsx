@@ -18,6 +18,7 @@ import { TitleSync } from "@/components/title-sync";
 import { db } from "@/db/db";
 import { listCuisines } from "@/db/queries/cuisines";
 import { getRecipeBySlug, searchRecipes } from "@/db/queries/recipes";
+import { CSP } from "@/lib/csp";
 import { placeWords } from "@/lib/places";
 import { fold } from "@/lib/recipe-filter";
 import { JA_FONTS, site } from "@/lib/site";
@@ -66,23 +67,6 @@ const INTRO_SKIP = `try{var p=location.pathname,h=${JSON.stringify(HOME)};if(!(p
 
 // Pick the language before first paint: the visitor's saved choice, else Japanese for a Japanese browser.
 const LANG_INIT = `try{var l=localStorage.getItem("wp:lang");if(!l&&/^ja(-|$)/i.test(navigator.language||""))l="ja";if(l==="ja"){var r=document.documentElement;r.dataset.lang="ja";r.lang="ja";var f=document.createElement("link");f.rel="stylesheet";f.id="wp-ja-fonts";f.href=${JSON.stringify(JA_FONTS)};document.head.appendChild(f)}}catch(e){}`;
-
-// Content Security Policy, as a <meta> because a static host can't send headers. It limits where the page may load
-// code, images and connections from: this site, Unsplash photos, and (for accounts) Firebase and Google sign-in.
-// 'unsafe-inline' is needed for Next's inline hydration scripts and inline styles; everything else is an allow-list.
-// The ws:// entries let VS Code Live Server's reload socket through. Production only: dev needs eval for fast refresh.
-const CSP = [
-  "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://apis.google.com",
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "img-src 'self' data: blob: https://images.unsplash.com https://lh3.googleusercontent.com",
-  "font-src 'self' data: https://fonts.gstatic.com",
-  "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com ws://127.0.0.1:* ws://localhost:*",
-  "frame-src https://*.firebaseapp.com https://accounts.google.com https://apis.google.com",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-].join("; ");
 
 // Clickjacking guard: a <meta> CSP can't forbid framing, so a page loaded inside someone else's frame hides itself
 // and asks the top window to load it directly instead.

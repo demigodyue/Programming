@@ -6,6 +6,7 @@
     "dev": "next dev",
     "predev": "npm run db:setup",
     "build": "next build && node scripts/copy-site.mjs",
+    "build:aws": "node scripts/build-aws.mjs",
     "prebuild": "npm run db:setup",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
