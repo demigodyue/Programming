@@ -1759,6 +1759,29 @@
     cursor: pointer;
     touch-action: none;
   }
+  /* With the 3D pot (data-three, set once it renders): the drawing hides and the page opens out of the middle of
+     the broth, where the camera ends up looking straight down — a circle growing from the centre (--hr). */
+  .wp-intro[data-three] {
+    --hr: calc(pow(clamp(0, (var(--q) - 0.72) / 0.28, 1), 2) * 150vmax);
+    -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent calc(var(--hr) - 1px), #000 var(--hr));
+    mask-image: radial-gradient(circle at 50% 50%, transparent calc(var(--hr) - 1px), #000 var(--hr));
+  }
+  .wp-intro__three {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s var(--ease-out);
+  }
+  .wp-intro[data-three] .wp-intro__three {
+    opacity: 1;
+  }
+  .wp-intro[data-three] .wp-pot-zoom {
+    visibility: hidden;
+  }
   /* The engravings (SectionArt) sit on the slats, under the wordmark and pot, and leave with the panel. */
   .wp-intro .section-art {
     z-index: 0;
@@ -1775,7 +1798,7 @@
   /* The wordmark stays exactly centred; the pot hangs below it. */
   .wp-intro__stack {
     position: relative;
-    z-index: 1;
+    z-index: 2;
   }
   .wp-intro__mark {
     position: relative;
@@ -1867,7 +1890,7 @@
     position: absolute;
     bottom: clamp(1.5rem, 5svh, 3rem);
     left: 50%;
-    z-index: 1;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -2217,6 +2240,33 @@
     display: block;
   }
 
+  /* The 3D stove (Stove3D) sits over the drawing, which hides once the canvas is running (data-three). */
+  .stove-3d {
+    position: relative;
+    width: 100%;
+    max-height: 64svh;
+    aspect-ratio: 592 / 384;
+  }
+  .stove-3d__canvas {
+    position: absolute;
+    inset: -10% -4% -2%;
+    width: 108%;
+    height: 112%;
+    opacity: 0;
+    transition: opacity 0.8s var(--ease-out);
+    pointer-events: none;
+  }
+  .stove-3d[data-three] .stove-3d__canvas {
+    opacity: 1;
+  }
+  .stove-3d[data-three] .stove {
+    visibility: hidden;
+  }
+  @media (width < 64rem) {
+    .stove-3d {
+      max-height: 34svh;
+    }
+  }
   /* Stove (StoveScene). Original illustration; colours are the site palette plus a few cookware darks. */
   .stove {
     --lit: 1;

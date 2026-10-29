@@ -6,7 +6,7 @@ import { CountUp } from "@/components/motion/count-up";
 import { FlipFace, flipClass } from "@/components/motion/flip-face";
 import { ScrubWords } from "@/components/motion/scrub-words";
 import { SectionArt } from "@/components/section-art";
-import { StoveScene } from "@/components/sections/stove-scene";
+import { Stove3D } from "@/components/sections/stove-3d";
 import type { RecipeCard } from "@/db/queries/recipes";
 
 // The home page from the About section down. After About every section moves its own way with the scroll:
@@ -163,7 +163,7 @@ export function CtaPanel() {
               </Link>
             </div>
           </div>
-          <StoveScene />
+          <Stove3D />
         </div>
       </div>
     </section>

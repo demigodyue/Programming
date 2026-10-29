@@ -358,6 +358,13 @@ tests/unit, tests/e2e    Vitest and Playwright
   scripts/copy-site.mjs, and a real header on AWS Amplify (scripts/build-aws.mjs writes customHttp.yml with CSP_HEADER,
   which adds frame-ancestors, plus HSTS etc.). Any new third-party origin (script, style, font, image, connect, frame)
   must be added there deliberately. FRAME_GUARD stands in for frame-ancestors on hosts that can't send headers.
+- **3D scenes (2026-10-29)**: three.js 0.180 (`lib/three/`): kit.ts (renderer, studio environment, grate, gas
+  flames, steam, loop that pauses off screen), intro-pot.ts (driven by --q on .wp-intro), stove.ts (driven by the CTA
+  section's --p). Both are dynamically imported (IntroCurtain, components/sections/stove-3d.tsx) and only start when
+  `webglAvailable()` (failIfMajorPerformanceCaveat, so software WebGL, e.g. headless test browsers, keeps the SVGs).
+  They set data-three, which hides the SVG fallback; with data-three the intro opens with a circular mask from the
+  centre instead of the SVG pot-mouth mask. Everything is procedural (no model/texture files). The intro's q easing
+  is time-based so it opens as fast on slow devices.
 - Hosting: AWS Amplify, manual deploys (`npm run build:aws -- <https address>` → world-plate-aws.zip). Not Amplify's Git
   builds: they support Next.js 12–15 only. `npm run build` still writes ../site for Live Server.
 - No `dangerouslySetInnerHTML` / `innerHTML` with user content (JSON-LD uses escaped, static recipe data; the flying

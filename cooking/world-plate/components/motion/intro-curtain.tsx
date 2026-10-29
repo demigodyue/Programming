@@ -9,7 +9,7 @@ import { SectionArt } from "@/components/section-art";
 const SLATS = [2, 1, 0, 1, 2];
 
 /**
- * An original boiling pot on a gas hob (GasBurner), drawn to look like real cookware: a glossy enamel stockpot shaded
+ * The fallback pot (no WebGL; the 3D one is lib/three/intro-pot.ts): an original boiling pot on a gas hob (GasBurner), drawn to look like real cookware: a glossy enamel stockpot shaded
  * as a cylinder (a soft key light from the left, a bright specular streak, reflected light on the far edge, a darker
  * base), a saffron band shaded the same way, a rolled rim, polished steel loop handles; inside, the dark back wall
  * and the boiling water with ripples and a sheen; a domed enamel lid with a polished steel rim, a specular highlight
@@ -246,15 +246,20 @@ export function IntroCurtain() {
       window.dispatchEvent(new Event("wp:intro-done"));
       cleanup();
     };
-    const tick = () => {
+    // Eases toward the target by time, not per frame, so it opens just as quickly on a slow device.
+    let last = 0;
+    const tick = (now: number) => {
       frame = 0;
-      q += (target - q) * 0.12;
+      const dt = last ? Math.min(0.25, (now - last) / 1000) : 1 / 60;
+      last = now;
+      q += (target - q) * (1 - Math.exp(-dt * 7.7));
       if (Math.abs(target - q) < 0.0005) q = target;
       el.style.setProperty("--q", q.toFixed(4));
       // The page starts its own entrance as it begins to open out of the pot.
       if (q > 0.5) html.removeAttribute("data-intro");
       if (q >= 0.999) return finish();
       if (q !== target) frame = requestAnimationFrame(tick);
+      else last = 0;
     };
     const nudge = (d: number) => {
       target = clamp(target + d);
@@ -298,12 +303,36 @@ export function IntroCurtain() {
       }
     };
 
+    // The real-time 3D pot (lib/three/intro-pot.ts) replaces the drawing once it's running; without WebGL the
+    // drawing and its CSS animation stay. Loaded only here, so other pages never download three.js.
+    let stop3d: (() => void) | undefined;
+    let gone = false;
+    const canvas = el.querySelector<HTMLCanvasElement>(".wp-intro__three");
+    if (canvas) {
+      import("@/lib/three/kit")
+        .then(async (kit) => {
+          if (gone || !kit.webglAvailable()) return;
+          const { startIntroPot } = await import("@/lib/three/intro-pot");
+          if (gone) return;
+          stop3d = startIntroPot(canvas, () => parseFloat(el.style.getPropertyValue("--q")) || 0);
+          el.dataset.three = "";
+        })
+        .catch(() => {});
+    }
+    const stopThree = () => {
+      gone = true;
+      stop3d?.();
+      stop3d = undefined;
+    };
+    window.addEventListener("wp:intro-done", stopThree, { once: true });
+
     window.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("touchstart", onTouchStart, { passive: true });
     window.addEventListener("touchmove", onTouchMove, { passive: false });
     window.addEventListener("keydown", onKey);
     el.addEventListener("click", open);
     return () => {
+      stopThree();
       if (!finished) cleanup();
     };
   }, []);
@@ -319,6 +348,7 @@ export function IntroCurtain() {
       ))}
       {/* The site's engravings on the panel too, in its cream ink, behind the wordmark and pot. */}
       <SectionArt offset={0} />
+      <canvas className="wp-intro__three" />
       <div className="wp-intro__stack">
         <span className="wp-intro__mark">
           <span className="wp-intro__outline">Sizzle Atlas</span>
