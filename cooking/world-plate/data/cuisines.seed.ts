@@ -21,8 +21,8 @@ export const cuisinesSeed: SeedCuisine[] = [
     emoji: "🍲",
     intro:
       "Korean food is built on fermentation — gochujang, doenjang and kimchi — and on sharing, with rice at the centre and banchan side dishes all around. Expect heat, tang and deep savoury flavour.",
-    image: u("1553163147-622ab57be1c7"),
-    imageAlt: "Bibimbap bowl with fried eggs, carrots and greens over rice",
+    image: u("1498654896293-37aacf113fd9"),
+    imageAlt: "A Korean table: stone-bowl bibimbap surrounded by small dishes of banchan and kimchi",
   },
   {
     slug: "nepali",
@@ -51,8 +51,8 @@ export const cuisinesSeed: SeedCuisine[] = [
     emoji: "🍛",
     intro:
       "Indian food is many cuisines in one, layered with whole and ground spices bloomed in hot ghee or oil. Punjabi tandoor classics, southern dosas and Bengali fish curries all share that love of fragrance.",
-    image: u("1588166524941-3bf61a9c41db"),
-    imageAlt: "Orange curry with chunks of chicken served beside white rice",
+    image: u("1625398407796-82650a8c135f"),
+    imageAlt: "A South Indian meal on a banana leaf: rice, sambar, papad and vegetable sides",
   },
   {
     slug: "mexican",

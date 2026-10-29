@@ -10,7 +10,7 @@ export const recipesJa: Record<string, RecipeJa> = {
     title: "醤油ラーメン",
     origin: "日本・東京",
     description: "鶏と出汁の澄んだスープを醤油だれで仕上げた東京風ラーメン。豚バラのチャーシューととろりとした味玉をのせて。",
-    imageAlt: "半熟卵、チャーシュー、海苔をのせたラーメン",
+    imageAlt: "チャーシュー、半熟卵、メンマ、コーン、青菜をのせた醤油ラーメン",
     sections: { "Chashu pork": "チャーシュー", "Marinated eggs": "味玉", Broth: "スープ", "Shoyu tare": "醤油だれ", "To serve": "仕上げ" },
     ingredients: [
       ["豚バラ肉（皮なし）", "巻いてたこ糸で縛る"],
@@ -53,7 +53,7 @@ export const recipesJa: Record<string, RecipeJa> = {
     title: "巻き寿司",
     origin: "日本・江戸（東京）",
     description: "酢飯と海苔でサーモン、きゅうり、アボカドを巻いた巻き寿司。家で寿司を始めるならまずここから。",
-    imageAlt: "木の舟盛りに並んだ巻き寿司と握り寿司",
+    imageAlt: "上から見た、アボカド巻きとサーモン巻きの並んだ巻き寿司",
     sections: { "Sushi rice": "酢飯", Rolls: "巻き寿司", "To serve": "添えるもの" },
     ingredients: [
       "米（日本の短粒米）",
@@ -125,7 +125,7 @@ export const recipesJa: Record<string, RecipeJa> = {
     title: "トッポッキ",
     origin: "韓国・ソウル",
     description: "もちもちの餅とおでんを、つややかな甘辛コチュジャンだれで煮込んだソウルの定番屋台おやつ。30分かからずに完成。",
-    imageAlt: "黒い器に盛った赤いコチュジャンだれのトッポッキ",
+    imageAlt: "赤いコチュジャンのたれがからんだ、もちもちのトッポッキのアップ",
     ingredients: [
       "棒状の韓国餅（カレトック）",
       "水",
@@ -271,7 +271,7 @@ export const recipesJa: Record<string, RecipeJa> = {
     title: "スパゲッティ・カルボナーラ",
     origin: "イタリア・ローマ",
     description: "ローマの定番。カリッと焼いたグアンチャーレ、ペコリーノ・ロマーノ、黒こしょうを卵のソースでなめらかにまとめる。生クリームは決して使わない。",
-    imageAlt: "カリカリのグアンチャーレと黒こしょうのカルボナーラを白い器に",
+    imageAlt: "なめらかな卵のソースとグアンチャーレをからめたスパゲッティ・カルボナーラ",
     ingredients: [
       "スパゲッティ",
       ["グアンチャーレ", "1cm幅に切る。パンチェッタでも可"],
@@ -297,7 +297,7 @@ export const recipesJa: Record<string, RecipeJa> = {
     title: "バターチキン",
     origin: "インド・デリー",
     description: "ヨーグルトに漬けて焼き目をつけた鶏肉を、トマト、バター、生クリームのなめらかなソースで煮込む。フェヌグリークがふわりと香る。",
-    imageAlt: "生クリームを回しかけた濃いオレンジ色のバターチキン",
+    imageAlt: "濃い色の器に盛った、クリーミーなオレンジ色のトマトソースのバターチキン",
     sections: { Marinade: "下味", Sauce: "ソース", "To serve": "添えるもの" },
     ingredients: [
       ["鶏もも肉（骨なし）", "ひと口大に切る"],
@@ -378,7 +378,7 @@ export const recipesJa: Record<string, RecipeJa> = {
     title: "タコス・アル・パストール",
     origin: "メキシコ・メキシコシティ",
     description: "グアヒージョ、アンチョ、アチオーテに漬けた豚肉を焦げ目がつくまで焼き、温かいコーントルティーヤに焼きパイナップル、玉ねぎ、パクチーと包む。",
-    imageAlt: "肉、アボカド、ハーブをのせたタコス2つを皿に",
+    imageAlt: "玉ねぎ、パクチー、赤玉ねぎの酢漬けをのせたタコス・アル・パストール3つと、緑と赤のサルサ",
     sections: { Marinade: "漬けだれ", Pork: "豚肉", "To serve": "添えるもの" },
     ingredients: [
       ["乾燥グアヒージョ唐辛子", "へたと種を取る", "本"],
@@ -451,7 +451,7 @@ export const recipesJa: Record<string, RecipeJa> = {
     title: "バタークロワッサン",
     origin: "フランス・パリ",
     description: "冷たいバターを三つ折り3回で折り込んだ発酵生地から作る、ハチの巣のような断面のパリパリのクロワッサン。",
-    imageAlt: "打ち粉をふった暗い台の上の黄金色のクロワッサン",
+    imageAlt: "クッキングシートに並んだ、こんがりとした層の美しいクロワッサン",
     sections: { Dough: "生地", "Butter block": "折り込みバター", "Egg wash": "塗り卵" },
     ingredients: [
       "強力粉",
@@ -560,7 +560,7 @@ export const recipesJa: Record<string, RecipeJa> = {
     title: "カツカレー",
     origin: "日本・東京",
     description: "サクサクのパン粉をまとった豚カツを切り分けてご飯に添え、手作りのまろやかでほんのり甘いカレーソースをたっぷりと。",
-    imageAlt: "暗い色の器でカレーソースの上に並べた、黄金色のパン粉の豚カツ",
+    imageAlt: "ご飯にのせたサクサクのとんかつと、濃厚なカレールー",
     sections: { "Curry sauce": "カレーソース", Katsu: "カツ", "To serve": "添えるもの" },
     ingredients: [
       "サラダ油",
@@ -1031,7 +1031,7 @@ export const recipesJa: Record<string, RecipeJa> = {
     title: "タイのグリーンカレー",
     origin: "タイ中部",
     description: "ゲーン・キャオ・ワーン。手作りの香り高いグリーンカレーペーストをココナッツクリームで炒め、鶏肉、タイなす、こぶみかんの葉、ホーリーバジルと煮込む。",
-    imageAlt: "タイなす、赤唐辛子、こぶみかんの葉を入れたグリーンカレーを青い器に",
+    imageAlt: "タイなすの入ったグリーンカレーに、手でタイバジルを散らすところ",
     sections: { "Curry paste": "カレーペースト", Curry: "カレー", "To serve": "添えるもの" },
     ingredients: [
       ["青い小粒唐辛子（プリッキーヌ）", undefined, "本"],
@@ -1134,7 +1134,7 @@ export const recipesJa: Record<string, RecipeJa> = {
     title: "フレンチクレープ",
     origin: "フランス・ブルターニュ地方",
     description: "休ませた生地をバターで焼いた、レースのように薄いクレープ。四つ折りにして、砂糖とレモン、ジャム、チョコレートスプレッドで。",
-    imageAlt: "三角に折った黄金色のクレープと、3種類のソースとミント",
+    imageAlt: "いちごとクリームを添えて折りたたんだクレープと、紅茶のカップ",
     ingredients: [
       "薄力粉",
       "塩",
@@ -1340,7 +1340,7 @@ export const recipesJa: Record<string, RecipeJa> = {
     title: "チュロス・コン・チョコラテ",
     origin: "スペイン・マドリード",
     description: "シュー生地のような生地を筋入りにカリッと揚げてシナモンシュガーをまぶし、濃厚なスペインのホットチョコレートに浸して食べる。",
-    imageAlt: "シナモンシュガーのチュロスを濃厚なホットチョコレートのボウルに浸しているところ",
+    imageAlt: "カフェで、濃厚なホットチョコレートのカップに添えたチュロス",
     sections: { Churros: "チュロス", "Cinnamon sugar": "シナモンシュガー", Chocolate: "チョコレート" },
     ingredients: [
       "水",
