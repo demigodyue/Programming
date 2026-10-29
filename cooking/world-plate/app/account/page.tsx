@@ -7,7 +7,7 @@ import { jaTitle } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Your account",
-  description: "Sign in or create a World Plate account to keep your favorite recipes on every device.",
+  description: "Sign in or create a Sizzle Atlas account to keep your favorite recipes on every device.",
   robots: { index: false },
   other: jaTitle("アカウント"),
 };

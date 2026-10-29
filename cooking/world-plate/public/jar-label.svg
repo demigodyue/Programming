@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 334" preserveAspectRatio="none">
-  <!-- Unwrapped body of the World Plate "House Masala" jar: front label centred at x=500, back label across the seam. -->
+  <!-- Unwrapped body of the Sizzle Atlas "House Masala" jar: front label centred at x=500, back label across the seam. -->
   <defs>
     <linearGradient id="sauce" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#e0603f"/>
@@ -15,8 +15,10 @@
   <rect x="300" y="58" width="400" height="236" fill="#00522d"/>
   <rect x="312" y="70" width="376" height="212" fill="none" stroke="#f4b942" stroke-width="3"/>
   <circle cx="500" cy="118" r="30" fill="#c2321b"/>
-  <text x="500" y="129" text-anchor="middle" font-family="Impact, 'Arial Narrow', sans-serif" font-size="30" fill="#fff8f6">WP</text>
-  <text x="500" y="196" text-anchor="middle" font-family="Impact, 'Arial Narrow', sans-serif" font-size="44" letter-spacing="2" fill="#f4b942">WORLD PLATE</text>
+  <!-- the Sizzle Atlas mark (components/logo.tsx, small) -->
+  <mask id="jar-mark" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><rect width="64" height="64" fill="#fff"/><g fill="none" stroke="#000" stroke-width="2.8" stroke-linecap="round"><ellipse cx="25" cy="38" rx="4.6" ry="12"/><path d="M13 38H37"/></g></mask>
+  <g transform="translate(478 96) scale(0.69)"><g transform="translate(-2.4 1)"><g mask="url(#jar-mark)" fill="#fff8f6"><circle cx="25" cy="38" r="12"/><path d="M41.4 34.8H58.4a3.2 3.2 0 0 1 0 6.4H41.4z"/></g><circle cx="25" cy="38" r="16.5" fill="none" stroke="#fff8f6" stroke-width="4.2"/><path d="M18 17.4c-3.1-2.7 3.1-5 0-9M32 17.4c-3.1-2.7 3.1-5 0-9" fill="none" stroke="#fff8f6" stroke-width="3.4" stroke-linecap="round"/></g></g>
+  <text x="500" y="196" text-anchor="middle" font-family="Impact, 'Arial Narrow', sans-serif" font-size="44" letter-spacing="2" fill="#f4b942">SIZZLE ATLAS</text>
   <rect x="380" y="208" width="240" height="2" fill="#f4b942"/>
   <text x="500" y="244" text-anchor="middle" font-family="Impact, 'Arial Narrow', sans-serif" font-size="30" letter-spacing="3" fill="#fff8f6">HOUSE MASALA</text>
   <text x="500" y="272" text-anchor="middle" font-family="'Arial Narrow', Arial, sans-serif" font-size="15" letter-spacing="3" fill="#f3e6d4">SLOW-ROASTED · 340 G</text>

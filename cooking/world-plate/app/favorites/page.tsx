@@ -9,7 +9,7 @@ import { jaTitle } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Your favorites",
-  description: "Recipes you've saved on World Plate.",
+  description: "Recipes you've saved on Sizzle Atlas.",
   robots: { index: false },
   other: jaTitle("お気に入り"),
 };

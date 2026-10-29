@@ -1,6 +1,6 @@
 'use client';
 
-// Watermelon UI `motion-carousel` — adapted for World Plate:
+// Watermelon UI `motion-carousel` — adapted for Sizzle Atlas:
 // - renders arbitrary slides (recipe cards) instead of numbered boxes
 // - carousel/slide ARIA semantics, labelled controls, keyboard arrows
 // - pagination dots no longer animate width/height; a shared `layoutId` pill moves between them (transform only)

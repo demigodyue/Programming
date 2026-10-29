@@ -1,6 +1,6 @@
 'use client';
 
-// Watermelon UI `stepper` (base) — adapted for World Plate as the servings adjuster:
+// Watermelon UI `stepper` (base) — adapted for Sizzle Atlas as the servings adjuster:
 // - controlled only, with a visible label and labelled +/- buttons (aria), live value for screen readers
 // - lucide icons instead of react-icons; saffron track with charcoal digits
 // - digits roll with a spring (y/scale keys so MotionConfig reducedMotion="user" turns it into a fade)

@@ -100,7 +100,7 @@ export function SiteHeader({ searchItems, searchPlaces }: { searchItems: SearchI
       <nav aria-label={t("Main", "メイン")} className="nav-intro relative flex w-full items-start justify-between gap-3 px-4 sm:px-6 lg:px-8">
         <Link
           href="/"
-          aria-label={t("World Plate home", "World Plate ホーム")}
+          aria-label={t("Sizzle Atlas home", "Sizzle Atlas ホーム")}
           onClick={(e) => {
             // Already home: a link to the same page would do nothing, so glide back to the top instead.
             if (pathname !== "/") return;
@@ -109,7 +109,7 @@ export function SiteHeader({ searchItems, searchPlaces }: { searchItems: SearchI
           }}
           className="nav-circle nav-logo bg-dot text-dot-foreground pointer-events-auto grid size-[50px] shrink-0 place-items-center rounded-full"
         >
-          <LogoMark ring={false} className="size-9" />
+          <LogoMark className="size-9" />
         </Link>
 
         <div

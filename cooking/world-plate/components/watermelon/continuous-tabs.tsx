@@ -1,6 +1,6 @@
 'use client';
 
-// Watermelon UI `continuous-tabs` (base) — adapted for World Plate:
+// Watermelon UI `continuous-tabs` (base) — adapted for Sizzle Atlas:
 // - controlled (`value` / `onChange`); renders on the server (the original returned null until mounted)
 // - radiogroup semantics with arrow-key navigation; per-instance layoutId so several can coexist
 // - saffron active pill; reduced motion snaps instead of sliding

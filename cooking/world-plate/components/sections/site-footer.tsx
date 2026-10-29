@@ -44,7 +44,7 @@ export function SiteFooter() {
         { title: <T en="Cuisines" ja="各国料理" />, links: cuisinesSeed.slice(0, half).map(cuisineLink) },
         { title: <T en="More cuisines" ja="その他の国" />, links: cuisinesSeed.slice(half).map(cuisineLink) },
       ]}
-      copyright={`© ${new Date().getFullYear()} World Plate`}
+      copyright={`© ${new Date().getFullYear()} Sizzle Atlas`}
       credit={
         <T
           en={

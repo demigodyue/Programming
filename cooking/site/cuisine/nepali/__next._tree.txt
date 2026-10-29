@@ -1,9 +1,7 @@
-:HL["/Programming/cooking/site/_next/static/chunks/1-c3ehkaj7wby.css","style"]
-:HL["/Programming/cooking/site/_next/static/chunks/0xdty6krp6giz.css","style"]
-:HL["/Programming/cooking/site/_next/static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
-:HL["/Programming/cooking/site/_next/static/media/9e9f04e3c37952ab-s.p.0pan85mumqyf3.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/Programming/cooking/site/_next/static/css/30b44f7ae403eb7c.css","style"]
+:HL["/Programming/cooking/site/_next/static/css/60698847d3206bc6.css","style"]
 :HC"https://images.unsplash.com"
 3:[["children",{"s":"__PAGE__","h":160}]]
 2:[["children",{"s":{"n":"name","t":"d","k":"nepali","s":[]},"h":65632,"c":"$Q3"}]]
 1:[["children",{"s":"cuisine","h":131136,"c":"$Q2"}]]
-0:{"b":"1Qy3J121Ot6BKH8Hmextv","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}
+0:{"b":"_rzBvx5_t_lyfVWa2V6hQ","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}

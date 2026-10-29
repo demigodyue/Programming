@@ -49,8 +49,8 @@ export default async function RecipesPage() {
         <SlantText as="h1" mode="load" text="All recipes" ja="すべてのレシピ" className="block text-[clamp(3.5rem,11vw,5.875rem)] leading-[0.92]" />
         <p className="load-stagger text-muted-foreground mt-6 max-w-md text-base" style={{ "--i": 0 } as CSSProperties}>
           <T
-            en="Every dish on World Plate. Search by name or ingredient, or narrow it down by cuisine, effort and time."
-            ja="World Plateのすべての料理。名前や材料で検索したり、国・難しさ・時間で絞り込んだりできます。"
+            en="Every dish on Sizzle Atlas. Search by name or ingredient, or narrow it down by cuisine, effort and time."
+            ja="Sizzle Atlasのすべての料理。名前や材料で検索したり、国・難しさ・時間で絞り込んだりできます。"
           />
         </p>
       </header>

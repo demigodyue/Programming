@@ -23,11 +23,7 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   poweredByHeader: false,
   env: { NEXT_PUBLIC_BASE_PATH: basePath },
-  turbopack: {
-    rules: {
-      "*.css": { loaders: ["@tailwindcss/turbopack"], as: "*.css" },
-    },
-  },
+  // Tailwind runs through postcss.config.mjs (builds use webpack; see that file).
   images: {
     loader: "custom",
     loaderFile: "./lib/image-loader.ts",

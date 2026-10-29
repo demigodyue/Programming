@@ -1,9 +1,9 @@
 @AGENTS.md
 
-# World Plate — project guide for Claude
+# Sizzle Atlas — project guide for Claude
 
 ## Project overview
-World Plate is an animation-rich recipe site showcasing famous dishes from around the world
+Sizzle Atlas is an animation-rich recipe site showcasing famous dishes from around the world
 (Japanese, Korean, Nepali, Italian, Indian, Mexican, Thai, French, Chinese, Middle Eastern),
 each with a full, accurate recipe. Visitors browse, search and filter recipes, open a recipe with a
 servings scaler, ingredient checklist and a step-by-step Cook Mode, save favorites and rate dishes.
@@ -45,7 +45,7 @@ Decisions made with the user where skills conflicted with the brief:
   on every page, with the **cream canvas** (replacing the orange they had asked to keep) and **all current motion kept**.
   See "Design rules". Superseded the Cult Eats look below, which superseded "Structured".
 - Look (2026-10-19, earlier): the user asked for the Cult Eats app's changes (`../a/cult-eats`, an Impossible
-  Foods poster style) on World Plate. They chose the **full Cult Eats style** (burnt-orange canvas + gold headlines, Anton
+  Foods poster style) on Sizzle Atlas. They chose the **full Cult Eats style** (burnt-orange canvas + gold headlines, Anton
   caps, red 15px pills, burgundy cards, blob-cut photos) and to **keep Slush's motion and add Cult Eats' effects** on top
   (floating food icons + photos, mouse depth, scroll progress, tilted marquee bands, image zoom, clip-path reveal).
   Slush's candy colours are remapped into the palette (names kept); Slush's timings are unchanged.
@@ -71,8 +71,11 @@ docs are unfilled templates. The final security review used the built-in `securi
 - **Above-the-fold entrances are pure CSS** (`.hero-content`, `.load-chars`, `.load-stagger`, `.load-fade`, `.home-sub`,
   `.roll` in globals.css, stagger via `--i`), so they play before hydration. Scroll reveals are CSS animations paused
   until `ScrollMotion` adds `data-in` (`[data-reveal="slant|lines|cards|intro"]`); without JS they simply play.
-- **Tailwind needs the Turbopack loader** in `next.config.ts` (`turbopack.rules["*.css"]`); without it no CSS is
-  generated. `tw-animate-css` was removed (its `style` export condition doesn't resolve with this loader).
+- **Builds use webpack** (`next build --webpack`, `next dev --webpack`, and the Playwright webServer). Windows Smart
+  App Control on the dev machine blocks Next's unsigned native compiler (@next/swc-win32-x64-msvc), so Next falls back to
+  its WebAssembly compiler, which only webpack can use. Tailwind therefore runs through PostCSS (`postcss.config.mjs`,
+  `@tailwindcss/postcss`), not a Turbopack loader. Don't turn Smart App Control off to get Turbopack back (it can't be
+  turned on again without reinstalling Windows). `tw-animate-css` was removed earlier (export-condition issues).
 - **Images**: the custom loader (`lib/image-loader.ts`) lets Unsplash's CDN resize. Above-the-fold heroes use
   `loading="eager"` + `fetchPriority="high"` (Next 16 deprecated `priority`); allowed qualities are listed in
   `images.qualities`.
@@ -141,7 +144,7 @@ docs are unfilled templates. The final security review used the built-in `securi
   `[data-reveal="rows"|"step"]`.
 
 ## Tech stack
-- Next.js 16 (App Router, Turbopack) + TypeScript (strict) + React 19
+- Next.js 16 (App Router, webpack builds) + TypeScript (strict) + React 19
 - Tailwind CSS v4 + shadcn/ui + Watermelon UI registry components
 - Motion (`motion/react`) for all animation; Lenis for smooth scroll
 - SQLite via `@libsql/client` + Drizzle ORM (switch to Postgres/Supabase/Turso by swapping the driver)
@@ -216,7 +219,7 @@ tests/unit, tests/e2e    Vitest and Playwright
 - Shapes: cards 12px (`rounded-lg`), buttons / toggles / chips 15px (`rounded-md`), feature card 38px (`rounded-3xl`).
   Feature and decorative photos are blob-cut (`mask-blob-1…4`), never circles; rectangles only inside cards.
   `.hex` / `.hex-outline` stay as indicators.
-- Header: Slush-style floating pill nav (burgundy ghost pills, red "Search"). The oversized "World Plate" wordmark (gold/red)
+- Header: Slush-style floating pill nav (burgundy ghost pills, red "Search"). The oversized "Sizzle Atlas" wordmark (gold/red)
   sits at the foot of the hero and footer.
 
 ## Animation rules (modelled on slush.app — recorded from its GSAP scripts and CSS, 2026-10-19)
@@ -228,7 +231,7 @@ tests/unit, tests/e2e    Vitest and Playwright
   `.load-pop` (sticker pop). Home only: `LetterRoll` wordmark (1.25s slices, 0.15s apart) and `.home-sub` (2em, 1.5s, 0.3s apart).
 - Page swing (runTransition): see Technical decisions. Reduced motion: crossfade (0.525s out / 1s in).
   2026-10-20: a cookbook page-turn replacement was tried and rejected ("I like the previous style, just change some
-  animations"), so Slush's swing stays with World Plate changes: the tracks gained rz (tilt, deg) and y (drop, vh) —
+  animations"), so Slush's swing stays with Sizzle Atlas changes: the tracks gained rz (tilt, deg) and y (drop, vh) —
   the old card lifts -3vh / tilts -2.5° while shrinking, then is tossed down-left (rz -14°, y 14vh); the new card
   tilts in (rz 12°, y 12vh → 0); the panels arc and tilt too and carry SectionArt engravings (forest ink on the light
   panel colours, cream on the strong ones). Then "smooth and a bit fast": the timeline plays 1.6× faster (~1.3s;
@@ -300,7 +303,7 @@ tests/unit, tests/e2e    Vitest and Playwright
   Sections with their own colour cover it; the Trending panel dropped its bg-background so the art shows through.
 - Intro curtain (2026-10-19, recorded from kervangida.com; that site has no route transition, its transition is
   this first-load preloader): `IntroCurtain` (components/motion/intro-curtain.tsx, `.wp-intro` in globals.css). A
-  full-screen `--dot` panel; the WORLD PLATE wordmark fills left to right over its outline (2s linear, from 0.1s) —
+  full-screen `--dot` panel; the SIZZLE ATLAS wordmark fills left to right over its outline (2s linear, from 0.1s) —
   the user wants that picture kept as is. 2026-10-20 additions (user: "add some animation like the cooking stove …
   waits for user to scroll … scroll animation and transition"; a slot-reel / split version was tried and reverted):
   an original boiling pot under the wordmark (lid rattle, bubbles, steam on loop) — made realistic in two rounds
@@ -328,7 +331,7 @@ tests/unit, tests/e2e    Vitest and Playwright
   scroll-time SlantText / HeadingReveal on section titles, the manifesto, the trending title, the CTA, "Keep exploring" and
   "The story of this dish" (page-load SlantText titles are unchanged). Their pinned product stage (a jar Lottie that tumbles
   with scroll inside a container that rises, eases to 0.91×, tilts -10°, then shrinks away turning ~25°) is `DishStage`
-  (components/sections/dish-stage.tsx) on the home page: an original World Plate "House Masala" jar built in CSS 3D
+  (components/sections/dish-stage.tsx) on the home page: an original Sizzle Atlas "House Masala" jar built in CSS 3D
   (`.jar` in globals.css, label art in public/jar-label.svg) tumbles through poses read off their frames and moves on
   the same container curve, passing in front of three ScrubWords headlines. Faces are shaded per frame from their turned
   normals (overlay opacity). Their jar, Lottie, branding and copy are not used.
@@ -362,7 +365,12 @@ tests/unit, tests/e2e    Vitest and Playwright
 - firestore.rules allow-lists the user document's fields; a new saved field means updating the rules too.
 - The localStorage demo account backend is only reachable when the build sets NEXT_PUBLIC_ACCOUNT_DEMO=1 (the E2E build).
 - `npm audit --omit=dev` must show no high/critical issues (`overrides` pins a patched @grpc/grpc-js).
-- Hex colours outside globals.css: the Google "G" logo's brand colours in components/account/account-panel.tsx.
+- Hex colours outside globals.css: the Google "G" logo's brand colours in components/account/account-panel.tsx; the
+  logo's tomato/white in app/icon.svg, app/apple-icon.png, app/opengraph-image.tsx and public/jar-label.svg.
+- **Brand (2026-10-29): Sizzle Atlas** (formerly World Plate). The mark (components/logo.tsx) is a frying pan seen
+  from above with a globe as the dish and steam rising, one colour with mask cut-outs; `small` (fewer lines, two
+  wisps) for ≤ 32 px. Copies of the drawing: app/icon.svg (favicon), app/apple-icon.png, the OG image, the jar label;
+  change them together. Internal names stay world-plate / wp (folder, package, storage keys, CSS classes).
 
 ## Code conventions
 - Server Components by default; `"use client"` only for interactivity/animation leaves.

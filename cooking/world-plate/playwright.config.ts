@@ -22,7 +22,7 @@ export default defineConfig({
     { name: "mobile", use: { ...devices["Pixel 7"] } },
   ],
   webServer: {
-    command: `npm run db:setup && npx next build && node scripts/serve-static.mjs out ${PORT}`,
+    command: `npm run db:setup && npx next build --webpack && node scripts/serve-static.mjs out ${PORT}`,
     url: `http://localhost:${PORT}`,
     env,
     timeout: 300_000,

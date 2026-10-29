@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --webpack",
     "predev": "npm run db:setup",
-    "build": "next build && node scripts/copy-site.mjs",
+    "build": "next build --webpack && node scripts/copy-site.mjs",
     "build:aws": "node scripts/build-aws.mjs https://main.d1arn7be8fhjvi.amplifyapp.com",
     "prebuild": "npm run db:setup",
     "lint": "eslint",
@@ -41,6 +41,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.64.1",
+    "@tailwindcss/postcss": "^4.3.3",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^24.19.2",
     "@types/react": "^19",

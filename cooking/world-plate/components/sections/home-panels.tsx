@@ -31,7 +31,7 @@ export function AboutPanel({ recipes, cuisineCount }: { recipes: RecipeCard[]; c
             <span>
               <T en="[ About ]" ja="［ このサイトについて ］" />
             </span>
-            <span>World Plate</span>
+            <span>Sizzle Atlas</span>
           </div>
           <h2 id="about-title" className="text-display mt-6">
             <T

@@ -1,6 +1,6 @@
 'use client';
 
-// Watermelon UI `emoji-spree-choice-chips` (base) — adapted for World Plate:
+// Watermelon UI `emoji-spree-choice-chips` (base) — adapted for Sizzle Atlas:
 // - controlled (`selected` / `onToggle`) so the URL is the source of truth
 // - demo heading, drag-to-pan, 500px min-height and "N Interests" pill removed; chips wrap normally
 // - real toggle buttons (aria-pressed), visible focus, saffron fill for selected

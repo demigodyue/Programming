@@ -1,4 +1,4 @@
-// Watermelon UI `footer-1` — adapted for World Plate:
+// Watermelon UI `footer-1` — adapted for Sizzle Atlas:
 // - newsletter form removed (the home page has a real, validated signup) and replaced by an `aside` slot
 // - <a> → next/link, fixed shadows removed in favour of theme tokens
 // - Structured restyle: full-bleed chalk band, uppercase group labels, cropped serif wordmark at the foot
@@ -70,7 +70,7 @@ export function Footer1({ logo, description, aside, linkGroups, copyright, credi
         className="foot-rise font-display text-headline -mb-[0.1em] text-center text-[19vw] leading-[0.9] tracking-[0.01em] whitespace-nowrap select-none"
       >
         {/* Each letter rises out of the footer's bottom edge as you reach it (scrubbed, .foot-rise). */}
-        {Array.from("World Plate").map((ch, i) => (
+        {Array.from("Sizzle Atlas").map((ch, i) => (
           <span key={i} style={{ "--li": i } as CSSProperties}>
             {ch === " " ? "\u00a0" : ch}
           </span>

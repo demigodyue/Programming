@@ -1553,7 +1553,7 @@
   }
 }
 
-/* ---------- The World Plate jar (DishStage) ----------
+/* ---------- The Sizzle Atlas jar (DishStage) ----------
    A CSS 3D cylinder: --jw is the jar's width; 24 label strips (the unwrapped label in /jar-label.svg, sliced by
    background-position) and 24 lid strips stand around the axis, with a lid top and a sauce base. DishStage turns
    the whole jar and sets each .jar__shade opacity from the face's lit angle. */
@@ -1919,7 +1919,7 @@
 
 /* ---------- Scroll-scrubbed sections (2026-10-19) ----------
    Everything here moves with the scroll position, like the jar stage, instead of playing once:
-   - hero: as it scrolls away the headline block sinks back and fades, and the WORLD PLATE letters fan apart
+   - hero: as it scrolls away the headline block sinks back and fades, and the SIZZLE ATLAS letters fan apart
    - after About every section moves its own way, all scrubbed by ScrollMotion's --p (0 → 1, set on [data-progress]):
      · Trending: a SlideBand (headline sliding left to right, outlined copy the other way; x-parallax), rows whose
        rule draws across and whose title rises out of a mask one by one, a photo window that opens and zooms out

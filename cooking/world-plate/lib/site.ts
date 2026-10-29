@@ -1,5 +1,5 @@
 export const site = {
-  name: "World Plate",
+  name: "Sizzle Atlas",
   description:
     "Famous dishes from around the world with full, tested recipes — ramen to croissants, momo to tacos al pastor.",
   url: (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, ""),

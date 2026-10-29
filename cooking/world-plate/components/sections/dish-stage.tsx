@@ -82,7 +82,7 @@ function turn([nx, ny, nz]: number[], rx: number, ry: number, rz: number) {
 }
 
 /**
- * The World Plate "House Masala" jar, built in CSS 3D: 24 label strips and 24 lid strips around a cylinder,
+ * The Sizzle Atlas "House Masala" jar, built in CSS 3D: 24 label strips and 24 lid strips around a cylinder,
  * a lid top and a base. Each face is shaded from its turned normal (an overlay's opacity, so it stays cheap).
  */
 function Jar({ jarRef }: { jarRef: React.RefObject<HTMLDivElement | null> }) {
@@ -110,7 +110,7 @@ function Jar({ jarRef }: { jarRef: React.RefObject<HTMLDivElement | null> }) {
 }
 
 /**
- * Hungry Tiger's pinned stage with an original World Plate jar in place of theirs. It stays in the middle of the
+ * Hungry Tiger's pinned stage with an original Sizzle Atlas jar in place of theirs. It stays in the middle of the
  * screen, tumbles through their poses as you scroll and moves on their container curve, passing in front of the
  * three headlines, which fill word by word (ScrubWords). Reduced motion: the jar rests upright in the middle.
  */
@@ -183,7 +183,7 @@ export function DishStage({ href }: { href: string }) {
       <div className="relative z-10 -mt-[100svh]">
         <div className="container-page flex h-[100svh] flex-col items-center pt-28 text-center md:pt-32">
           <p className="label-caps text-muted-foreground">
-            <T en="World Plate · House masala" ja="World Plate · 特製マサラ" />
+            <T en="Sizzle Atlas · House masala" ja="Sizzle Atlas · 特製マサラ" />
           </p>
           <ScrubWords id="stage-title" text="Spice it up" ja="スパイスで|もっと|おいしく" className="text-display mt-3 max-w-[12ch]" />
         </div>

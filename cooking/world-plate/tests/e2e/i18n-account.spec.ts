@@ -144,7 +144,7 @@ test("the browser tab title follows the language", async ({ page }) => {
   await page.goto("/recipes/katsu-curry");
   await expect(page).toHaveTitle(/Katsu Curry/);
   await page.getByRole("button", { name: "日本語に切り替え" }).click();
-  await expect(page).toHaveTitle("カツカレー（和食） · World Plate");
+  await expect(page).toHaveTitle("カツカレー（和食） · Sizzle Atlas");
   await page.getByRole("button", { name: "Switch to English" }).click();
   await expect(page).toHaveTitle(/Katsu Curry/);
 });

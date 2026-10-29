@@ -321,8 +321,8 @@ export function IntroCurtain() {
       <SectionArt offset={0} />
       <div className="wp-intro__stack">
         <span className="wp-intro__mark">
-          <span className="wp-intro__outline">World Plate</span>
-          <span className="wp-intro__fill">World Plate</span>
+          <span className="wp-intro__outline">Sizzle Atlas</span>
+          <span className="wp-intro__fill">Sizzle Atlas</span>
         </span>
         <span className="wp-pot-zoom">
           <BoilingPot />
