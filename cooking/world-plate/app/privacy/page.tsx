@@ -103,6 +103,14 @@ export default function PrivacyPage() {
                 ja="アカウントページでは、ログインの仕組みを Google（Firebase）から読み込みます。サイト自体は Amazon Web Services でホストしています。"
               />
             </li>
+            {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
+              <li>
+                <T
+                  en="To keep bots from creating accounts, Google reCAPTCHA checks requests from the account page (Firebase App Check)."
+                  ja="ボットによるアカウント作成を防ぐため、アカウントページでは Google reCAPTCHA がリクエストを確認します（Firebase App Check）。"
+                />
+              </li>
+            )}
           </ul>
           <p className="text-muted-foreground text-sm">
             <T

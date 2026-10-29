@@ -6,4 +6,4 @@
 3:[["children",{"s":"__PAGE__","h":160}]]
 2:[["children",{"s":{"n":"slug","t":"d","k":"kukhura-ko-masu","s":[]},"h":65632,"c":"$Q3"}]]
 1:[["children",{"s":"recipes","h":131136,"c":"$Q2"}]]
-0:{"b":"a1KVrot6ZU48koodzhWxS","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}
+0:{"b":"TaGUSLK9lpLIt2q7v4k3_","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}

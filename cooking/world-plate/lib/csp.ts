@@ -6,10 +6,17 @@
 // It is used twice: as a <meta> in every page (app/layout.tsx, production only; dev needs eval for fast refresh), which
 // works on any static host, and as a real response header on AWS Amplify (scripts/build-aws.mjs → customHttp.yml).
 // Only the header can forbid framing (frame-ancestors); a <meta> policy ignores it.
+// App Check's reCAPTCHA (only when a site key is configured, lib/account/firebase-backend.ts) needs Google's
+// reCAPTCHA script, frame and token endpoint.
+const appCheck = Boolean(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY);
+const recaptchaScript = appCheck ? ["https://www.google.com/recaptcha/", "https://www.gstatic.com/recaptcha/"] : [];
+const recaptchaConnect = appCheck ? ["https://content-firebaseappcheck.googleapis.com", "https://www.google.com/recaptcha/"] : [];
+const recaptchaFrame = appCheck ? ["https://www.google.com/recaptcha/", "https://recaptcha.google.com/recaptcha/"] : [];
+
 const policy = (extraConnect: string[]) =>
   [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' https://apis.google.com",
+    ["script-src 'self' 'unsafe-inline' https://apis.google.com", ...recaptchaScript].join(" "),
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "img-src 'self' data: blob: https://images.unsplash.com https://lh3.googleusercontent.com",
     "font-src 'self' data: https://fonts.gstatic.com",
@@ -20,9 +27,10 @@ const policy = (extraConnect: string[]) =>
       "https://firestore.googleapis.com",
       "https://www.googleapis.com",
       "https://*.firebaseapp.com",
+      ...recaptchaConnect,
       ...extraConnect,
     ].join(" "),
-    "frame-src https://*.firebaseapp.com https://accounts.google.com https://apis.google.com",
+    ["frame-src https://*.firebaseapp.com https://accounts.google.com https://apis.google.com", ...recaptchaFrame].join(" "),
     "worker-src 'self' blob:",
     "manifest-src 'self'",
     "object-src 'none'",

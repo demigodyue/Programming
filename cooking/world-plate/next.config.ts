@@ -24,6 +24,9 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   env: { NEXT_PUBLIC_BASE_PATH: basePath },
   // Tailwind runs through postcss.config.mjs (builds use webpack; see that file).
+  // Static generation reads the local SQLite file from several workers at once; SQLite's default busy timeout is 0,
+  // so a momentary lock fails a page ("SQLITE_BUSY"). Retry such pages instead of failing the whole build.
+  experimental: { staticGenerationRetryCount: 3 },
   images: {
     loader: "custom",
     loaderFile: "./lib/image-loader.ts",

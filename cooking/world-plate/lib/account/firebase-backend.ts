@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import {
   createUserWithEmailAndPassword,
   deleteUser,
@@ -25,6 +26,11 @@ import { AccountError, firebaseConfig, RECENT_SIGN_IN_MS, type AccountBackend, t
  * at sign-in, then written back. Google sign-in uses a popup (it has to be enabled in the Firebase console).
  */
 const app = initializeApp(firebaseConfig);
+// App Check (optional): with a reCAPTCHA v3 site key set at build time, every request to Firebase carries a token
+// proving it came from this site in a real browser, so scripts can't mass-create accounts or hammer the database.
+// Turn on enforcement in the Firebase console only after the site is sending tokens (App Check → APIs → Metrics).
+const recaptchaKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+if (recaptchaKey) initializeAppCheck(app, { provider: new ReCaptchaV3Provider(recaptchaKey), isTokenAutoRefreshEnabled: true });
 const auth = getAuth(app);
 const db = getFirestore(app);
 
