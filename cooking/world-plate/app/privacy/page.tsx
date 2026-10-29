@@ -51,8 +51,8 @@ export default function PrivacyPage() {
         <Section title={<T en="With an account" ja="アカウントを作った場合" />}>
           <p>
             <T
-              en="Accounts are run by Google Firebase. We keep your name, email address, saved recipes and star ratings, so you can see them on any device. Your password goes straight to Firebase; we never see it. If you sign in with Google, we receive your name and email from Google, and nothing else is stored."
-              ja="アカウントは Google Firebase で管理しています。保存するのは名前、メールアドレス、保存したレシピ、星の評価で、どの端末からでも見られるようにするためです。パスワードは直接 Firebase に送られ、私たちが見ることはありません。Google でログインした場合も、Google から受け取るのは名前とメールアドレスだけです。"
+              en="Accounts are run by Google Firebase. We keep your name, email address, saved recipes, star ratings and your choice of profile picture, so you can see them on any device. Your password goes straight to Firebase; we never see it. If you sign in with Google, your Google name, email and profile photo are used; the photo is shown from Google, not copied."
+              ja="アカウントは Google Firebase で管理しています。保存するのは名前、メールアドレス、保存したレシピ、星の評価、選んだプロフィール写真で、どの端末からでも見られるようにするためです。パスワードは直接 Firebase に送られ、私たちが見ることはありません。Google でログインした場合は、Google の名前・メールアドレス・プロフィール写真を使います。写真は Google から表示するだけで、コピーはしません。"
             />
           </p>
           <p>
@@ -65,6 +65,15 @@ export default function PrivacyPage() {
             <T
               en="Only you can read your saved data: the database refuses everyone else, and only accepts recipe names and 1–5 star ratings."
               ja="保存したデータを読めるのはあなただけです。データベースは他の人のアクセスを拒否し、レシピ名と1〜5の星の評価しか受け付けません。"
+            />
+          </p>
+        </Section>
+
+        <Section title={<T en="Your own profile picture" ja="自分で選んだプロフィール写真" />}>
+          <p>
+            <T
+              en="If you upload a picture, your device first crops it to a small square (192 × 192 pixels). Only those pixels are saved in your account: not the original file, and none of its hidden details, such as where a photo was taken."
+              ja="写真をアップロードすると、まず端末上で小さな正方形（192 × 192ピクセル）に切り抜かれます。アカウントに保存されるのはその画像だけで、元のファイルや、撮影場所などの隠れた情報は保存されません。"
             />
           </p>
         </Section>

@@ -12,10 +12,16 @@ export type AccountUser = {
   /** Email address confirmed (always true for Google accounts). */
   verified: boolean;
   provider: "password" | "google";
+  /** The Google account's photo, if any (Google sign-ins only). */
+  photoURL?: string | null;
+  /** The chosen profile picture (lib/avatar.ts), once the account's data has loaded. */
+  avatar?: string;
 };
 
 /** What an account keeps: saved recipe slugs (newest first) and star ratings by slug. */
 export type SavedData = { favorites: string[]; ratings: Ratings };
+/** What loading an account returns: its saved data and its chosen profile picture (lib/avatar.ts). */
+export type LoadedData = SavedData & { avatar?: string };
 
 export interface AccountBackend {
   /** Calls back with the signed-in user (or null) now and whenever it changes. Returns an unsubscribe. */
@@ -31,7 +37,9 @@ export interface AccountBackend {
   refreshUser(): Promise<AccountUser | null>;
   /** Delete the account and everything it saved. Needs a recent sign-in ("auth/requires-recent-login" otherwise). */
   deleteAccount(): Promise<void>;
-  load(uid: string): Promise<SavedData>;
+  load(uid: string): Promise<LoadedData>;
+  /** Save the chosen profile picture ("google", "preset:<id>" or a small data URL, lib/avatar.ts). */
+  setAvatar(uid: string, avatar: string): Promise<void>;
   save(uid: string, data: SavedData): Promise<void>;
 }
 

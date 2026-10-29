@@ -1,4 +1,4 @@
-:HL["/Programming/cooking/site/_next/static/css/a31faa06f2168d98.css","style"]
+:HL["/Programming/cooking/site/_next/static/css/7a0eab5d8eb115f4.css","style"]
 :HL["/Programming/cooking/site/_next/static/css/484ad2984cb85ddf.css","style"]
 :HC"https://images.unsplash.com"
 :HL["/Programming/cooking/site/brand/lockup-light-360.webp","image",{"imageSrcSet":"/Programming/cooking/site/brand/lockup-light-360.webp 360w, /Programming/cooking/site/brand/lockup-light-720.webp 720w","imageSizes":"180px"}]
@@ -6,4 +6,4 @@
 3:[["children",{"s":"__PAGE__","h":160}]]
 2:[["children",{"s":{"n":"slug","t":"d","k":"hummus","s":[]},"h":65632,"c":"$Q3"}]]
 1:[["children",{"s":"recipes","h":131136,"c":"$Q2"}]]
-0:{"b":"TaGUSLK9lpLIt2q7v4k3_","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}
+0:{"b":"sifzUpXocuBb1GU3TL2Ag","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}

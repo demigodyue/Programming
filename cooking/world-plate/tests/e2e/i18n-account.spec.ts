@@ -1,3 +1,4 @@
+import sharp from "sharp";
 import { expect, test, type Page } from "@playwright/test";
 
 // The field's label carries both languages (one hidden), so match the accessible name instead of the label text.
@@ -147,4 +148,39 @@ test("the browser tab title follows the language", async ({ page }) => {
   await expect(page).toHaveTitle("カツカレー（和食） · Sizzle Atlas");
   await page.getByRole("button", { name: "Switch to English" }).click();
   await expect(page).toHaveTitle(/Katsu Curry/);
+});
+
+test("pick a food avatar or upload your own picture, and it stays with the account", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("wp-account-demo", "1"));
+  await page.goto("/account");
+  await page.getByRole("radio", { name: "Create account" }).click();
+  await page.getByLabel("Your name").fill("Kenji");
+  await page.getByLabel("Email").fill("kenji@example.com");
+  await password(page).fill("onigiri-123");
+  await page.getByRole("button", { name: "Create account" }).click();
+  await expect(page.getByRole("heading", { name: "Hello, Kenji" })).toBeVisible();
+
+  // A food avatar by default, in the profile and the header.
+  const header = page.getByRole("link", { name: /Your account/ }).locator("img");
+  await expect(header).toHaveAttribute("src", /\/avatars\/[a-z]+\.webp$/);
+
+  await page.getByRole("button", { name: "Change picture" }).click();
+  await page.getByRole("button", { name: "Sushi" }).click();
+  await expect(page.getByRole("button", { name: "Sushi" })).toHaveAttribute("aria-pressed", "true");
+  await expect(header).toHaveAttribute("src", /\/avatars\/sushi\.webp$/);
+
+  // Their own picture: shrunk in the browser to a small WebP/JPEG.
+  // A real 640×480 photo-sized PNG (not square, so the crop is exercised too).
+  const png = await sharp({ create: { width: 640, height: 480, channels: 3, background: "#c2321b" } }).png().toBuffer();
+  await page.getByLabel("Upload your own picture").setInputFiles({ name: "me.png", mimeType: "image/png", buffer: png });
+  await expect(header).toHaveAttribute("src", /^data:image\/(webp|jpeg);base64,/);
+
+  // Signing out and back in brings it back from the account.
+  await page.getByRole("button", { name: "Sign out" }).click();
+  await page.getByRole("radio", { name: "Sign in" }).click();
+  await page.getByLabel("Email").fill("kenji@example.com");
+  await password(page).fill("onigiri-123");
+  await page.getByRole("button", { name: "Sign in" }).last().click();
+  await expect(page.getByRole("heading", { name: "Hello, Kenji" })).toBeVisible();
+  await expect(header).toHaveAttribute("src", /^data:image\/(webp|jpeg);base64,/);
 });

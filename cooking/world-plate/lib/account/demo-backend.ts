@@ -1,3 +1,4 @@
+import { cleanAvatar } from "@/lib/avatar";
 import { cleanFavorites, cleanRatings, type Ratings } from "@/lib/local-store";
 import { AccountError, MIN_PASSWORD, type AccountBackend, type AccountUser } from "./backend";
 
@@ -13,6 +14,7 @@ type DemoAccount = Omit<AccountUser, "verified" | "provider"> & {
   provider: AccountUser["provider"];
   favorites: string[];
   ratings: Ratings;
+  avatar?: string;
 };
 const ACCOUNTS = "wp-demo:accounts";
 const SESSION = "wp-demo:session";
@@ -113,7 +115,14 @@ export const demoBackend: AccountBackend = {
   load: (uid) =>
     later(() => {
       const a = Object.values(accounts()).find((x) => x.uid === uid);
-      return { favorites: cleanFavorites(a?.favorites), ratings: cleanRatings(a?.ratings) };
+      return { favorites: cleanFavorites(a?.favorites), ratings: cleanRatings(a?.ratings), avatar: cleanAvatar(a?.avatar) };
+    }),
+  setAvatar: (uid, avatar) =>
+    later(() => {
+      const all = accounts();
+      const a = Object.values(all).find((x) => x.uid === uid);
+      if (a) a.avatar = avatar;
+      saveAccounts(all);
     }),
   save: (uid, data) =>
     later(() => {

@@ -8,6 +8,7 @@ rules_version = '2';
 //     name       string, up to 60 characters
 //     favorites  list of distinct recipe slugs from recipeSlugs() (so no junk or oversized entries)
 //     ratings    map of recipe slug → 1, 2, 3, 4 or 5 stars
+//     avatar     "google", "preset:<food>" or a small WebP/JPEG data URL (≤ 60,000 characters; lib/avatar.ts)
 //     createdAt / updatedAt  the server's own timestamp (request.time), so nobody can backdate them
 // recipeSlugs() is generated from the recipes by scripts/sync-recipe-slugs.ts (it runs before every build).
 service cloud.firestore {
@@ -70,7 +71,7 @@ service cloud.firestore {
         return request.auth != null && request.auth.uid == uid;
       }
       function validFields(data) {
-        return data.keys().hasOnly(["name", "favorites", "ratings", "createdAt", "updatedAt"])
+        return data.keys().hasOnly(["name", "favorites", "ratings", "avatar", "createdAt", "updatedAt"])
           && (!("name" in data) || (data.name is string && data.name.size() <= 60))
           && (!("favorites" in data) || (data.favorites is list
                 && data.favorites.size() <= recipeSlugs().size()
@@ -79,6 +80,9 @@ service cloud.firestore {
           && (!("ratings" in data) || (data.ratings is map
                 && data.ratings.keys().hasOnly(recipeSlugs())
                 && data.ratings.values().hasOnly([1, 2, 3, 4, 5])))
+          && (!("avatar" in data) || (data.avatar is string && (data.avatar == "google"
+                || data.avatar.matches("preset:(dumpling|sushi|taco|pizza|ramen|croissant|avocado|chili|onigiri|cake|curry|pancakes)")
+                || (data.avatar.size() <= 60000 && data.avatar.matches("data:image/(webp|jpeg);base64,[A-Za-z0-9+/]+={0,2}")))))
           && (!("createdAt" in data) || data.createdAt == request.time || data.createdAt == resource.data.createdAt)
           && (!("updatedAt" in data) || data.updatedAt == request.time || data.updatedAt == resource.data.updatedAt);
       }

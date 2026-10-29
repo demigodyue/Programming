@@ -2,11 +2,12 @@
 
 import { UserRound } from "lucide-react";
 import Link from "next/link";
+import { Avatar } from "@/components/account/avatar";
 import { useAccount } from "@/lib/account/store";
 import { useT } from "@/lib/lang";
 import { cn } from "@/lib/utils";
 
-/** Header circle to the account page: a person icon, or the signed-in cook's initial. */
+/** Header circle to the account page: a person icon, or the signed-in cook's picture (components/account/avatar.tsx). */
 export function AccountButton({ className }: { className?: string }) {
   const account = useAccount();
   const t = useT();
@@ -19,7 +20,9 @@ export function AccountButton({ className }: { className?: string }) {
       aria-label={user ? t(`Your account (${user.email})`, `アカウント（${user.email}）`) : t("Sign in or create an account", "ログイン・新規登録")}
       className={cn("grid place-items-center rounded-full", className)}
     >
-      {initial ? (
+      {user ? (
+        <Avatar user={user} className="size-full" />
+      ) : initial ? (
         <span aria-hidden className="font-display text-xl leading-none">
           {initial}
         </span>

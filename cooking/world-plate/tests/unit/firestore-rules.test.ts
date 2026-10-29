@@ -22,6 +22,6 @@ describe("saved-recipe allow-list", () => {
 
   it("only allows 1–5 stars and known fields", () => {
     expect(rules).toContain("data.ratings.values().hasOnly([1, 2, 3, 4, 5])");
-    expect(rules).toContain('data.keys().hasOnly(["name", "favorites", "ratings", "createdAt", "updatedAt"])');
+    expect(rules).toContain('data.keys().hasOnly(["name", "favorites", "ratings", "avatar", "createdAt", "updatedAt"])');
   });
 });

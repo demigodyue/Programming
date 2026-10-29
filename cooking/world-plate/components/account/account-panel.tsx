@@ -3,6 +3,7 @@
 import { Eye, EyeOff, Heart, KeyRound, LogOut, Mail, MailCheck, Trash2, User } from "lucide-react";
 import { m, useReducedMotion } from "motion/react";
 import Link from "next/link";
+import { Avatar, AvatarPicker } from "@/components/account/avatar";
 import { useState, type FormEvent } from "react";
 import { T } from "@/components/i18n";
 import { FlipFace, flipClass } from "@/components/motion/flip-face";
@@ -341,13 +342,11 @@ function Profile({ user, syncing }: { user: AccountUser; syncing: boolean }) {
   const favorites = useFavorites();
   const [busy, setBusy] = useState(false);
   const count = favorites?.length ?? 0;
-  const initial = (name || email).trim().charAt(0).toUpperCase() || "?";
 
   return (
     <div className="bg-card rounded-lg border p-6 text-center sm:p-8">
-      <span aria-hidden className="bg-dot text-dot-foreground font-display mx-auto grid size-20 place-items-center rounded-full text-4xl">
-        {initial}
-      </span>
+      <Avatar user={user} className="mx-auto size-24" />
+      <AvatarPicker user={user} />
       <h2 className="font-display mt-5 text-[2.125rem] leading-none">
         <T en={`Hello, ${name || "cook"}`} ja={`こんにちは、${name || "シェフ"}さん`} />
       </h2>

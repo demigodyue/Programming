@@ -90,20 +90,22 @@ async function onUser(user: AccountUser | null) {
     return;
   }
   hint(true);
-  const keepName = state.status === "in" && state.user.uid === user.uid && !user.name ? state.user.name : user.name;
+  const prev = state.status === "in" && state.user.uid === user.uid ? state.user : null;
+  const keepName = prev && !user.name ? prev.name : user.name;
   const fresh = syncedUid !== user.uid;
-  set({ status: "in", user: { ...user, name: keepName }, syncing: fresh });
+  set({ status: "in", user: { ...user, name: keepName, avatar: prev?.avatar }, syncing: fresh });
   if (!fresh) return;
   syncedUid = user.uid;
   try {
     const b = await backend();
     const remote = await b.load(user.uid);
+    if (state.status === "in" && state.user.uid === user.uid) set({ ...state, user: { ...state.user, avatar: remote.avatar } });
     const mine = local();
     const merged: SavedData = { favorites: mergeFavorites(mine.favorites, remote.favorites), ratings: mergeRatings(mine.ratings, remote.ratings) };
     lastSynced = JSON.stringify(merged);
     replaceFavorites(merged.favorites);
     replaceRatings(merged.ratings);
-    if (!same(merged, remote)) await b.save(user.uid, merged);
+    if (!same(merged, { favorites: remote.favorites, ratings: remote.ratings })) await b.save(user.uid, merged);
   } catch {
     // Offline or blocked: keep the local data; the next change tries again.
   }
@@ -188,6 +190,20 @@ export async function sendVerification() {
 export async function refreshUser() {
   const user = await (await backend()).refreshUser();
   if (user && state.status === "in") set({ ...state, user: { ...user, name: user.name || state.user.name } });
+}
+
+/** Choose a profile picture (lib/avatar.ts). Shown at once; put back if saving fails. */
+export async function setAvatar(avatar: string) {
+  if (state.status !== "in") return;
+  const before = state.user.avatar;
+  const uid = state.user.uid;
+  set({ ...state, user: { ...state.user, avatar } });
+  try {
+    await (await backend()).setAvatar(uid, avatar);
+  } catch (e) {
+    if (state.status === "in" && state.user.uid === uid) set({ ...state, user: { ...state.user, avatar: before } });
+    throw e;
+  }
 }
 
 export async function deleteAccount() {

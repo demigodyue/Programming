@@ -15,6 +15,7 @@ import {
   type User,
 } from "firebase/auth";
 import { deleteDoc, doc, getDoc, getFirestore, serverTimestamp, setDoc } from "firebase/firestore/lite";
+import { cleanAvatar } from "@/lib/avatar";
 import { cleanFavorites, cleanRatings } from "@/lib/local-store";
 import { RECIPE_SLUGS } from "@/lib/recipe-slugs";
 import { AccountError, firebaseConfig, RECENT_SIGN_IN_MS, type AccountBackend, type AccountUser } from "./backend";
@@ -35,8 +36,15 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 const toUser = (u: User): AccountUser => {
-  const google = u.providerData.some((p) => p.providerId === "google.com");
-  return { uid: u.uid, email: u.email ?? "", name: u.displayName ?? "", verified: google || u.emailVerified, provider: google ? "google" : "password" };
+  const google = u.providerData.find((p) => p.providerId === "google.com");
+  return {
+    uid: u.uid,
+    email: u.email ?? "",
+    name: u.displayName ?? "",
+    verified: Boolean(google) || u.emailVerified,
+    provider: google ? "google" : "password",
+    photoURL: google?.photoURL ?? u.photoURL ?? null,
+  };
 };
 
 /** Firebase errors carry a code such as "auth/invalid-credential"; the form shows a friendly message for it. */
@@ -105,8 +113,11 @@ export const firebaseBackend: AccountBackend = {
   load: (uid) =>
     wrap(async () => {
       const data = (await getDoc(doc(db, "users", uid))).data();
-      return { favorites: cleanFavorites(data?.favorites), ratings: cleanRatings(data?.ratings) };
+      return { favorites: cleanFavorites(data?.favorites), ratings: cleanRatings(data?.ratings), avatar: cleanAvatar(data?.avatar) };
     }),
+
+  setAvatar: (uid, avatar) =>
+    wrap(() => setDoc(doc(db, "users", uid), { avatar, updatedAt: serverTimestamp() }, { merge: true })),
 
   save: (uid, data) =>
     wrap(() =>
