@@ -45,26 +45,8 @@ export function SiteFooter() {
         { title: <T en="More cuisines" ja="その他の国" />, links: cuisinesSeed.slice(half).map(cuisineLink) },
       ]}
       copyright={`© ${new Date().getFullYear()} Sizzle Atlas`}
-      credit={
-        <T
-          en={
-            <>
-              Photos from{" "}
-              <a href="https://unsplash.com" className="hover-fine:text-foreground underline underline-offset-2">
-                Unsplash
-              </a>
-            </>
-          }
-          ja={
-            <>
-              写真：
-              <a href="https://unsplash.com" className="hover-fine:text-foreground underline underline-offset-2">
-                Unsplash
-              </a>
-            </>
-          }
-        />
-      }
+      signoff={<T en="Cook the world, one plate at a time." ja="世界を、一皿ずつ。" />}
+      toTop={<T en="Back to top" ja="トップへ戻る" />}
     />
   );
 }

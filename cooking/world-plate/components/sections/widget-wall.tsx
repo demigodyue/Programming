@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { Minutes, T } from "@/components/i18n";
@@ -145,8 +146,19 @@ export function WidgetWall({
         {/* Quickest tonight. */}
         {quickest && (
           <Widget className="col-span-1 md:col-span-3">
-            <Link href={`/recipes/${quickest.slug}`} className="group flex h-full min-h-64 flex-col justify-between gap-6 p-5 md:min-h-72">
-              <span className="label-caps text-muted-foreground">
+            <Link
+              href={`/recipes/${quickest.slug}`}
+              className="group relative isolate flex h-full min-h-64 flex-col justify-between gap-6 overflow-hidden p-5 text-white md:min-h-72"
+            >
+              <Image
+                src={quickest.image}
+                alt=""
+                fill
+                sizes="(min-width: 768px) 25vw, 50vw"
+                className="-z-10 object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <span aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-t from-black/75 via-black/25 to-black/35" />
+              <span className="label-caps text-white/90">
                 <T en="Quickest tonight" ja="今夜すぐ作れる一品" />
               </span>
               <span>
@@ -154,14 +166,14 @@ export function WidgetWall({
                   <T en={quickest.title} ja={quickest.ja.title} />
                 </span>
                 <span className="mt-3 flex flex-wrap gap-1.5">
-                  <span className="rounded-full border px-2.5 py-0.5 text-xs">
+                  <span className="rounded-full border border-white/60 px-2.5 py-0.5 text-xs">
                     <T en={quickest.cuisineName} ja={quickest.ja.cuisineName} />
                   </span>
-                  <span className="rounded-full border px-2.5 py-0.5 text-xs">
+                  <span className="rounded-full border border-white/60 px-2.5 py-0.5 text-xs">
                     <Minutes m={quickest.totalMinutes} />
                   </span>
                   {quickest.vegetarian && (
-                    <span className="rounded-full border px-2.5 py-0.5 text-xs">
+                    <span className="rounded-full border border-white/60 px-2.5 py-0.5 text-xs">
                       <T en="Vegetarian" ja="ベジタリアン" />
                     </span>
                   )}

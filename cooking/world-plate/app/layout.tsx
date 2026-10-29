@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Anton, Inter } from "next/font/google";
+import { Bricolage_Grotesque, Geist } from "next/font/google";
 import { preconnect } from "react-dom";
 import { AccountBoot } from "@/components/account/account-boot";
 import { T } from "@/components/i18n";
@@ -24,22 +24,22 @@ import { fold } from "@/lib/recipe-filter";
 import { JA_FONTS, site } from "@/lib/site";
 import "./globals.css";
 
-// Foudre type, two families only: Anton for display (standing in for Beni 900) and Inter for everything else
-// (standing in for Clash Grotesk). Anton is preloaded because the hero headline and wordmark are set in it.
-const anton = Anton({
-  variable: "--font-anton",
+// Two families: Bricolage Grotesque for display (variable: set condensed and extra bold in globals.css, .font-display)
+// and Geist for everything else. Both are variable fonts, so one file each covers every weight.
+const display = Bricolage_Grotesque({
+  variable: "--font-display-face",
   subsets: ["latin"],
-  weight: "400",
+  axes: ["opsz", "wdth"],
   display: "swap",
 });
 
-const inter = Inter({
-  variable: "--font-inter",
+const sans = Geist({
+  variable: "--font-sans-face",
   subsets: ["latin"],
   display: "swap",
 });
 
-// The Japanese fonts (Dela Gothic One under Anton, Noto Sans JP under Inter) aren't bundled: their stylesheet is
+// The Japanese fonts (Dela Gothic One under the display face, Noto Sans JP under Geist) aren't bundled: their stylesheet is
 // hundreds of unicode-range rules, render-blocking for every visitor if next/font included it. It's added only when
 // the page is in Japanese — by LANG_INIT below, or by setLang() (lib/lang.ts; the URL is JA_FONTS in lib/site.ts).
 
@@ -119,7 +119,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   // Every page leads with an Unsplash photo — open the connection before the <img> is parsed.
   preconnect("https://images.unsplash.com");
   return (
-    <html lang="en" suppressHydrationWarning data-intro="" data-intro-lock="" className={`${anton.variable} ${inter.variable}`}>
+    <html lang="en" suppressHydrationWarning data-intro="" data-intro-lock="" className={`${display.variable} ${sans.variable}`}>
       <head>
         {process.env.NODE_ENV === "production" && <meta httpEquiv="Content-Security-Policy" content={CSP} />}
         <meta name="referrer" content="strict-origin-when-cross-origin" />

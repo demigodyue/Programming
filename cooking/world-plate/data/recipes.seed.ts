@@ -308,8 +308,8 @@ export const recipesSeed: SeedRecipe[] = [
     origin: "Naples, Italy",
     description:
       "Neapolitan-style pizza with a puffy, blistered crust, raw crushed San Marzano tomatoes, fior di latte and fresh basil.",
-    image: u("1604068549290-dea0e4a305ca"),
-    imageAlt: "Margherita pizza with melted mozzarella, tomato sauce and basil leaves",
+    image: u("1784802841639-a773d10a6a14"),
+    imageAlt: "Neapolitan margherita with a blistered crust, tomato, melted mozzarella and fresh basil",
     prepMinutes: 150,
     cookMinutes: 10,
     servings: 4,

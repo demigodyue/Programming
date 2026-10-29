@@ -242,7 +242,7 @@ export const recipesJa: Record<string, RecipeJa> = {
     title: "マルゲリータ",
     origin: "イタリア・ナポリ",
     description: "ふっくらと膨らみ焦げ目のついた縁が特徴のナポリ風ピッツァ。生のまま潰したサンマルツァーノトマト、フィオル・ディ・ラッテ、フレッシュバジル。",
-    imageAlt: "溶けたモッツァレラ、トマトソース、バジルの葉をのせたマルゲリータ",
+    imageAlt: "焦げ目のついた縁、トマト、とろけたモッツァレラ、フレッシュバジルのナポリ風マルゲリータ",
     sections: { Dough: "生地", Topping: "トッピング" },
     ingredients: [
       "「00」粉",

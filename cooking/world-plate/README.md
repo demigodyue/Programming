@@ -168,15 +168,19 @@ All motion is modelled on [slush.app](https://slush.app) (the "Slush" style on R
 - **Floating photos and scroll extras:** dish photos float around the hero all the time, follow the mouse at different depths and rise at different speeds as you scroll. A tomato-red progress bar tracks the page, card photos settle inside their frames while scrolling, and the dish marquee runs as two tilted bands.
 - **Recipe kitchen:** a cartoon pot sits at the top of the ingredient list. Tick an ingredient and its name flies in an arc into the pot, which bobs and splashes as the soup level rises. The pot starts bubbling when half full and steams when everything's in, and a "Start Cook Mode" button appears. The ingredient rows slide in one after another, and each method step rises out of a blur as you reach it. The step you're reading lights up and plays a small drawing of what to do: bubbles rise from a pot, oil spits in a pan, a knife chops, a whisk spins, an oven glows, a clock hand sweeps or a cloche lifts. The rail between step numbers fills in as you read on. Every time a step mentions ("8–10 minutes", "1½ hours") becomes a timer button with a draining ring that chimes and buzzes when done. Cook Mode shows the same drawing, large, with big timer buttons, and a running timer carries over between the page and Cook Mode.
 - **Reduced motion:** no 3D, no travel, no parallax or marquee drift — opacity fades only; the page transition becomes a crossfade. Lenis isn't loaded.
-- **Performance:** Motion is loaded via `LazyMotion` and `m.*` components, with its features fetched asynchronously. Lenis and Cook Mode are loaded on demand. Anton (one weight) is preloaded because the home page's largest element is the Anton wordmark. The Japanese fonts are not preloaded and are split by character range, so English visitors never download them. The floats and scroll-linked effects are CSS animations, off the main thread.
+- **Performance:** Motion is loaded via `LazyMotion` and `m.*` components, with its features fetched asynchronously. Lenis and Cook Mode are loaded on demand. The display and body fonts (Bricolage Grotesque and Geist, both variable) are preloaded. The Japanese fonts are not preloaded and are split by character range, so English visitors never download them. The floats and scroll-linked effects are CSS animations, off the main thread.
 
 ## Logo
 
 The logo is the owner’s artwork in `logo/`: a cast-iron pan holding a glowing globe with map pins, steam and sparks, above “SIZZLE ATLAS · World recipe collection”. The site uses transparent cut-outs of it in `public/brand/`: the pan on its own (header) and the full logo in two versions, the original with cream “ATLAS” for dark backgrounds and one with navy lettering for light backgrounds (footer, switching with the theme). The browser-tab icon, phone home-screen icon and link-preview image (`app/icon.png`, `app/apple-icon.png`, `app/opengraph-image.png`) and the spice-jar badge are made from the same art.
 
+## Step pictures
+
+Each recipe step shows a small 3D picture of what it asks you to do (a pot of soup, an egg in a pan, a loaf, a knife, a mixing bowl, an hourglass, a laid plate, a flame), from Microsoft’s Fluent Emoji 3D set (MIT licence, `public/icons/steps/LICENSE.txt`). The one on the step you’re reading moves a little.
+
 ## Look
 
-The Agence Foudre magazine style (from Refero): a butter-yellow canvas, huge condensed tomato-red headlines (Anton), forest-green body text and buttons, warm sand cards and tags, Inter for all other text, and round tomato-red nav dots. Dark mode runs on forest green with saffron headlines. See CLAUDE.md "Design rules".
+The Agence Foudre magazine style (from Refero): a butter-yellow canvas, huge condensed tomato-red headlines (Bricolage Grotesque, extra bold at 75% width), forest-green body text and buttons, warm sand cards and tags, Geist for all other text, and round tomato-red nav dots. Dark mode runs on forest green with saffron headlines. See CLAUDE.md "Design rules".
 
 ## Status (last verified)
 

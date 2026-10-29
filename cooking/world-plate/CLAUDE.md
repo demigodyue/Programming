@@ -79,8 +79,12 @@ docs are unfilled templates. The final security review used the built-in `securi
 - **Images**: the custom loader (`lib/image-loader.ts`) lets Unsplash's CDN resize. Above-the-fold heroes use
   `loading="eager"` + `fetchPriority="high"` (Next 16 deprecated `priority`); allowed qualities are listed in
   `images.qualities`.
-- **Fonts**: Anton (single weight 400, preloaded — the home LCP is the Anton wordmark/headline), Inter (variable,
-  preloaded), Dela Gothic One + Noto Sans JP for Japanese (`preload: false`). Anton has no italic: `<em>` in display type is a colour switch.
+- **Fonts (2026-10-29)**: Bricolage Grotesque (variable, opsz+wdth axes) for display, set weight 800 at wdth 75 on
+  h1–h4 and .font-display (globals.css); Geist (variable) for everything else; Dela Gothic One + Noto Sans JP for
+  Japanese (loaded on demand). `<em>` in display type is a colour switch. The footer has no giant wordmark any more:
+  a sign-off line (.foot-signoff) and Back to top. No photo-credit line (Unsplash licence doesn’t require one).
+- **Step icons**: StepIcon is an <img> of a Fluent Emoji 3D picture (public/icons/steps/*.webp, MIT); per-action
+  CSS movement (.step-icon--*, wp-step-* keyframes) on [data-active].
 - **Hex colours** live only in `app/globals.css`. Two unavoidable exceptions: `viewport.themeColor` in
   `app/layout.tsx` and `app/opengraph-image.tsx` (neither can read CSS variables).
 - Registry gotcha: a Watermelon item rewrote `cn` imports to `from "cn"` and installed an unrelated npm package
