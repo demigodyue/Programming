@@ -7,7 +7,7 @@
     "predev": "npm run db:setup",
     "build": "next build --webpack && node scripts/copy-site.mjs",
     "build:aws": "node scripts/build-aws.mjs https://main.d1arn7be8fhjvi.amplifyapp.com",
-    "prebuild": "npm run db:setup",
+    "prebuild": "npm run db:setup && npm run rules",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
@@ -17,6 +17,7 @@
     "db:migrate": "node --env-file-if-exists=.env.local node_modules/drizzle-kit/bin.cjs migrate",
     "db:seed": "tsx --env-file-if-exists=.env.local db/seed.ts",
     "db:setup": "npm run db:migrate && npm run db:seed",
+    "rules": "tsx scripts/sync-recipe-slugs.ts",
     "db:studio": "node --env-file-if-exists=.env.local node_modules/drizzle-kit/bin.cjs studio"
   },
   "dependencies": {
@@ -51,7 +52,6 @@
     "drizzle-kit": "^0.31.11",
     "eslint": "^9",
     "eslint-config-next": "16.4.1",
-    "shadcn": "^4.21.5",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
     "typescript": "^5",

@@ -308,6 +308,28 @@ function AuthForm() {
               <T en="Back to sign in" ja="ログインに戻る" />
             </button>
           )}
+          {mode === "signup" && (
+            <span className="text-muted-foreground">
+              <T
+                en={
+                  <>
+                    What we keep and how to delete it:{" "}
+                    <Link href="/privacy" className="underline underline-offset-2">
+                      Privacy
+                    </Link>
+                  </>
+                }
+                ja={
+                  <>
+                    保存する内容と削除方法：
+                    <Link href="/privacy" className="underline underline-offset-2">
+                      プライバシー
+                    </Link>
+                  </>
+                }
+              />
+            </span>
+          )}
         </p>
       </m.form>
     </div>

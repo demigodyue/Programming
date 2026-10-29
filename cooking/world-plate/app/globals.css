@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "shadcn/tailwind.css";
+@import "./shadcn-tailwind.css";
 @import "lenis/dist/lenis.css";
 
 @custom-variant dark (&:is(.dark *));
@@ -71,7 +71,7 @@
   --shadow-lift: 0 0 #0000;
   /* Section titles in Anton (standing in for Foudre's Beni 900), up to 130px. Foudre sets Beni at 0.70 leading;
      Anton's caps are 0.86em tall, so 0.92 is the tightest that doesn't collide. Tracking normal. */
-  --text-display: clamp(3.5rem, 11.5vw, 8.125rem);
+  --text-display: clamp(2.5rem, 7.6vw, 5.75rem);
   --text-display--line-height: 0.92;
   --text-display--letter-spacing: 0;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -330,13 +330,13 @@
       --art-w: 100%;
     }
   }
-  /* Bricolage Grotesque, condensed and extra bold, uppercase, slightly tight. */
+  /* Archivo, expanded and extra bold, uppercase, slightly tight. */
   h1,
   h2,
   h3,
   h4 {
     @apply font-display text-balance;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
   }
   h1,
   h2,
@@ -344,8 +344,8 @@
   h4,
   .font-display {
     font-weight: 800;
-    font-stretch: 75%;
-    font-variation-settings: "wdth" 75;
+    font-stretch: 112%;
+    font-variation-settings: "wdth" 112;
   }
   h1,
   h2,
@@ -1624,7 +1624,7 @@
     background: #c2321b;
     color: #fff8f6;
     font: 800 calc(var(--jw) * 0.11) / 1 var(--font-display);
-    font-variation-settings: "wdth" 75;
+    font-variation-settings: "wdth" 112;
   }
   .jar__bottom {
     top: calc(var(--jlh) + var(--jbh) - var(--jr));
@@ -1815,8 +1815,8 @@
     translate: 0 calc(var(--rise) * -28vh);
     scale: calc(1 - var(--rise) * 0.1);
     opacity: calc(1 - var(--rise));
-    font: 800 clamp(2.75rem, 8vw, 6.5rem) / 0.92 var(--font-display);
-    font-variation-settings: "wdth" 75;
+    font: 800 clamp(2rem, 5.6vw, 4.5rem) / 0.95 var(--font-display);
+    font-variation-settings: "wdth" 112;
     text-transform: uppercase;
     white-space: nowrap;
   }
@@ -2035,7 +2035,7 @@
     align-items: center;
     gap: 2.5vw;
     padding-right: 2.5vw;
-    font-size: clamp(4rem, 12vw, 11rem);
+    font-size: clamp(2.75rem, 8.4vw, 7.75rem);
     line-height: 0.9;
     text-transform: uppercase;
     white-space: nowrap;
@@ -2156,7 +2156,7 @@
   }
   .cuisine-stack__title {
     color: var(--headline);
-    font-size: clamp(2.75rem, 6.5vw, 6rem);
+    font-size: clamp(2rem, 4.6vw, 4.25rem);
     line-height: 0.9;
     text-transform: uppercase;
   }
@@ -2271,7 +2271,7 @@
     display: flex;
     flex-direction: column;
     color: inherit;
-    font-size: clamp(4.5rem, 12vw, 10.5rem);
+    font-size: clamp(3rem, 8.4vw, 7.25rem);
     line-height: 0.86;
     text-transform: uppercase;
   }
@@ -2497,7 +2497,7 @@
     align-items: center;
     justify-content: center;
     color: #fff8ec; /* warm white over the photo, both themes */
-    font-size: clamp(3.5rem, 13vw, 12rem);
+    font-size: clamp(2.5rem, 9vw, 8.5rem);
     line-height: 0.88;
     text-align: center;
     text-transform: uppercase;

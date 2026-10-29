@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Geist } from "next/font/google";
+import { Archivo, Plus_Jakarta_Sans } from "next/font/google";
 import { preconnect } from "react-dom";
 import { AccountBoot } from "@/components/account/account-boot";
 import { T } from "@/components/i18n";
@@ -24,22 +24,22 @@ import { fold } from "@/lib/recipe-filter";
 import { JA_FONTS, site } from "@/lib/site";
 import "./globals.css";
 
-// Two families: Bricolage Grotesque for display (variable: set condensed and extra bold in globals.css, .font-display)
-// and Geist for everything else. Both are variable fonts, so one file each covers every weight.
-const display = Bricolage_Grotesque({
+// Two families: Archivo for display (variable: set expanded and extra bold in globals.css, .font-display) and Plus
+// Jakarta Sans for everything else. Both are variable fonts, so one file each covers every weight.
+const display = Archivo({
   variable: "--font-display-face",
   subsets: ["latin"],
-  axes: ["opsz", "wdth"],
+  axes: ["wdth"],
   display: "swap",
 });
 
-const sans = Geist({
+const sans = Plus_Jakarta_Sans({
   variable: "--font-sans-face",
   subsets: ["latin"],
   display: "swap",
 });
 
-// The Japanese fonts (Dela Gothic One under the display face, Noto Sans JP under Geist) aren't bundled: their stylesheet is
+// The Japanese fonts (Dela Gothic One under the display face, Noto Sans JP under Plus Jakarta Sans) aren't bundled: their stylesheet is
 // hundreds of unicode-range rules, render-blocking for every visitor if next/font included it. It's added only when
 // the page is in Japanese — by LANG_INIT below, or by setLang() (lib/lang.ts; the URL is JA_FONTS in lib/site.ts).
 

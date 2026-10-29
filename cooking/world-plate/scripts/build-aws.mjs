@@ -50,7 +50,12 @@ const yaml = `customHeaders:
       - key: 'Referrer-Policy'
         value: 'strict-origin-when-cross-origin'
       - key: 'Permissions-Policy'
-        value: 'camera=(), microphone=(), geolocation=(), payment=()'
+        value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()'
+      # Keeps other sites from scripting this window, but lets the Google sign-in popup report back.
+      - key: 'Cross-Origin-Opener-Policy'
+        value: 'same-origin-allow-popups'
+      - key: 'X-Permitted-Cross-Domain-Policies'
+        value: 'none'
   - pattern: '/_next/static/**'
     headers:
       - key: 'Cache-Control'

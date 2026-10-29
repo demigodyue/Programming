@@ -79,8 +79,8 @@ docs are unfilled templates. The final security review used the built-in `securi
 - **Images**: the custom loader (`lib/image-loader.ts`) lets Unsplash's CDN resize. Above-the-fold heroes use
   `loading="eager"` + `fetchPriority="high"` (Next 16 deprecated `priority`); allowed qualities are listed in
   `images.qualities`.
-- **Fonts (2026-10-29)**: Bricolage Grotesque (variable, opsz+wdth axes) for display, set weight 800 at wdth 75 on
-  h1–h4 and .font-display (globals.css); Geist (variable) for everything else; Dela Gothic One + Noto Sans JP for
+- **Fonts (2026-10-29)**: Archivo (variable, wdth axis) for display, set weight 800 at wdth 112 on h1–h4 and
+  .font-display (globals.css; display sizes were scaled down for the wider letters); Plus Jakarta Sans for everything else; Dela Gothic One + Noto Sans JP for
   Japanese (loaded on demand). `<em>` in display type is a colour switch. The footer has no giant wordmark any more:
   a sign-off line (.foot-signoff) and Back to top. No photo-credit line (Unsplash licence doesn’t require one).
 - **Step icons**: StepIcon is an <img> of a Fluent Emoji 3D picture (public/icons/steps/*.webp, MIT); per-action
@@ -373,7 +373,10 @@ tests/unit, tests/e2e    Vitest and Playwright
   builds: they support Next.js 12–15 only. `npm run build` still writes ../site for Live Server.
 - No `dangerouslySetInnerHTML` / `innerHTML` with user content (JSON-LD uses escaped, static recipe data; the flying
   heart/basket are fixed SVG strings; flying ingredient chips use textContent).
-- firestore.rules allow-lists the user document's fields; a new saved field means updating the rules too.
+- firestore.rules allow-lists the user document's fields; a new saved field means updating the rules too. Favourites
+  and rating keys must be in recipeSlugs() (generated with lib/recipe-slugs.ts by scripts/sync-recipe-slugs.ts in
+  prebuild; slugs are only ever added). New recipes → the rules file changes → the owner must republish it.
+- Security audit scripts (live Firebase, throwaway accounts): see the 2026-10-29 audit in README "Security".
 - The localStorage demo account backend is only reachable when the build sets NEXT_PUBLIC_ACCOUNT_DEMO=1 (the E2E build).
 - `npm audit --omit=dev` must show no high/critical issues (`overrides` pins a patched @grpc/grpc-js).
 - Hex colours outside globals.css: the Google "G" logo's brand colours in components/account/account-panel.tsx.

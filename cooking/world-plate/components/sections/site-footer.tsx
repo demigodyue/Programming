@@ -39,6 +39,7 @@ export function SiteFooter() {
             { label: <T en="Your favorites" ja="お気に入り" />, href: "/favorites" },
             { label: <T en="Shopping list" ja="買い物リスト" />, href: "/shopping-list" },
             { label: <T en="Your account" ja="アカウント" />, href: "/account" },
+            { label: <T en="Privacy" ja="プライバシー" />, href: "/privacy" },
           ],
         },
         { title: <T en="Cuisines" ja="各国料理" />, links: cuisinesSeed.slice(0, half).map(cuisineLink) },

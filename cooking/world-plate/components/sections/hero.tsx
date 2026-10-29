@@ -155,7 +155,7 @@ export function Hero({
             data-parallax-end="20"
             data-parallax-scroll-start="top top"
             data-parallax-scroll-end="bottom top-=20%"
-            className="hero-fan font-display text-headline -mb-[0.1em] text-center text-[19vw] leading-[0.9] tracking-[0.01em] whitespace-nowrap select-none"
+            className="hero-fan font-display text-headline -mb-[0.1em] text-center text-[10.6vw] leading-[0.9] tracking-[0.01em] whitespace-nowrap select-none"
           >
             <LetterRoll text="Sizzle Atlas" />
           </p>

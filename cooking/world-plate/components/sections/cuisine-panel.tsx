@@ -106,7 +106,7 @@ export function CuisinePanel({ cuisines }: { cuisines: CuisineSummary[] }) {
                 </span>
                 <span className="label-caps cuisine-card__num">{String(i + 1).padStart(2, "0")}</span>
                 <span className="cuisine-card__meta">
-                  <span className="cuisine-card__name font-display block truncate text-[clamp(1rem,1.9vw,1.75rem)] leading-none uppercase">
+                  <span className="cuisine-card__name font-display block text-balance text-[clamp(0.8rem,1.15vw,1.2rem)] leading-none uppercase">
                     <T en={c.name} ja={c.ja.name} />
                   </span>
                   <span className="label-caps mt-1.5 hidden truncate text-[0.6875rem] sm:block">

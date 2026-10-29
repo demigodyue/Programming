@@ -15,6 +15,7 @@ import {
 } from "firebase/auth";
 import { deleteDoc, doc, getDoc, getFirestore, serverTimestamp, setDoc } from "firebase/firestore/lite";
 import { cleanFavorites, cleanRatings } from "@/lib/local-store";
+import { RECIPE_SLUGS } from "@/lib/recipe-slugs";
 import { AccountError, firebaseConfig, RECENT_SIGN_IN_MS, type AccountBackend, type AccountUser } from "./backend";
 
 /**
@@ -103,6 +104,16 @@ export const firebaseBackend: AccountBackend = {
 
   save: (uid, data) =>
     wrap(() =>
-      setDoc(doc(db, "users", uid), { favorites: data.favorites, ratings: data.ratings, updatedAt: serverTimestamp() }, { merge: true }),
+      // Only names the database rules accept (firestore.rules allows the known recipes, 1–5 stars): an old or
+      // tampered entry in this browser would otherwise make every save fail.
+      setDoc(
+        doc(db, "users", uid),
+        {
+          favorites: data.favorites.filter((s) => RECIPE_SLUGS.has(s)),
+          ratings: Object.fromEntries(Object.entries(data.ratings).filter(([s]) => RECIPE_SLUGS.has(s))),
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true },
+      ),
     ),
 };

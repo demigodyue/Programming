@@ -1,8 +1,8 @@
-:HL["/Programming/cooking/site/_next/static/css/3a30c5aac56e4a55.css","style"]
-:HL["/Programming/cooking/site/_next/static/css/2485badf1b0e216a.css","style"]
+:HL["/Programming/cooking/site/_next/static/css/a31faa06f2168d98.css","style"]
+:HL["/Programming/cooking/site/_next/static/css/484ad2984cb85ddf.css","style"]
 :HC"https://images.unsplash.com"
 :HL["/Programming/cooking/site/brand/lockup-light-360.webp","image",{"imageSrcSet":"/Programming/cooking/site/brand/lockup-light-360.webp 360w, /Programming/cooking/site/brand/lockup-light-720.webp 720w","imageSizes":"180px"}]
 :HL["/Programming/cooking/site/brand/lockup-dark-360.webp","image",{"imageSrcSet":"/Programming/cooking/site/brand/lockup-dark-360.webp 360w, /Programming/cooking/site/brand/lockup-dark-720.webp 720w","imageSizes":"180px"}]
 2:[["children",{"s":"__PAGE__","h":160}]]
 1:[["children",{"s":"shopping-list","h":64,"c":"$Q2"}]]
-0:{"b":"w0HgSERekhg9l1776qwfz","t":{"t":{"s":"","h":16,"c":"$Q1"}}}
+0:{"b":"a1KVrot6ZU48koodzhWxS","t":{"t":{"s":"","h":16,"c":"$Q1"}}}
