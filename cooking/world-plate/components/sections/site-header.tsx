@@ -107,9 +107,9 @@ export function SiteHeader({ searchItems, searchPlaces }: { searchItems: SearchI
             e.preventDefault();
             window.dispatchEvent(new Event("wp:scroll-top"));
           }}
-          className="nav-circle nav-logo bg-dot text-dot-foreground pointer-events-auto grid size-[50px] shrink-0 place-items-center rounded-full"
+          className="nav-circle nav-logo pointer-events-auto grid h-[50px] w-[58px] shrink-0 place-items-center rounded-full"
         >
-          <LogoMark className="size-9" />
+          <LogoMark className="w-[58px]" />
         </Link>
 
         <div

@@ -171,7 +171,7 @@ All motion is modelled on [slush.app](https://slush.app) (the "Slush" style on R
 
 ## Logo
 
-The Sizzle Atlas mark is a frying pan seen from above: the dish in it is a globe, and steam rises off it. It is one colour, so it works in the tomato nav circle, on the cream page and on the forest bands, and there is a bolder version with fewer lines for favicons. It lives in `components/logo.tsx`, with copies in `app/icon.svg` (browser tab), `app/apple-icon.png` (phone home screen), the link-preview image and the spice-jar label.
+The logo is the owner’s artwork in `logo/`: a cast-iron pan holding a glowing globe with map pins, steam and sparks, above “SIZZLE ATLAS · World recipe collection”. The site uses transparent cut-outs of it in `public/brand/`: the pan on its own (header) and the full logo in two versions, the original with cream “ATLAS” for dark backgrounds and one with navy lettering for light backgrounds (footer, switching with the theme). The browser-tab icon, phone home-screen icon and link-preview image (`app/icon.png`, `app/apple-icon.png`, `app/opengraph-image.png`) and the spice-jar badge are made from the same art.
 
 ## Look
 

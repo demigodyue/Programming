@@ -365,12 +365,12 @@ tests/unit, tests/e2e    Vitest and Playwright
 - firestore.rules allow-lists the user document's fields; a new saved field means updating the rules too.
 - The localStorage demo account backend is only reachable when the build sets NEXT_PUBLIC_ACCOUNT_DEMO=1 (the E2E build).
 - `npm audit --omit=dev` must show no high/critical issues (`overrides` pins a patched @grpc/grpc-js).
-- Hex colours outside globals.css: the Google "G" logo's brand colours in components/account/account-panel.tsx; the
-  logo's tomato/white in app/icon.svg, app/apple-icon.png, app/opengraph-image.tsx and public/jar-label.svg.
-- **Brand (2026-10-29): Sizzle Atlas** (formerly World Plate). The mark (components/logo.tsx) is a frying pan seen
-  from above with a globe as the dish and steam rising, one colour with mask cut-outs; `small` (fewer lines, two
-  wisps) for ≤ 32 px. Copies of the drawing: app/icon.svg (favicon), app/apple-icon.png, the OG image, the jar label;
-  change them together. Internal names stay world-plate / wp (folder, package, storage keys, CSS classes).
+- Hex colours outside globals.css: the Google "G" logo's brand colours in components/account/account-panel.tsx.
+- **Brand (2026-10-29): Sizzle Atlas** (formerly World Plate). The logo is the owner’s artwork (logo/*.jpg, navy
+  background). public/brand/ holds cut-outs made from it (flood-fill of the navy from the edges): mark-*.webp (pan only,
+  header) and lockup-light/dark-*.webp (full logo; light = navy lettering for cream pages). app/icon.png,
+  app/apple-icon.png (on navy), app/opengraph-image.png and the jar badge (embedded PNG in public/jar-label.svg) come
+  from the same art. Internal names stay world-plate / wp (folder, package, storage keys, CSS classes).
 
 ## Code conventions
 - Server Components by default; `"use client"` only for interactivity/animation leaves.
