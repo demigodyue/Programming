@@ -57,7 +57,7 @@ Both searches (the box on /recipes and the header search) find dishes by country
 
 The site is published on AWS Amplify Hosting as plain static files, uploaded with Amplify's **Deploy without Git**. Amplify's own Git builds aren't used: they only support Next.js 12–15, and the site is a static export anyway.
 
-The site is live at **https://main.d1arn7be8fhjvi.amplifyapp.com**.
+The site is live at **https://sizzleatlas.com** (also reachable at https://main.d1arn7be8fhjvi.amplifyapp.com).
 
 ```bash
 npm run build:aws
